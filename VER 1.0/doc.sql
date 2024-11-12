@@ -50,6 +50,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
             htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
 
+                htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
+                    for a in (select variavel, conteudo from doc_variaveis) loop
+                       htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
+                    end loop;
+                htp.p('></div>'); 
+
                 htp.p('<div class="header-doc">');  
 
                     ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');

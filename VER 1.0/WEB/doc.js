@@ -55,7 +55,8 @@ document.addEventListener('click', function(e){
     if(e.target.className == "ler-mais"){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
-        window.open('http://cloud.upquery.com/conhecimento/dwu.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
        
         if(document.querySelector('.escolhido')){
 
@@ -119,7 +120,8 @@ document.addEventListener('click', function(e){
     
     if(e.target.className == "lista-pergunta"){
         
-        window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
 
        // chamar('detalhe_pergunta', e.target.title,'',tip_user);
         document.body.scrollTop = 0
@@ -150,12 +152,13 @@ function chamar(proc, search, alvo,tipousuario){
     }
 
     else if (proc == 'main'){
-        window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main');
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.location.replace(url_doc + '.doc.main');
     }else{
-                
-        //window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main');
+
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
-        window.history.pushState("", "", "/conhecimento/dwu.doc.main");//remove os parametros da url , caso esteja acessando de um link externo
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
 
     }
     request.onload = function(){  
