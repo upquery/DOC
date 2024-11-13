@@ -676,7 +676,7 @@ li.flex-categorias {
   text-align: center;
 }
 
-img.mais {
+img.mais, img.menos {
   border-radius: 25px;
   margin-top: 15px;
   height: 32px;
@@ -873,7 +873,7 @@ span.label-tipUser{
     height: 285px;
     top: 0px;
   }
-  img.mais {
+  img.mais, img.menos {
     border-radius: 20px;
     margin-top: 5px;
     height: 20px;
@@ -1292,7 +1292,7 @@ span.label-tipUser{
     height: 285px;
     top: 0px;
   }
-  img.mais {
+  img.mais, img.menos {
     border-radius: 20px;
     margin-top: 5px;
     height: 20px;
@@ -1588,7 +1588,7 @@ span.menu-lateral-item {
   cursor: pointer;
 }
 
-img.menu-lateral-mais {
+img.menu-lateral-aberto, img.menu-lateral-fechado {
   border-radius: 9px;
   margin-top: 4px;
   height: 17px;

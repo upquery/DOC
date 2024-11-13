@@ -127,18 +127,33 @@ document.addEventListener('click', function(e){
         document.body.scrollTop = 0
     }
 
-    if(e.target.className == "menu-lateral-aberto" && e.target.tagName == 'IMG' ){
+    if(e.target.tagName == 'IMG' && (e.target.classList.contains('menu-lateral-aberto') || e.target.classList.contains('menu-lateral-fechado')) ){
         console.log('passou 1');
-        console.log(e.target.parentNode.parentNode.parentNode);
+        let li_pai   = e.target.parentNode.parentNode;
+        let ul_irmao = li_pai.nextElementSibling;
+        if (ul_irmao.classList.contains('menu-lateral-aberto')) {
+            ul_irmao.classList.remove('menu-lateral-aberto');
+            ul_irmao.classList.add('menu-lateral-fechado');
+        } else {
+            ul_irmao.classList.remove('menu-lateral-fechado');
+            ul_irmao.classList.add('menu-lateral-aberto');
+        }    
+        console.log(e.target.getAttribute('src'));
+        let img_src = e.target.getAttribute('src');
+        if (e.target.classList.contains('menu-lateral-aberto')) {
+            e.target.classList.remove('menu-lateral-aberto');
+            e.target.classList.add('menu-lateral-fechado');
+            e.target.setAttribute('src',img_src.replace('menos.png', 'mais.png'));
+        } else {
+            e.target.classList.remove('menu-lateral-fechado');
+            e.target.classList.add('menu-lateral-aberto');
+            e.target.setAttribute('src',img_src.replace('mais.png', 'menos.png'));
+        }
 
-        //let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        //window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
-       //
-        //if(document.querySelector('.escolhido')){
-//
-        //    document.querySelector('.escolhido').classList.remove('escolhido');
-        //}
+        console.log(li_pai);
+        console.log(ul_irmao)
     }
+
 
 
 

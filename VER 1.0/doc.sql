@@ -438,7 +438,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         htp.p('<div class="main-conteudo">');
             
             htp.p('<div class="menu-lateral-conteudo">');
-                MONTA_MENU_LATERAL(0, 1, 6);
+                MONTA_MENU_LATERAL(0, 1, 2);
             htp.p('</div>');
 
             htp.p('<div class="fundo-conteudo">');
@@ -520,12 +520,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         HTP.P('<ul '||WS_MOSTRAR||'>');
 
         
-        FOR A IN (SELECT A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
+        FOR A IN (SELECT A.NR_ORDEM, A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
                     FROM DOC_ESTRUTURA A, DOC_PERGUNTAS B 
                    WHERE B.CD_PERGUNTA     = A.CD_PERGUNTA
                      AND B.ID_VISUALIZACAO LIKE '%M%'
                      AND A.CD_PERGUNTA_PAI = PRM_PERGUNTA_PAI 
-                    ORDER BY B.PERGUNTA ) loop
+                    ORDER BY A.NR_ORDEM, B.PERGUNTA ) loop
             IF A.QT_FILHO = 0 THEN 
                 WS_IMG := '';
             ELSE
@@ -537,7 +537,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             END IF;
 
             HTP.P('<li data-pergunta="'||a.CD_PERGUNTA||'" data-nivel="'||prm_nivel||'" style="padding-left: '||PRM_NIVEL*20||'px;">'); 
-            HTP.P('<span class="menu-lateral-item">'||WS_IMG||A.PERGUNTA||'</span>');
+            HTP.P('<span class="menu-lateral-item">'||WS_IMG||'-'||a.CD_PERGUNTA||'-'||A.PERGUNTA||'</span>');
             HTP.P('</li>');                        
             --HTP.P('<li><span class="menu-lateral-item"><img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-mais">CRIAÇÃO DE UM OBJETO BROWSER</span></li>');
             IF A.QT_FILHO > 0 THEN 
