@@ -55,8 +55,7 @@ document.addEventListener('click', function(e){
     if(e.target.className == "ler-mais"){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
-        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
+        window.open('http://cloud.upquery.com/conhecimento/dwu.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
        
         if(document.querySelector('.escolhido')){
 
@@ -120,43 +119,11 @@ document.addEventListener('click', function(e){
     
     if(e.target.className == "lista-pergunta"){
         
-        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
+        window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
 
        // chamar('detalhe_pergunta', e.target.title,'',tip_user);
         document.body.scrollTop = 0
     }
-
-    if(e.target.tagName == 'IMG' && (e.target.classList.contains('menu-lateral-aberto') || e.target.classList.contains('menu-lateral-fechado')) ){
-        console.log('passou 1');
-        let li_pai   = e.target.parentNode.parentNode;
-        let ul_irmao = li_pai.nextElementSibling;
-        if (ul_irmao.classList.contains('menu-lateral-aberto')) {
-            ul_irmao.classList.remove('menu-lateral-aberto');
-            ul_irmao.classList.add('menu-lateral-fechado');
-        } else {
-            ul_irmao.classList.remove('menu-lateral-fechado');
-            ul_irmao.classList.add('menu-lateral-aberto');
-        }    
-        console.log(e.target.getAttribute('src'));
-        let img_src = e.target.getAttribute('src');
-        if (e.target.classList.contains('menu-lateral-aberto')) {
-            e.target.classList.remove('menu-lateral-aberto');
-            e.target.classList.add('menu-lateral-fechado');
-            e.target.setAttribute('src',img_src.replace('menos.png', 'mais.png'));
-        } else {
-            e.target.classList.remove('menu-lateral-fechado');
-            e.target.classList.add('menu-lateral-aberto');
-            e.target.setAttribute('src',img_src.replace('mais.png', 'menos.png'));
-        }
-
-        console.log(li_pai);
-        console.log(ul_irmao)
-    }
-
-
-
-
 });
 
 function chamar(proc, search, alvo,tipousuario){
@@ -183,13 +150,12 @@ function chamar(proc, search, alvo,tipousuario){
     }
 
     else if (proc == 'main'){
-        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.location.replace(url_doc + '.doc.main');
+        window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main');
     }else{
-
+                
+        //window.location.replace('http://cloud.upquery.com/conhecimento/dwu.doc.main');
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
-        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
+        window.history.pushState("", "", "/conhecimento/dwu.doc.main");//remove os parametros da url , caso esteja acessando de um link externo
 
     }
     request.onload = function(){  

@@ -1,7 +1,5 @@
-SET DEFINE OFF
-CREATE OR REPLACE PACKAGE BODY DOC  IS
-
--- TESTE GIT
+create or replace PACKAGE BODY DOC  IS
+               
     PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                     PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
                     utm_source      VARCHAR2 DEFAULT NULL,
@@ -30,7 +28,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
         htp.p('<!DOCTYPE html>');
         htp.p('<html lang="pt-br">');
-                
+
             htp.p('<head>');
 
                 htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
@@ -50,21 +48,15 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
             htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
 
-                htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
-                    for a in (select variavel, conteudo from doc_variaveis) loop
-                       htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
-                    end loop;
-                htp.p('></div>'); 
-
                 htp.p('<div class="header-doc">');  
 
                     ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
-                                            
+
                     htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
 
                         htp.p('<a class="go-faq">Central de Ajuda</a>');
                         htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
-                    
+
                         if upper(trim(ws_usuario)) <> 'NOUSER' then
                             htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
                         end if;
@@ -81,17 +73,17 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     ws_tipouser:='';
                     ws_externo:='';
                 END IF;
-                
-                								
+
+
                 htp.p('<div class="main">');
 
-                    
+
                     doc.principal;
 
                 htp.p('</div>');
 
                 htp.p('<div class="footer-doc">');
-                    
+
                     htp.p('<span>');
                         htp.p('<a class="links" title="WhatsApp" href="https://wa.me/message/DWVS7MC4FU2RF1"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="sociais" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M440.164,71.836C393.84,25.511,332.249,0,266.737,0S139.633,25.511,93.308,71.836S21.473,179.751,21.473,245.263    c0,41.499,10.505,82.279,30.445,118.402L0,512l148.333-51.917c36.124,19.938,76.904,30.444,118.403,30.444    c65.512,0,127.104-25.512,173.427-71.836C486.488,372.367,512,310.776,512,245.263S486.488,118.16,440.164,71.836z     M266.737,460.495c-38.497,0-76.282-10.296-109.267-29.776l-6.009-3.549L48.952,463.047l35.878-102.508l-3.549-6.009    c-19.479-32.985-29.775-70.769-29.775-109.266c0-118.679,96.553-215.231,215.231-215.231s215.231,96.553,215.231,215.231    C481.968,363.943,385.415,460.495,266.737,460.495z"/></g></g><g><g><path d="M398.601,304.521l-35.392-35.393c-11.709-11.71-30.762-11.71-42.473,0l-13.538,13.538    c-32.877-17.834-60.031-44.988-77.866-77.865l13.538-13.539c5.673-5.672,8.796-13.214,8.796-21.236    c0-8.022-3.124-15.564-8.796-21.236l-35.393-35.393c-5.672-5.672-13.214-8.796-21.236-8.796c-8.023,0-15.564,3.124-21.236,8.796    l-28.314,28.314c-15.98,15.98-16.732,43.563-2.117,77.664c12.768,29.791,36.145,62.543,65.825,92.223    c29.68,29.68,62.432,53.057,92.223,65.825c16.254,6.965,31.022,10.44,43.763,10.44c13.992,0,25.538-4.193,33.901-12.557    l28.314-28.314c5.673-5.672,8.796-13.214,8.796-21.236S404.273,310.193,398.601,304.521z M349.052,354.072    c-6.321,6.32-23.827,4.651-44.599-4.252c-26.362-11.298-55.775-32.414-82.818-59.457c-27.043-27.043-48.158-56.455-59.457-82.818    c-8.903-20.772-10.571-38.278-4.252-44.599l28.315-28.314l35.393,35.393l-28.719,28.719l4.53,9.563    c22.022,46.49,59.753,84.221,106.244,106.244l9.563,4.53l28.719-28.719l35.393,35.393L349.052,354.072z"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg></a>');                        
                         htp.p('<a class="links" title="Instagram" href="https://www.instagram.com/upquery/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sociais" feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>');
@@ -101,7 +93,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     htp.p('<span >');
                         htp.p('<a class="links" href="https://www.upquery.com">2021 © UpQuery do Brasil</a>');
                     htp.p('</span>');
-                   
+
                     -- Retirado a pedido do suporte
                     /*htp.p('<span class="cversion"> Current Version: ');
                     --     gbl.getVersion;
@@ -113,12 +105,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     htp.p('</span>');
 
                 htp.p('</div>');
-                
+
                 htp.p('<div id="loadingscreens">');					
 				htp.p('</div>');
 
 			htp.p('</body>');
-    
+
     END MAIN;
 
     PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
@@ -134,11 +126,11 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 htp.p('<div class="bgmenur" ></div>');
             end if;
 
-            
+
             /*htp.p('<span>');                
 
                 htp.p('COLOQUE AQUI O CONTEUDO DE APRESENTAÇÃO/NOTAS DA VERSÃO');
-            
+
             htp.p('</span>');*/
 
 
@@ -150,30 +142,30 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                     PRM_USUARIO VARCHAR2 DEFAULT NULL,
                     PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
+
         WS_USUARIO	    VARCHAR2(80);
         WS_CSS		    VARCHAR2(80);
         WS_TIPUSER      VARCHAR2(2);
 
     BEGIN
         WS_TIPUSER:=PRM_TIPUSER;
-      
+
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
             htp.p('<div class="conteudo-faq">');
 
-            
+
                 htp.p('<div class="fundo-busca">');
-                        
-                        
- 
+
+
+
                         htp.p('<h1 class="titulo-faq"> COMO PODEMOS AJUDAR?</h1>');
 
                         htp.p('<div class="mensagem">');
                             htp.p('<span class="label-tipUser">');
                                 htp.p('<a>Tipo de usuario:</a>');
                                  htp.p('<select id ="change-tipUser" onchange="tip_user=this.value; chamar(''FAQ'', '''||PRM_VALOR||''','''',this.value);" >');
-                                    
+
                                     if WS_TIPUSER = 'T' THEN
                                         htp.p('<option value="T" selected>Todos</option>');
                                     ELSE
@@ -209,12 +201,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('</div>');
 
     END FAQ;
-    
+
     PROCEDURE DOC_PUBLIC (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                             PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                             PRM_USUARIO VARCHAR2 DEFAULT NULL,
                             PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
+
         WS_USUARIO	    VARCHAR2(80);
         WS_CSS		    VARCHAR2(80);
         WS_TIPUSER      VARCHAR2(2);
@@ -226,14 +218,14 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('<div class="conteudo-faq">');
 
                 htp.p('<div class="fundo-busca">');
-                        
+
                         htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O</h1>');
 
                         htp.p('<div class="mensagem">');
                             htp.p('<span class="label-tipUser">');
                                 htp.p('<a>Tipo de usuario:</a>');
                                 htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
-                                    
+
                                     if WS_TIPUSER = 'T' THEN
                                         htp.p('<option value="T" selected>Todos</option>');
                                     ELSE
@@ -261,7 +253,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                         htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
                 htp.p('</div>');
-                        
+
                         htp.p('<ul class="flex-container">');
                             doc.consulta(PRM_VALOR,'D',WS_TIPUSER);
                         htp.p('</ul>');
@@ -269,12 +261,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('</div>');
 
     END DOC_PUBLIC;
-    
+
     PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                             PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                             PRM_USUARIO VARCHAR2 DEFAULT NULL,
                             PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
+
         WS_USUARIO	    VARCHAR2(80);
         WS_CSS		    VARCHAR2(80);
         WS_TIPUSER      VARCHAR2(2);
@@ -282,20 +274,20 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
     BEGIN
 
         WS_TIPUSER:=PRM_TIPUSER;
-      
+
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
             htp.p('<div class="conteudo-faq">');
 
                 htp.p('<div class="fundo-busca">');
-                        
+
                         htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
 
                         htp.p('<div class="mensagem">');
                             htp.p('<span class="label-tipUser">');
                                 htp.p('<a>Tipo de usuario:</a>');
                                 htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
-                                    
+
                                     if WS_TIPUSER = 'T' THEN
                                         htp.p('<option value="T" selected>Todos</option>');
                                     ELSE
@@ -323,13 +315,13 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                         htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
                 htp.p('</div>');
-              
+
                         htp.p('<ul class="flex-container">');
                             doc.consulta(PRM_VALOR,'P',WS_TIPUSER);
                         htp.p('</ul>');
 
             htp.p('</div>');
-       
+
     END DOC_PRIVATE;
 
     PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
@@ -340,7 +332,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         WS_CATEGORIA VARCHAR2(80) := 'N/A';
         WS_VALOR     VARCHAR2(1000);
         WS_CLASSE    VARCHAR2(2);
-        
+
         WS_COUNT NUMBER := 0;
         TYPE WS_LINHAS IS TABLE OF DOC_PERGUNTAS%ROWTYPE;
         WS_LINHA WS_LINHAS;
@@ -369,25 +361,25 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         end if;
 
         ws_limit := ' order by categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
-            
+
             IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             ELSE
-                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             END IF;
-            
+
             FOR i in 1..ws_linha.COUNT
 
                 LOOP			
 
                     IF (WS_CATEGORIA<>WS_LINHA(I).CATEGORIA) THEN			   
-                        
+
                         IF WS_CATEGORIA<>'N/A' THEN
                             HTP.P('</UL>');
                                 HTP.P('</LI>');
                         END IF;
                         HTP.P('<LI CLASS="flex-categorias" TITLE="'||WS_LINHA(I).CATEGORIA||'">');
-                            
+
                             HTP.P('<UL CLASS ="">');
                                 WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
                     END IF;
@@ -402,7 +394,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                             end if;
 
                         htp.p('</li>');
-                
+
                 END LOOP;
 
     EXCEPTION
@@ -434,143 +426,111 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="spinner"></div>');
-        
-        htp.p('<div class="main-conteudo">');
-            
-            htp.p('<div class="menu-lateral-conteudo">');
-                MONTA_MENU_LATERAL(0, 1, 2);
+        htp.p('<div class="fundo-conteudo">');
+
+
+                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE 
+                  INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE 
+                  FROM 
+                    (   SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
+                          FROM DOC_DETALHES T1
+                          LEFT JOIN DOC_PERGUNTAS T2 
+                            ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
+                         WHERE T2.CD_PERGUNTA = PRM_VALOR
+                           AND T1.VERSAO      = NVL(prm_versao,T1.VERSAO) 
+                         ORDER BY T1.VERSAO DESC
+                    )
+                 WHERE ROWNUM = 1; 
+
+            htp.p('<div id="'||prm_valor||'" class="retorna-faq">');
+
+                    --htp.p('<a>'||ws_categoria||'</a>');
+
+                --REMOVIDO VERSÃO , IRÁ TRAZER SEMPRE A VERSÃO ATUAL
+                /* htp.p('<select class="check-ver" title="'||nvl(prm_versao,ws_versao)||'">');
+
+
+                    htp.p('<option selected disabled>'||nvl(prm_versao,ws_versao)||'</option>');
+
+                            FOR O IN (SELECT DISTINCT VERSAO FROM DOC_DETALHES WHERE CD_PERGUNTA = PRM_VALOR AND VERSAO <> WS_VERSAO ORDER BY VERSAO ASC)
+                            LOOP
+
+                                htp.p('<option value="'||O.VERSAO||'">'||O.VERSAO||'</option>');
+
+                            END LOOP;
+
+                    htp.p('</select>');
+                    htp.p('<a class="versao">VERS&Atilde;O</a>');*/
+
             htp.p('</div>');
 
-            htp.p('<div class="fundo-conteudo">');
-                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE 
-                    INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE 
-                    FROM 
-                    (   SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
-                            FROM DOC_DETALHES T1
-                            LEFT JOIN DOC_PERGUNTAS T2 
-                            ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
-                            WHERE T2.CD_PERGUNTA = PRM_VALOR
-                            AND T1.VERSAO      = NVL(prm_versao,T1.VERSAO) 
-                            ORDER BY T1.VERSAO DESC
-                    )
-                    WHERE ROWNUM = 1; 
-                
-                htp.p('<div class="detalhe-conteudo">');
-                    
-                    htp.p('<span class="detalhe-pergunta">'||WS_PERGUNTA||'</span>');
-                    htp.p('<span class="detalhe-resposta">'||WS_DETALHES||'</span>');
+            htp.p('<div class="detalhe-conteudo">');
+
+                htp.p('<span class="detalhe-pergunta">'||WS_PERGUNTA||'</span>');
+                htp.p('<span class="detalhe-resposta">'||WS_DETALHES||'</span>');
+
+            htp.p('</div>');
+
+            htp.p('<div class="detalhe-conteudo2">');
+
+                htp.p('<div class= "voto">');
+
+                    htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                    htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
+
+                    htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
 
                 htp.p('</div>');
+                htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
-                htp.p('<div class="detalhe-conteudo2">');
-                                                            
-                    htp.p('<div class= "voto">');
+                htp.p('<span class="relacionados">Artigos relacionados</span>');
+                htp.p('<ul id="perg-rel">');
 
-                        htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                        htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
+                    IF PRM_TIPUSER <> 'T' THEN
 
-                        htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-                        
-                    htp.p('</div>');
-                    htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
+                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                            LOOP
+                                htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                            END LOOP;
 
-                    htp.p('<span class="relacionados">Artigos relacionados</span>');
-                    htp.p('<ul id="perg-rel">');
+                    ELSE
 
-                        IF PRM_TIPUSER <> 'T' THEN
+                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                            LOOP
+                                htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                            END LOOP;
 
-                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
-                                LOOP
-                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                                END LOOP;
+                    END IF;
 
-                        ELSE
+                htp.p('</ul>');
 
-                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
-                                LOOP
-                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                                END LOOP;
-
-                        END IF;
-
-                    htp.p('</ul>');
-                    
-                htp.p('</div>');    -- detalhe-conteudo2
-            htp.p('</div>');        -- fundo-conteudo 
-        htp.p('</div>');            -- principal-conteudo 
+            htp.p('</div>');    
+        htp.p('</div>');    
 
     END DETALHE_PERGUNTA;
 
-
-    PROCEDURE MONTA_MENU_LATERAL  ( PRM_PERGUNTA_PAI VARCHAR2,
-                                    PRM_NIVEL        NUMBER,
-                                    PRM_NIVEL_ABERTO NUMBER ) AS
-        WS_MOSTRAR VARCHAR2(300);
-        WS_IMG     VARCHAR2(300);
-    BEGIN
-        
-        IF PRM_NIVEL <= PRM_NIVEL_ABERTO THEN 
-            WS_MOSTRAR := ' class="menu-lateral-aberto"';
-        ELSE     
-            WS_MOSTRAR := ' class="menu-lateral-fechado"';
-        END IF;
-
-        HTP.P('<ul '||WS_MOSTRAR||'>');
-
-        
-        FOR A IN (SELECT A.NR_ORDEM, A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
-                    FROM DOC_ESTRUTURA A, DOC_PERGUNTAS B 
-                   WHERE B.CD_PERGUNTA     = A.CD_PERGUNTA
-                     AND B.ID_VISUALIZACAO LIKE '%M%'
-                     AND A.CD_PERGUNTA_PAI = PRM_PERGUNTA_PAI 
-                    ORDER BY A.NR_ORDEM, B.PERGUNTA ) loop
-            IF A.QT_FILHO = 0 THEN 
-                WS_IMG := '';
-            ELSE
-                IF PRM_NIVEL < PRM_NIVEL_ABERTO THEN
-                    WS_IMG    := ' <img src="dwu.fcl.download?arquivo=menos.png" class="menu-lateral-aberto">';
-                ELSE 
-                    WS_IMG    := ' <img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-fechado">';
-                END IF;     
-            END IF;
-
-            HTP.P('<li data-pergunta="'||a.CD_PERGUNTA||'" data-nivel="'||prm_nivel||'" style="padding-left: '||PRM_NIVEL*20||'px;">'); 
-            HTP.P('<span class="menu-lateral-item">'||WS_IMG||'-'||a.CD_PERGUNTA||'-'||A.PERGUNTA||'</span>');
-            HTP.P('</li>');                        
-            --HTP.P('<li><span class="menu-lateral-item"><img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-mais">CRIAÇÃO DE UM OBJETO BROWSER</span></li>');
-            IF A.QT_FILHO > 0 THEN 
-                DOC.MONTA_MENU_LATERAL  (A.CD_PERGUNTA, PRM_NIVEL + 1, PRM_NIVEL_ABERTO);
-            END IF; 
-        END LOOP;
-
-        HTP.P('</ul>');                       
-
-    END MONTA_MENU_LATERAL; 
-
-
-
     PROCEDURE RANK_PERGUNTAS (  PRM_VALOR                VARCHAR2 DEFAULT NULL, 
                                 PRM_PERGUNTA             VARCHAR2 DEFAULT NULL) AS
-    
+
     BEGIN
-        
+
         UPDATE DOC_PERGUNTAS 
            SET 
             RANK_PERGUNTAS  = DECODE(upper(PRM_VALOR), 'SIM', RANK_PERGUNTAS+1, 'NAO', RANK_PERGUNTAS-1)
          WHERE 
             CD_PERGUNTA     = PRM_PERGUNTA;
         COMMIT;
-    
+
         htp.p('!!!');
-      
+
     END RANK_PERGUNTAS;
 
     FUNCTION TRADUZIR (PRM_TEXTO VARCHAR2) RETURN VARCHAR2 AS
-       
+
         WS_TRANSLATE VARCHAR2(1000);
-        
+
     BEGIN
 
         WS_TRANSLATE:= TRANSLATE( PRM_TEXTO,'ÁÇÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÜáçéíóúàèìòùâêîôûãõëü',
@@ -581,5 +541,3 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
     END TRADUZIR;
 
 END DOC;
-/
-SHOW ERROR;
