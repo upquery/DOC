@@ -371,9 +371,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_limit := ' order by categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
             
             IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-                execute immediate 'select * from doc_perguntas where tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             ELSE
-                execute immediate 'select * from doc_perguntas where classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             END IF;
             
             FOR i in 1..ws_linha.COUNT
@@ -434,90 +434,122 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="spinner"></div>');
-        htp.p('<div class="fundo-conteudo">');
-
         
-                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE 
-                  INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE 
-                  FROM 
-                    (   SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
-                          FROM DOC_DETALHES T1
-                          LEFT JOIN DOC_PERGUNTAS T2 
-                            ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
-                         WHERE T2.CD_PERGUNTA = PRM_VALOR
-                           AND T1.VERSAO      = NVL(prm_versao,T1.VERSAO) 
-                         ORDER BY T1.VERSAO DESC
-                    )
-                 WHERE ROWNUM = 1; 
+        htp.p('<div class="main-conteudo">');
             
-            htp.p('<div id="'||prm_valor||'" class="retorna-faq">');
-                
-                    --htp.p('<a>'||ws_categoria||'</a>');
-                
-                --REMOVIDO VERSÃO , IRÁ TRAZER SEMPRE A VERSÃO ATUAL
-                /* htp.p('<select class="check-ver" title="'||nvl(prm_versao,ws_versao)||'">');
-                    
-
-                    htp.p('<option selected disabled>'||nvl(prm_versao,ws_versao)||'</option>');
-
-                            FOR O IN (SELECT DISTINCT VERSAO FROM DOC_DETALHES WHERE CD_PERGUNTA = PRM_VALOR AND VERSAO <> WS_VERSAO ORDER BY VERSAO ASC)
-                            LOOP
-
-                                htp.p('<option value="'||O.VERSAO||'">'||O.VERSAO||'</option>');
-
-                            END LOOP;
-
-                    htp.p('</select>');
-                    htp.p('<a class="versao">VERS&Atilde;O</a>');*/
-
+            htp.p('<div class="menu-lateral-conteudo">');
+                MONTA_MENU_LATERAL(0, 1, 6);
             htp.p('</div>');
 
-            htp.p('<div class="detalhe-conteudo">');
+            htp.p('<div class="fundo-conteudo">');
+                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE 
+                    INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE 
+                    FROM 
+                    (   SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
+                            FROM DOC_DETALHES T1
+                            LEFT JOIN DOC_PERGUNTAS T2 
+                            ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
+                            WHERE T2.CD_PERGUNTA = PRM_VALOR
+                            AND T1.VERSAO      = NVL(prm_versao,T1.VERSAO) 
+                            ORDER BY T1.VERSAO DESC
+                    )
+                    WHERE ROWNUM = 1; 
                 
-                htp.p('<span class="detalhe-pergunta">'||WS_PERGUNTA||'</span>');
-                htp.p('<span class="detalhe-resposta">'||WS_DETALHES||'</span>');
-
-            htp.p('</div>');
-
-            htp.p('<div class="detalhe-conteudo2">');
-                                                         
-                htp.p('<div class= "voto">');
-
-                    htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                    htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
-
-                    htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
+                htp.p('<div class="detalhe-conteudo">');
                     
+                    htp.p('<span class="detalhe-pergunta">'||WS_PERGUNTA||'</span>');
+                    htp.p('<span class="detalhe-resposta">'||WS_DETALHES||'</span>');
+
                 htp.p('</div>');
-                htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
-                htp.p('<span class="relacionados">Artigos relacionados</span>');
-                htp.p('<ul id="perg-rel">');
+                htp.p('<div class="detalhe-conteudo2">');
+                                                            
+                    htp.p('<div class= "voto">');
 
-                    IF PRM_TIPUSER <> 'T' THEN
+                        htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                        htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
 
-                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
-                            LOOP
-                                htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                            END LOOP;
+                        htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
+                        
+                    htp.p('</div>');
+                    htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
-                    ELSE
+                    htp.p('<span class="relacionados">Artigos relacionados</span>');
+                    htp.p('<ul id="perg-rel">');
 
-                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
-                            LOOP
-                                htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                            END LOOP;
+                        IF PRM_TIPUSER <> 'T' THEN
 
-                    END IF;
+                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                                LOOP
+                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                END LOOP;
 
-                htp.p('</ul>');
-                
-            htp.p('</div>');    
-        htp.p('</div>');    
+                        ELSE
+
+                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                                LOOP
+                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                END LOOP;
+
+                        END IF;
+
+                    htp.p('</ul>');
+                    
+                htp.p('</div>');    -- detalhe-conteudo2
+            htp.p('</div>');        -- fundo-conteudo 
+        htp.p('</div>');            -- principal-conteudo 
 
     END DETALHE_PERGUNTA;
+
+
+    PROCEDURE MONTA_MENU_LATERAL  ( PRM_PERGUNTA_PAI VARCHAR2,
+                                    PRM_NIVEL        NUMBER,
+                                    PRM_NIVEL_ABERTO NUMBER ) AS
+        WS_MOSTRAR VARCHAR2(300);
+        WS_IMG     VARCHAR2(300);
+    BEGIN
+        
+        IF PRM_NIVEL <= PRM_NIVEL_ABERTO THEN 
+            WS_MOSTRAR := ' class="menu-lateral-aberto"';
+        ELSE     
+            WS_MOSTRAR := ' class="menu-lateral-fechado"';
+        END IF;
+
+        HTP.P('<ul '||WS_MOSTRAR||'>');
+
+        
+        FOR A IN (SELECT A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
+                    FROM DOC_ESTRUTURA A, DOC_PERGUNTAS B 
+                   WHERE B.CD_PERGUNTA     = A.CD_PERGUNTA
+                     AND B.ID_VISUALIZACAO LIKE '%M%'
+                     AND A.CD_PERGUNTA_PAI = PRM_PERGUNTA_PAI 
+                    ORDER BY B.PERGUNTA ) loop
+            IF A.QT_FILHO = 0 THEN 
+                WS_IMG := '';
+            ELSE
+                IF PRM_NIVEL < PRM_NIVEL_ABERTO THEN
+                    WS_IMG    := ' <img src="dwu.fcl.download?arquivo=menos.png" class="menu-lateral-aberto">';
+                ELSE 
+                    WS_IMG    := ' <img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-fechado">';
+                END IF;     
+            END IF;
+
+            HTP.P('<li data-pergunta="'||a.CD_PERGUNTA||'" data-nivel="'||prm_nivel||'" style="padding-left: '||PRM_NIVEL*20||'px;">'); 
+            HTP.P('<span class="menu-lateral-item">'||WS_IMG||A.PERGUNTA||'</span>');
+            HTP.P('</li>');                        
+            --HTP.P('<li><span class="menu-lateral-item"><img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-mais">CRIAÇÃO DE UM OBJETO BROWSER</span></li>');
+            IF A.QT_FILHO > 0 THEN 
+                DOC.MONTA_MENU_LATERAL  (A.CD_PERGUNTA, PRM_NIVEL + 1, PRM_NIVEL_ABERTO);
+            END IF; 
+        END LOOP;
+
+        HTP.P('</ul>');                       
+
+    END MONTA_MENU_LATERAL; 
+
+
 
     PROCEDURE RANK_PERGUNTAS (  PRM_VALOR                VARCHAR2 DEFAULT NULL, 
                                 PRM_PERGUNTA             VARCHAR2 DEFAULT NULL) AS

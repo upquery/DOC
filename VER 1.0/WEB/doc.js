@@ -126,6 +126,22 @@ document.addEventListener('click', function(e){
        // chamar('detalhe_pergunta', e.target.title,'',tip_user);
         document.body.scrollTop = 0
     }
+
+    if(e.target.className == "menu-lateral-aberto" && e.target.tagName == 'IMG' ){
+        console.log('passou 1');
+        console.log(e.target.parentNode.parentNode.parentNode);
+
+        //let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        //window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
+       //
+        //if(document.querySelector('.escolhido')){
+//
+        //    document.querySelector('.escolhido').classList.remove('escolhido');
+        //}
+    }
+
+
+
 });
 
 function chamar(proc, search, alvo,tipousuario){
