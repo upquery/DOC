@@ -65,5 +65,11 @@ create or replace package DOC  is
 
 	FUNCTION TRADUZIR 			(PRM_TEXTO 				VARCHAR2) RETURN VARCHAR2;
 
+    procedure monta_html_conteudo ( prm_pergunta     varchar2,
+                                    prm_conteudo out clob );
+
+	procedure formatar_texto_html ( prm_pergunta         varchar2,
+                                    prm_texto     in out clob) ;
+
 END DOC;
 /

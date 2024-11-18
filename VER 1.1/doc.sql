@@ -427,6 +427,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         WS_VERSAO       VARCHAR2(80);
         WS_CLASSE       VARCHAR2(3);
         WS_LINK_PAG     VARCHAR2(100);
+        WS_CONTEUDO     CLOB;
 
     BEGIN
 
@@ -443,23 +444,23 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('</div>');
 
             htp.p('<div class="fundo-conteudo">');
-                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE 
-                    INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE 
-                    FROM 
-                    (   SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
-                            FROM DOC_DETALHES T1
-                            LEFT JOIN DOC_PERGUNTAS T2 
-                            ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
-                            WHERE T2.CD_PERGUNTA = PRM_VALOR
+                SELECT DETALHES,PERGUNTA,CATEGORIA,VERSAO,CLASSE INTO WS_DETALHES,WS_PERGUNTA,WS_CATEGORIA,WS_VERSAO,WS_CLASSE
+                  FROM ( SELECT t1.DETALHES DETALHES,T2.PERGUNTA PERGUNTA,T2.CATEGORIA CATEGORIA,T1.VERSAO VERSAO ,T2.CLASSE
+                           FROM DOC_DETALHES T1
+                           LEFT JOIN DOC_PERGUNTAS T2  ON T2.CD_PERGUNTA = T1.CD_PERGUNTA
+                          WHERE T2.CD_PERGUNTA = PRM_VALOR
                             AND T1.VERSAO      = NVL(prm_versao,T1.VERSAO) 
-                            ORDER BY T1.VERSAO DESC
-                    )
+                         ORDER BY T1.VERSAO DESC
+                       )
                     WHERE ROWNUM = 1; 
+
+                doc.monta_html_conteudo(prm_valor, ws_conteudo);
+                ws_detalhes := ws_conteudo;
                 
                 htp.p('<div class="detalhe-conteudo">');
                     
                     htp.p('<span class="detalhe-pergunta">'||WS_PERGUNTA||'</span>');
-                    htp.p('<span class="detalhe-resposta">'||WS_DETALHES||'</span>');
+                    htp.p('<span class="detalhe-resposta  resposta_conteudo">'||WS_DETALHES||'</span>');
 
                 htp.p('</div>');
 
@@ -511,6 +512,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     
                 htp.p('</div>');    -- detalhe-conteudo2
             htp.p('</div>');        -- fundo-conteudo 
+
+            htp.p('<div class="bloco-direito-conteudo"></div>');
+
         htp.p('</div>');            -- principal-conteudo 
 
     END DETALHE_PERGUNTA;
@@ -549,7 +553,8 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             END IF;
 
             HTP.P('<li data-nivel="'||prm_nivel||'" style="padding-left: '||PRM_NIVEL*20||'px;">'); 
-            HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||'-'||a.CD_PERGUNTA||'-'||A.PERGUNTA||'</span>');
+            HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||'-'||A.PERGUNTA||'</span>');
+            --HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||'-'||a.CD_PERGUNTA||'-'||A.PERGUNTA||'</span>');
             HTP.P('</li>');                        
             --HTP.P('<li><span class="menu-lateral-item"><img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-mais">CRIAÇÃO DE UM OBJETO BROWSER</span></li>');
             IF A.QT_FILHO > 0 THEN 
@@ -591,6 +596,237 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         RETURN(WS_TRANSLATE);
 
     END TRADUZIR;
+
+    procedure monta_html_conteudo ( prm_pergunta     varchar2,
+                                    prm_conteudo out clob ) as
+        ws_conteudo clob;
+        ws_tag_i       varchar2(4000);
+        ws_tag_f       varchar2(10);
+        ws_class       varchar2(4000);
+        ws_class2      varchar2(4000);
+        ws_class_tot   varchar2(32000);
+        ws_styles      varchar2(32000);
+        ws_texto       clob; 
+        ws_paragrafo_aberto boolean;
+        
+        ws_marcador_nivel   integer;
+        ws_marcador_ante    integer;
+        ws_marcador_atual   integer;
+        ws_count            integer; 
+
+    begin
+        ws_conteudo         := null;
+        ws_class_tot        := null;
+        ws_paragrafo_aberto := false;
+
+        ws_marcador_ante    := 0;
+
+        for a in (select * from doc_conteudos where cd_pergunta = prm_pergunta and upper(id_ativo) = 'S' order by sq_conteudo) loop
+            ws_tag_i := null;
+            ws_tag_f := null;
+            ws_texto := a.texto; 
+            
+            -- Fecha o parágrafo anterior (se estiver aberto)
+            if ws_paragrafo_aberto then 
+                if a.tp_conteudo in ('TEXTO','LINK','LINK_PERGUNTA', 'IMAGEM') and a.nr_linhas_antes = 0 then 
+                    ws_conteudo         := ws_conteudo||'&nbsp;'; 
+                else 
+                    ws_conteudo         := ws_conteudo||'</p>'; 
+                    ws_paragrafo_aberto := false; 
+                end if;     
+            end if;  
+
+            -- Fecha marcadores abertos 
+            if a.tp_conteudo not like 'MARCADOR%' and ws_marcador_ante > 0 then 
+                ws_conteudo :=  ws_conteudo||RPAD('</ul>', (5*ws_marcador_ante), '</ul>');
+            end if;  
+
+            -- Coloca linhas em branco 
+            if a.nr_linhas_antes > 0 then 
+                ws_conteudo := ws_conteudo || RPAD('<br>', (4*a.nr_linhas_antes), '<br>');
+            end if; 
+
+            -- Monta class/estilo do elemento 
+            ws_class := null;
+            if a.id_estilo is not null then 
+                ws_class     := ' class="'||replace(a.id_estilo,'|',' ')||'"';
+                ws_class_tot := replace(ws_class_tot, a.id_estilo||'|','');
+                ws_class_tot := ws_class_tot||'|'||a.id_estilo||'|';
+            end if; 
+
+            -- Define o tipo de elemento 
+            if a.tp_conteudo = 'TEXTO' then  
+                ws_tag_i := '<span>';  -- Adiciona espaço antes e depois 
+                ws_tag_f := '</span>';
+            elsif a.tp_conteudo = 'PARAGRAFO' then 
+                ws_tag_i            := '<p><span>';
+                ws_tag_f            := '</span>';
+                ws_paragrafo_aberto := true; 
+            elsif a.tp_conteudo = 'LINHA' then 
+                ws_tag_i := '<hr>';
+                ws_tag_f := '';
+            elsif a.tp_conteudo like 'MARCADOR%' then  
+                ws_marcador_atual := replace(a.tp_conteudo,'MARCADOR','');
+                if ws_marcador_atual > ws_marcador_ante then
+                    ws_tag_i            := '<ul class="'||a.tp_conteudo||'">';
+                elsif ws_marcador_atual < ws_marcador_ante then                    
+                    ws_tag_i :=  RPAD('</ul>', (5*(ws_marcador_ante-ws_marcador_atual)), '</ul>');   -- Fecha os marcadores anteriores 
+                end if;     
+               
+                ws_tag_i := ws_tag_i||'<li>';
+                ws_tag_f := '</li>';
+                ws_marcador_ante := ws_marcador_atual; 
+            elsif a.tp_conteudo like 'IMAGEM' then  
+                -- Alinhamento não funciona em objeto IMG, alinha um span externo 
+                ws_class2 := null;
+                select max(lower(css_estilo)) into ws_class2 
+                  from doc_estilos 
+                 where id_estilo in (select column_value from table(fun.vpipe(a.id_estilo)))
+                   and lower(css_estilo) like '%text-align%'; 
+                if ws_class2 is not null then    
+                    ws_class2 := substr(ws_class2,instr(ws_class2,'text-align:',1,1), 100);
+                    ws_class2 := substr(ws_class2,1,instr(ws_class2,';',1,1));
+                    ws_class2 := 'style="display: block ruby; '||ws_class2||'"';
+                end if; 
+                ws_tag_i            := '<span '||ws_class2||'><img '||ws_class||' src="dwu.fcl.download?arquivo='||ws_texto||'"></span>';
+                ws_tag_f            := null;
+                ws_texto            := null;
+                ws_class            := null;
+            end if; 
+
+            if ws_class is not null then 
+                ws_tag_i := replace(ws_tag_i,'>',ws_class||'>');
+            end if; 
+
+            --ws_texto := doc.formatar_html(a.cd_pergunta, ws_texto);
+            if a.formatar_interno = 'S' then
+                doc.formatar_texto_html(a.cd_pergunta, ws_texto);
+            end if; 
+
+            ws_conteudo := ws_conteudo||ws_tag_i||ws_texto||ws_tag_f;
+
+        end loop;
+        
+        -- Fecha paragrafo aberto 
+        if ws_paragrafo_aberto then 
+            ws_conteudo := ws_conteudo||'</p>'; 
+        end if;     
+
+        -- Fecha marcadores abertos 
+        if ws_marcador_ante > 0 then 
+            ws_conteudo :=  ws_conteudo||RPAD('</ul>', (5*ws_marcador_ante), '</ul>');
+        end if;  
+
+        ws_styles := '<style id="style-conteudo">';
+        --for a in (select id_estilo, css_estilo from doc_estilos where id_estilo in (select column_value from table(fun.vpipe(ws_class_tot))) order by id_estilo ) loop
+        for a in (select id_estilo, css_estilo from doc_estilos order by id_estilo ) loop
+            ws_styles := ws_styles||' .'||a.id_estilo||' {'||a.css_estilo||'} ';
+        end loop;
+        ws_styles := ws_styles ||'</style>';
+
+
+        prm_conteudo := ws_styles||' '||ws_conteudo; 
+
+    END monta_html_conteudo; 
+
+
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------
+    procedure formatar_texto_html ( prm_pergunta         varchar2,
+                                    prm_texto     in out clob ) as
+        ws_retorno          varchar2(32000);
+        ws_url_doc          VARCHAR2(200); 
+        ws_qt_formatar      integer; 
+        ws_formatar         varchar2(32000);
+        ws_formato          varchar2(1000);
+        ws_texto            varchar2(32000);
+        ws_idx              integer;
+        ws_class            varchar2(1000);
+        ws_link             varchar2(1000);
+        ws_img              varchar2(1000);
+        ws_perg             varchar2(1000);
+        ws_html             varchar2(32000);      
+
+        ws_raise_fim        exception;
+    begin
+
+        ws_qt_formatar := regexp_count(prm_texto, '<#FORMATAR#');
+        ws_retorno     := prm_texto;
+        select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
+
+        if ws_qt_formatar = 0 then 
+            raise ws_raise_fim;
+        end if;     
+
+        ws_idx := 0; 
+        while ws_idx < ws_qt_formatar loop
+            ws_idx := ws_idx + 1;
+
+            ws_formatar := substr(prm_texto, instr(prm_texto, '<#FORMATAR#', 1, ws_idx),1000000);
+            ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '</#FORMATAR#>', 1, 1) + 12);  
+
+            ws_retorno := replace(ws_retorno, ws_formatar, '[#FORMATAR99#]');
+            
+            ws_texto    := ws_formatar;  
+            ws_texto    := substr(ws_texto, instr(ws_texto, '>', 1, 1)+1,1000000);  
+            ws_texto    := substr(ws_texto, 1, instr(ws_texto, '</#FORMATAR#>', 1, 1)-1);  
+
+            ws_formato := replace(ws_formatar,'<#FORMATAR# ','');
+            ws_formato := substr(ws_formato,1,instr(ws_formato,'>',1,1)-1)||' ' ;
+
+            ws_class := null;
+            if instr(ws_formato, 'CLASSE=') > 0 then 
+                ws_class     := substr(ws_formato, instr(ws_formato, 'CLASSE=', 1, 1)+7, 100000);
+                ws_class     := substr(ws_class, 1, instr(ws_class, ' ', 1, 1)-1);
+                ws_class     := upper(replace(ws_class,'|', ' '));
+            end if;    
+
+            ws_link := null;
+            if instr(ws_formato, 'LINK=') > 0 then 
+                ws_link     := substr(ws_formato, instr(ws_formato, 'LINK=', 1, 1)+5, 100000);
+                ws_link     := substr(ws_link, 1, instr(ws_link, ' ', 1, 1)-1);
+                ws_link     := replace(ws_link,'|', ' ');
+            end if;    
+
+            ws_perg := null;
+            if instr(ws_formato, 'PERG=') > 0 then 
+                ws_perg     := substr(ws_formato, instr(ws_formato, 'PERG=', 1, 1)+5, 100000);
+                ws_perg     := substr(ws_perg, 1, instr(ws_perg, ' ', 1, 1)-1);
+                ws_perg     := replace(ws_perg,'|', ' ');
+            end if;    
+
+            ws_img := null;
+            if instr(ws_formato, 'IMG=') > 0 then 
+                ws_img     := substr(ws_formato, instr(ws_formato, 'IMG=', 1, 1)+4, 100000);
+                ws_img     := substr(ws_img, 1, instr(ws_img, ' ', 1, 1)-1);
+                ws_img     := replace(ws_img,'|', ' ');
+            end if;    
+
+            if ws_img is not null then 
+                ws_img := 'dwu.fcl.download?arquivo='||ws_img; 
+                ws_html := '<img class="'||ws_class||'" src="'||ws_img||'">';
+            else     
+                ws_html := ws_texto; 
+            end if;     
+
+            if ws_perg is not null then 
+                ws_perg := ws_url_doc||'.doc.main?prm_externo='||ws_perg; 
+                ws_html := '<a class="'||ws_class||'" href="'||ws_perg||'">'||ws_html||'</a>';
+            elsif ws_link is not null then 
+                ws_html := '<a class="'||ws_class||'" href="'||ws_link||'">'||ws_html||'</a>';
+            else 
+                ws_html := '<span class="'||ws_class||'">'||ws_html||'</span>';
+            end if; 
+
+            ws_retorno := replace(ws_retorno,'[#FORMATAR99#]',ws_html);
+
+        end loop;
+
+        prm_texto := ws_retorno;
+
+    exception when ws_raise_fim then 
+        null;        
+    end formatar_texto_html; 
 
 END DOC;
 /

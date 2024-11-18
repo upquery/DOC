@@ -363,9 +363,9 @@ create or replace PACKAGE BODY DOC  IS
         ws_limit := ' order by categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
 
             IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-                execute immediate 'select * from doc_perguntas where tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             ELSE
-                execute immediate 'select * from doc_perguntas where classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where id_visualizacao like ''%T%'' and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             END IF;
 
             FOR i in 1..ws_linha.COUNT
@@ -488,7 +488,7 @@ create or replace PACKAGE BODY DOC  IS
 
                     IF PRM_TIPUSER <> 'T' THEN
 
-                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T') AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
                             LOOP
                                 htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
                                 htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
@@ -496,7 +496,7 @@ create or replace PACKAGE BODY DOC  IS
 
                     ELSE
 
-                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
+                        FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS WHERE ID_VISUALIZACAO LIKE '%T%' AND CATEGORIA = WS_CATEGORIA AND CD_PERGUNTA<>PRM_VALOR AND CLASSE = WS_CLASSE ORDER BY CD_PERGUNTA ) 
                             LOOP
                                 htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
                                 htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');

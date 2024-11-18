@@ -12,3 +12,21 @@ cd_pergunta_pai number not null);
 alter table doc_estrutura add constraint doc_estrutura_pk primary key (cd_pergunta, cd_pergunta_pai) ;
 --
 ALTER TABLE doc_perguntas ADD id_VISUALIZACAO varchar2(2) default 'TM' not null;
+-------------------------------------------------------------------
+
+create table doc_conteudos (
+cd_pergunta      number,
+sq_conteudo      number,
+tp_conteudo      varchar2(30),  -- TITULO / PARAGRAFO / TEXTO / IMAGEM / MARCADOR1 / MARCADOR2 / MARCADOR3 / MARCAODR4 
+id_estilo        varchar2(30), 
+nr_linhas_antes  integer default 0 not null, 
+cd_link          varchar2(300),
+texto            long,
+formatar_interno varchar2(1) default 'S' not null,
+id_ativo         varchar2(1) default 'S' not null);
+alter table doc_conteudos add constraint doc_conteudo_pk primary key (cd_pergunta, sq_conteudo);
+--
+create table doc_estilos (
+id_estilo        varchar2(30), 
+css_estilo       varchar2(4000) ); 
+alter table doc_estilos add constraint doc_estilos_pk primary key (id_estilo);
