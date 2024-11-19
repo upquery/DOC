@@ -15,6 +15,7 @@ ALTER TABLE doc_perguntas ADD id_VISUALIZACAO varchar2(2) default 'TM' not null;
 -------------------------------------------------------------------
 
 create table doc_conteudos (
+id_conteudo      number,     
 cd_pergunta      number,
 sq_conteudo      number,
 tp_conteudo      varchar2(30),  -- TITULO / PARAGRAFO / TEXTO / IMAGEM / MARCADOR1 / MARCADOR2 / MARCADOR3 / MARCAODR4 
@@ -24,7 +25,8 @@ cd_link          varchar2(300),
 texto            long,
 formatar_interno varchar2(1) default 'S' not null,
 id_ativo         varchar2(1) default 'S' not null);
-alter table doc_conteudos add constraint doc_conteudo_pk primary key (cd_pergunta, sq_conteudo);
+alter table doc_conteudos add constraint doc_conteudo_pk primary key (id_conteudo);
+create index doc_conteudos_idx001 on doc_conteudos (cd_pergunta);
 --
 create table doc_estilos (
 id_estilo        varchar2(30), 

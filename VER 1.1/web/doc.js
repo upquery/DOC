@@ -32,23 +32,18 @@ var loading;
 document.addEventListener('click', function(e){
 
     if(e.target.classList.contains('flex-perguntas')){ 
-
         e.target.parentNode.classList.toggle('selected');
     }
 
     if(e.target.classList.contains('mais')){ 
-
         e.target.parentNode.parentNode.classList.toggle('selected');
     }
 
     if(e.target.classList.contains('cxmsg')){
-
         document.querySelector('.cxmsg').classList.remove('mostrar');
-
     }
     
     if(e.target.id == "lupa"){
-
         chamar('consulta', e.target.previousElementSibling.value, '.flex-container',tip_user);   
     }
 
@@ -65,66 +60,53 @@ document.addEventListener('click', function(e){
     }
 
     if(e.target.className == "retorna-princ"){
-
         chamar('main');
-
         if(document.querySelector('.escolhido')){
-
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
     }
 
+
     if(e.target.className == "go-doc-public"){
-        
         classe_doc = 'D';
         chamar('DOC_PUBLIC', e.target.title,'',tip_user);
-
         if(document.querySelector('.escolhido')){
-
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
-
         e.target.classList.add('escolhido');
     }
 
-    if(e.target.className == "go-doc-private"){
 
+    if(e.target.className == "go-doc-private"){
         classe_doc = 'P';
         chamar('DOC_PRIVATE', e.target.title,'',tip_user);
-
         if(document.querySelector('.escolhido')){
-
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
-
         e.target.classList.add('escolhido');
     }
 
     if(e.target.className == "go-faq"){
-
         classe_doc = 'F';
         chamar('faq', e.target.title,'',tip_user);
-
         if(document.querySelector('.escolhido')){
-
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
-
         e.target.classList.add('escolhido');
     }
     
     if(e.target.classList.contains("votacao")){
-
         chamar('rank_perguntas', 'prm_valor='+ e.target.title + '&prm_pergunta=' + document.querySelector('.retorna-faq').id); 
     }
+
     
     if(e.target.className == "lista-pergunta"){
         
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
-
-       // chamar('detalhe_pergunta', e.target.title,'',tip_user);
+        chamar('detalhe_pergunta', e.target.title, '', tip_user, 'somente_pergunta' );
+        //window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
         document.body.scrollTop = 0
+
     }
 
     if(e.target.tagName == 'IMG' && (e.target.classList.contains('menu-lateral-aberto') || e.target.classList.contains('menu-lateral-fechado')) ){
@@ -149,11 +131,11 @@ document.addEventListener('click', function(e){
             e.target.classList.add('menu-lateral-aberto');
             e.target.setAttribute('src',img_src.replace('mais.png', 'menos.png'));
         }
-
-        console.log(li_pai);
-        console.log(ul_irmao)
+    
     } else if(e.target.classList.contains('menu-lateral-item') ){
         let cd_pergunta = e.target.getAttribute('data-pergunta');
+        document.getElementById(objid).querySelectorAll('.err')[0]; 
+        e.target.classList.add('selecionado');
         chamar('detalhe_pergunta', cd_pergunta, '', tip_user, 'somente_pergunta' );
 
     }    
@@ -182,7 +164,10 @@ function chamar(proc, search, alvo, tipousuario, tipo){
     }else{
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
+        try {
+            window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
+        } catch {
+        }
     }
 
     request.onload = function(){  
