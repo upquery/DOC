@@ -585,8 +585,9 @@ h1.titulo-faq {
 .fundo-conteudo{
   flex-basis: 60%;
   background:#cbc3c321;
-  overflow: scroll;
   height: 1000px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .bloco-direito-conteudo{
@@ -1616,7 +1617,8 @@ img.menu-lateral-aberto, img.menu-lateral-fechado {
 }
 
 .menu-lateral-scroll {
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   height: 650px;  
 }
 
@@ -1664,5 +1666,3 @@ ul.MARCADOR4{
   list-style-type: circle;
   margin-left: 160x;
 }
-
-

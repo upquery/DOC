@@ -110,7 +110,6 @@ document.addEventListener('click', function(e){
     }
 
     if(e.target.tagName == 'IMG' && (e.target.classList.contains('menu-lateral-aberto') || e.target.classList.contains('menu-lateral-fechado')) ){
-        console.log('passou 1');
         let li_pai   = e.target.parentNode.parentNode;
         let ul_irmao = li_pai.nextElementSibling;
         if (ul_irmao.classList.contains('menu-lateral-aberto')) {
@@ -120,7 +119,6 @@ document.addEventListener('click', function(e){
             ul_irmao.classList.remove('menu-lateral-fechado');
             ul_irmao.classList.add('menu-lateral-aberto');
         }    
-        console.log(e.target.getAttribute('src'));
         let img_src = e.target.getAttribute('src');
         if (e.target.classList.contains('menu-lateral-aberto')) {
             e.target.classList.remove('menu-lateral-aberto');
@@ -134,7 +132,10 @@ document.addEventListener('click', function(e){
     
     } else if(e.target.classList.contains('menu-lateral-item') ){
         let cd_pergunta = e.target.getAttribute('data-pergunta');
-        document.getElementById(objid).querySelectorAll('.err')[0]; 
+        var itens = document.getElementById('menu-lateral-scroll').querySelectorAll('.menu-lateral-item.selecionado');
+        for(let a=0;a<itens.length;a++){
+            itens[a].classList.remove('selecionado');
+        }
         e.target.classList.add('selecionado');
         chamar('detalhe_pergunta', cd_pergunta, '', tip_user, 'somente_pergunta' );
 
