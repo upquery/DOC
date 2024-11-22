@@ -521,21 +521,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     htp.p('<span class="relacionados">Artigos relacionados</span>');
                     htp.p('<ul id="perg-rel">');
 
-                        IF PRM_TIPUSER <> 'T' THEN
-
-                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
-                                        WHERE ( ID_LIBERADO = 'S' or gbl.getNivel = 'A' )
-                                          AND CATEGORIA   = WS_CATEGORIA 
-                                          AND CLASSE      = WS_CLASSE 
-                                          AND CD_PERGUNTA <> PRM_VALOR
-                                          AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T')  
-                                        ORDER BY CD_PERGUNTA ) 
-                                LOOP
-                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                                END LOOP;
-
-                        ELSE
+                        IF NVL(PRM_TIPUSER,'T') = 'T' THEN
 
                             FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
                                         WHERE (ID_LIBERADO = 'S' or gbl.getNivel = 'A')
@@ -547,7 +533,18 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                                     htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
                                     htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
                                 END LOOP;
-
+                        ELSE 
+                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
+                                        WHERE ( ID_LIBERADO = 'S' or gbl.getNivel = 'A' )
+                                          AND CATEGORIA   = WS_CATEGORIA 
+                                          AND CLASSE      = WS_CLASSE 
+                                          AND CD_PERGUNTA <> PRM_VALOR
+                                          AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T')  
+                                        ORDER BY CD_PERGUNTA ) 
+                                LOOP
+                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                END LOOP;
                         END IF;
 
                     htp.p('</ul>');

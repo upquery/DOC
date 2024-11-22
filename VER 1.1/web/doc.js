@@ -178,10 +178,8 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
         request.send('prm_valor=');
     } else if(proc == 'detalhe_pergunta'){
         request.send('prm_valor='+search+'&prm_tipuser='+tipousuario);
-        console.log('a1');
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.history.pushState('','',url_doc + '.doc.main?prm_externo='+search+'&prm_usuario='+tipousuario);
-        console.log('a2:' + url_doc + '.doc.main?prm_externo='+search+'&prm_usuario='+tipousuario);
+        window.history.pushState('','',url_doc + '.doc.main?prm_externo='+search);
     } else if(proc == 'rank_perguntas'){
         request.send(search); 
     } else if (proc == 'main'){
