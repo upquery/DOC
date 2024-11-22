@@ -1649,20 +1649,20 @@ ul.MARCADOR1 li span:first-child, ul.MARCADOR2 li span:first-child, ul.MARCADOR3
 
 ul.MARCADOR1{
   list-style-type: disc;
-  margin-left: 15px;
+  margin-left: 40px;
 }
 
 ul.MARCADOR2{
   list-style-type: square;
-  margin-left: 60px;
+  margin-left: 90px;
 }
 
 ul.MARCADOR3{
   list-style-type: circle;
-  margin-left: 110x;
+  margin-left: 140x;
 }
 
 ul.MARCADOR4{
   list-style-type: circle;
-  margin-left: 160x;
+  margin-left: 190x;
 }

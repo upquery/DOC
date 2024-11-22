@@ -76,7 +76,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     ws_tipouser:=prm_usuario;
                     ws_externo:=prm_externo;
                     htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
-                    htp.p('<script>gopage=document.getElementById(''prm_externo'');chamar(''detalhe_pergunta'',gopage.getAttribute(''data-search''),'''',gopage.getAttribute(''data-usuario''));</script>');
+                    htp.p('<script>gopage=document.getElementById(''prm_externo'');chamar(''detalhe_pergunta'',gopage.getAttribute(''data-search''),'''',gopage.getAttribute(''data-usuario''),'''',''S'');</script>');
                     ws_tipouser:='';
                     ws_externo:='';
                 END IF;
@@ -459,12 +459,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
                     if gbl.getusuario <> 'NOUSER' then 
-                        MONTA_MENU_LATERAL(0, 1, 2);
+                        doc.MONTA_MENU_LATERAL(0, 1, 2);
                     end if;     
                 htp.p('</div>');    
             htp.p('</div>');
 
-            htp.p('<div class="fundo-conteudo">');
+            htp.p('<div id="fundo-conteudo" class="fundo-conteudo">');
                 select detalhes,pergunta,categoria,versao,classe into ws_detalhes,ws_pergunta,ws_categoria,ws_versao,ws_classe
                   from ( select t1.detalhes detalhes,t2.pergunta pergunta,t2.categoria categoria,t1.versao versao ,t2.classe
                            from doc_detalhes t1
@@ -596,9 +596,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
             HTP.P('<li data-nivel="'||prm_nivel||'" style="padding-left: '||PRM_NIVEL*20||'px;">'); 
             HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||A.PERGUNTA||'</span>');
-            --HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||'-'||a.CD_PERGUNTA||'-'||A.PERGUNTA||'</span>');
             HTP.P('</li>');                        
-            --HTP.P('<li><span class="menu-lateral-item"><img src="dwu.fcl.download?arquivo=mais.png" class="menu-lateral-mais">CRIAÇÃO DE UM OBJETO BROWSER</span></li>');
             IF A.QT_FILHO > 0 THEN 
                 DOC.MONTA_MENU_LATERAL  (A.CD_PERGUNTA, PRM_NIVEL + 1, PRM_NIVEL_ABERTO);
             END IF; 
@@ -706,7 +704,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     ws_marcador_atual := ws_marcador_ante-ws_marcador_atual;
                 end if;     
 
-                ws_tag_i := ws_tag_i||'<li><span>'||a.ds_titulo||'</span>';
+                ws_tag_i := ws_tag_i||'<li><span>'||a.ds_titulo||'&nbsp;</span>';
                 ws_tag_f := '</li>';
 
                 ws_marcador_ante := ws_marcador_atual; 
@@ -727,10 +725,10 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 ws_texto            := null;
                 ws_class            := null;
             elsif a.tp_conteudo like 'LINK' then  
-                ws_tag_i            := '<a class="'||ws_class||'" href="'||a.ds_titulo||'">';
+                ws_tag_i            := '<a class="'||ws_class||'" href="'||a.ds_titulo||'" target="_blank">';
                 ws_tag_f            := '</a>';
             elsif a.tp_conteudo like 'PERGUNTA' then  
-                ws_tag_i            := '<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'">';
+                ws_tag_i            := '<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'" target="_blank">';
                 ws_tag_f            := '</a>';
             end if; 
 
@@ -738,10 +736,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 ws_tag_i := replace(ws_tag_i,'>',ws_class||'>');
             end if; 
 
-            --ws_texto := doc.formatar_html(a.cd_pergunta, ws_texto);
-            if a.sem_formatacao <> 'S' then
-                doc.formatar_texto_html(a.cd_pergunta, ws_texto);
-            end if; 
+            doc.formatar_texto_html(a.cd_pergunta, ws_texto);
 
             ws_conteudo := ws_conteudo||ws_tag_i||ws_texto||ws_tag_f;
 
@@ -853,9 +848,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
             if ws_perg is not null then 
                 ws_perg := ws_url_doc||'.doc.main?prm_externo='||ws_perg; 
-                ws_html := '<a class="'||ws_class||'" href="'||ws_perg||'">'||ws_html||'</a>';
+                ws_html := '<a class="'||ws_class||'" href="'||ws_perg||'" target="_blank">'||ws_html||'</a>';
             elsif ws_link is not null then 
-                ws_html := '<a class="'||ws_class||'" href="'||ws_link||'">'||ws_html||'</a>';
+                ws_html := '<a class="'||ws_class||'" href="'||ws_link||'" target="_blank">'||ws_html||'</a>';
             else 
                 ws_html := '<span class="'||ws_class||'">'||ws_html||'</span>';
             end if; 

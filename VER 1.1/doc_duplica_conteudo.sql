@@ -14,8 +14,8 @@ begin
     --
     select nvl(max(sq_conteudo),0) + 1 into ws_sq_conteudo from doc_conteudos where cd_pergunta = r1.cd_pergunta ;
     --
-    insert into doc_conteudos (id_conteudo, cd_pergunta, sq_conteudo, tp_conteudo, id_estilo, nr_linhas_antes, texto, formatar_interno, id_ativo)
-                       values (ws_id_conteudo, r1.cd_pergunta, ws_sq_conteudo, r1.tp_conteudo, r1.id_estilo, r1.nr_linhas_antes, r1.texto, r1.formatar_interno, r1.id_ativo);
+    insert into doc_conteudos (id_conteudo, cd_pergunta, sq_conteudo, tp_conteudo, id_estilo, nr_linhas_antes, ds_titulo, ds_texto, id_ativo)
+                       values (ws_id_conteudo, r1.cd_pergunta, ws_sq_conteudo, r1.tp_conteudo, r1.id_estilo, r1.nr_linhas_antes, r1.ds_titulo, r1.ds_texto, r1.id_ativo);
     --
     commit; 
     --

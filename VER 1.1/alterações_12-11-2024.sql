@@ -21,9 +21,8 @@ sq_conteudo      number,
 tp_conteudo      varchar2(30),  -- TITULO / PARAGRAFO / TEXTO / IMAGEM / MARCADOR1 / MARCADOR2 / MARCADOR3 / MARCAODR4 
 id_estilo        varchar2(30), 
 nr_linhas_antes  integer default 0 not null, 
-cd_link          varchar2(300),
-texto            long,
-formatar_interno varchar2(1) default 'S' not null,
+ds_titulo        varchar2(300),
+ds_texto         clob,
 id_ativo         varchar2(1) default 'S' not null);
 alter table doc_conteudos add constraint doc_conteudo_pk primary key (id_conteudo);
 create index doc_conteudos_idx001 on doc_conteudos (cd_pergunta);

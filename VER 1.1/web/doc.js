@@ -103,7 +103,7 @@ document.addEventListener('click', function(e){
     if(e.target.className == "lista-pergunta"){
         
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        chamar('detalhe_pergunta', e.target.title, '', tip_user, 'somente_pergunta' );
+        chamar('detalhe_pergunta', e.target.title, '', tip_user, 'somente_pergunta','S' );
         //window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
         document.body.scrollTop = 0
 
@@ -131,23 +131,44 @@ document.addEventListener('click', function(e){
         }
     
     } else if(e.target.classList.contains('menu-lateral-item') ){
+        
+        menu_seleciona_item(e.target, 'N');
         let cd_pergunta = e.target.getAttribute('data-pergunta');
-        var itens = document.getElementById('menu-lateral-scroll').querySelectorAll('.menu-lateral-item.selecionado');
-        for(let a=0;a<itens.length;a++){
-            itens[a].classList.remove('selecionado');
-        }
-        e.target.classList.add('selecionado');
-        chamar('detalhe_pergunta', cd_pergunta, '', tip_user, 'somente_pergunta' );
+        chamar('detalhe_pergunta', cd_pergunta, '', tip_user, 'somente_pergunta', 'N' );
+        
 
     }    
 
 
 });
 
-function chamar(proc, search, alvo, tipousuario, tipo){
+function menu_seleciona_item(item, posicionar) {
+    var posicionar = posicionar || 'S';
+    var itens = document.getElementById('menu-lateral-scroll').querySelectorAll('.menu-lateral-item.selecionado');
+    for(let a=0;a<itens.length;a++){
+        itens[a].classList.remove('selecionado');
+    }
+    item.classList.add('selecionado');
+
+    if (posicionar == 'S') {
+        let item_rect = item.getBoundingClientRect();
+        let menu_rect = document.getElementById('menu-lateral-scroll').getBoundingClientRect();
+        let limite_inferior = menu_rect.top + menu_rect.height - item_rect.height ;
+        if (item_rect.top > limite_inferior) {
+            document.getElementById('menu-lateral-scroll').scrollTop = document.getElementById('menu-lateral-scroll').scrollTop + (item_rect.top - limite_inferior);    
+        } else if (item_rect.top < menu_rect.top) {
+            document.getElementById('menu-lateral-scroll').scrollTop = 0;                
+        }    
+    }    
+};
+
+
+function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
 
     var alvo = alvo || '.main';
     var tipo = tipo || 'tela';
+    var localiza_menu = localiza_menu || 'S';
+
     loading = document.querySelector('.spinner');  
     loading.classList.add('ativado');
     var request = new XMLHttpRequest(); //aqui inicializa a requisição
@@ -157,6 +178,10 @@ function chamar(proc, search, alvo, tipousuario, tipo){
         request.send('prm_valor=');
     } else if(proc == 'detalhe_pergunta'){
         request.send('prm_valor='+search+'&prm_tipuser='+tipousuario);
+        console.log('a1');
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.history.pushState('','',url_doc + '.doc.main?prm_externo='+search+'&prm_usuario='+tipousuario);
+        console.log('a2:' + url_doc + '.doc.main?prm_externo='+search+'&prm_usuario='+tipousuario);
     } else if(proc == 'rank_perguntas'){
         request.send(search); 
     } else if (proc == 'main'){
@@ -181,6 +206,32 @@ function chamar(proc, search, alvo, tipousuario, tipo){
                 } else {
                     document.querySelector(alvo).innerHTML = request.responseText;      
                 }    
+                if (proc == 'detalhe_pergunta' && localiza_menu == 'S') {
+                    var itens = document.getElementById('menu-lateral-scroll').querySelectorAll('.menu-lateral-item');
+                    for(let a=0;a<itens.length;a++){
+                        if ( itens[a].getAttribute('data-pergunta') == search ) {
+                            
+                            // Abre os níveis superiores ao item selecionado 
+                            let ul = itens[a].parentNode.parentNode;
+                            let fim = 'N';
+                            while (fim == 'N') {
+                                ul.classList.remove('menu-lateral-fechado');
+                                ul.classList.add('menu-lateral-aberto');
+                                try {
+                                    img = ul.previousElementSibling.getElementsByTagName('IMG')[0];
+                                    img.classList.remove('menu-lateral-fechado');
+                                    img.classList.add('menu-lateral-aberto');
+                                    img.setAttribute('src', img.getAttribute('src').replace('mais.png','menos.png'));
+                                    ul = ul.parentNode;
+                                    fim = (ul.tagName != 'UL' ? 'S' : 'N');
+                                } catch {
+                                    fim = 'S';
+                                }
+                            }
+                            menu_seleciona_item(itens[a], 'S');  // marca/seleciona item 
+                        };
+                    }
+                }
             } else { 
                 document.querySelector('.voto').remove();
                 document.querySelector('.cxmsg').classList.add('mostrar');
@@ -191,7 +242,14 @@ function chamar(proc, search, alvo, tipousuario, tipo){
             loading.classList.remove('ativado');// esse ponto testa se o endereço alcançou 200, e traz a resposta do backend               
         }
     }; 
-    window.scrollTo(0, 0);
+    if (proc == 'detalhe_pergunta') {
+        try {
+            document.getElementById('fundo-conteudo').scrollTo(0, 0); 
+        } catch {
+        }    
+    } else {
+        window.scrollTo(0, 0);
+    }
 };
 
 
