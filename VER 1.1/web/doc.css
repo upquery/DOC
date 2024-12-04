@@ -579,6 +579,7 @@ h1.titulo-faq {
   padding-top: 8%;
   /* padding-right: 1%; */ 
   padding-bottom: 1px;  
+  max-width: 380px;
 }
 
 
@@ -1653,16 +1654,16 @@ ul.MARCADOR1{
 }
 
 ul.MARCADOR2{
-  list-style-type: square;
-  margin-left: 90px;
+  list-style-type: circle;
+  margin-left: 40px;
 }
 
 ul.MARCADOR3{
-  list-style-type: circle;
-  margin-left: 140x;
+  list-style-type: square;
+  margin-left: 40px;
 }
 
 ul.MARCADOR4{
-  list-style-type: circle;
-  margin-left: 190x;
+  list-style-type: square;
+  margin-left: 40px;
 }
