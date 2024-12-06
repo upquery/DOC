@@ -666,7 +666,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             ws_texto       := a.ds_texto; 
 
             -- Fecha marcadores abertos 
-            if a.tp_conteudo not like 'MARCADOR%' and ws_marcador_ante > 0 then 
+            if a.tp_conteudo not like 'MARCADOR%' and a.tp_conteudo <> 'IMAGEM' and ws_marcador_ante > 0 then 
                 ws_conteudo      := ws_conteudo||RPAD('</ul>', (5*ws_marcador_ante), '</ul>');
                 ws_marcador_ante := 0;
             end if;  
