@@ -16,7 +16,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
     ws_externo      VARCHAR2(200);
 
     BEGIN
-    htp.p('<script>');
+        htp.p('<script>');
 
 	    htp.prn('const ');
 		for i in(select cd_constante, vl_constante from bi_constantes) loop
