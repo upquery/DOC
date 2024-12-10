@@ -493,7 +493,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 
                 if gbl.getusuario <> 'NOUSER' then 
                     ws_conteudo := null;
-                    doc.monta_html_conteudo(prm_valor, ws_conteudo);
+                    doc.monta_conteudo_html(prm_valor, ws_conteudo);
                     if ws_conteudo is not null then 
                         ws_detalhes := ws_conteudo;
                     end if;     
@@ -634,7 +634,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
     END TRADUZIR;
 
-    procedure monta_html_conteudo ( prm_pergunta     varchar2,
+    procedure monta_conteudo_html ( prm_pergunta     varchar2,
                                     prm_conteudo out clob ) as
         ws_conteudo clob;
         ws_tag_i       varchar2(4000);
@@ -758,10 +758,10 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
     exception
         when others then
-            insert into bi_log_sistema values (sysdate, 'monta_html_conteudo: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+            insert into bi_log_sistema values (sysdate, 'monta_conteudo_html: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
             commit;
 
-    END monta_html_conteudo; 
+    END monta_conteudo_html; 
 
 
 
@@ -862,10 +862,103 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         when ws_raise_fim then 
             null;        
         when others then
-            insert into bi_log_sistema values (sysdate, 'monta_html_conteudo: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+            insert into bi_log_sistema values (sysdate, 'formatar_texto_html: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
             commit;
 
     end formatar_texto_html; 
+
+    
+    procedure monta_conteudo_json ( prm_classe    varchar2) as
+        cursor c_conteudo is 
+            select c.cd_pergunta, p.pergunta ds_sessao, c.ds_titulo, c.ds_texto 
+             from doc_perguntas p, doc_conteudos c
+            where p.cd_pergunta = c.cd_pergunta
+              and p.classe = decode(prm_classe,'T', p.classe, prm_classe) 
+            order by c.cd_pergunta, c.sq_conteudo;
+
+        ws_cd_ante doc_perguntas.cd_pergunta%type; 
+        ws_ds_conteudo    clob;
+        ws_json_total     clob; 
+        ws_json_pergunta  clob; 
+
+    begin 
+        ws_cd_ante       := null;
+        ws_json_pergunta := null;
+        for a in c_conteudo loop
+            if a.ds_titulo is not null then 
+                ws_ds_conteudo := trim(a.ds_titulo||' '||a.ds_texto);
+            else 
+                ws_ds_conteudo := trim(a.ds_texto);
+            end if; 
+            ws_ds_conteudo := replace(ws_ds_conteudo,'"',''); 
+            limpar_formatacao (ws_ds_conteudo);
+
+            if a.cd_pergunta = nvl(ws_cd_ante,'-1') then 
+                ws_json_pergunta := ws_json_pergunta||' '||ws_ds_conteudo;
+            else 
+                if ws_cd_ante is not null then 
+                    ws_json_pergunta := trim(ws_json_pergunta)||'"},'; 
+                end if; 
+                ws_json_total    := ws_json_total||ws_json_pergunta;
+                ws_json_pergunta := '{"seção": "'||a.ds_sessao||'","conteúdo":"'||ws_ds_conteudo; 
+            end if; 
+            ws_cd_ante := a.cd_pergunta; 
+        end loop;
+
+        if ws_cd_ante is not null then 
+            ws_json_pergunta := ws_json_pergunta||'"}'; 
+            ws_json_total    := ws_json_total||ws_json_pergunta;
+        end if; 
+        ws_json_total := '{"documentação": ['||ws_json_total||']}';
+        
+        ws_json_total := replace(replace(replace(ws_json_total,chr(10),' '),chr(9),' '),chr(11), ' ');
+
+        update doc_json set json = ws_json_total where classe = prm_classe;
+        if sql%notfound then 
+            insert into doc_json (classe, json) values (prm_classe, ws_json_total);
+        end if; 
+        commit; 
+    end monta_conteudo_json; 
+
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------
+    procedure limpar_formatacao ( prm_texto     in out clob ) as
+        ws_retorno          varchar2(32000);
+        ws_qt_formatar      integer; 
+        ws_formatar         varchar2(32000);
+        ws_idx              integer;
+
+        ws_raise_fim        exception;
+    begin
+
+        ws_qt_formatar := regexp_count(prm_texto, '<DOCF');
+        ws_retorno     := prm_texto;
+
+        if ws_qt_formatar = 0 then 
+            raise ws_raise_fim;
+        end if;     
+
+        ws_idx := 0; 
+        while ws_idx < ws_qt_formatar loop
+            ws_idx := ws_idx + 1;
+            ws_formatar := substr(prm_texto, instr(prm_texto, '<DOCF', 1, ws_idx),1000000);
+            ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '>', 1, 1));  
+            ws_retorno := replace(ws_retorno, ws_formatar, '');
+        end loop;
+        
+        ws_retorno := replace(ws_retorno,'</DOCF>','');
+
+        prm_texto := ws_retorno;
+
+    exception 
+        when ws_raise_fim then 
+            null;        
+        when others then
+            insert into bi_log_sistema values (sysdate, 'limpar_formatacao: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+            commit;
+
+    end limpar_formatacao; 
+
 
 END DOC;
 /
