@@ -891,7 +891,12 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 ws_ds_conteudo := trim(a.ds_texto);
             end if; 
             ws_ds_conteudo := replace(ws_ds_conteudo,'"',''); 
-            limpar_formatacao (ws_ds_conteudo);
+            
+            doc.formatar_texto_html(a.cd_pergunta, ws_ds_conteudo);
+            ws_ds_conteudo := replace(ws_ds_conteudo,'"', '''');
+            ws_ds_conteudo := replace(ws_ds_conteudo,'dwu.fcl.download?arquivo=','https://cloud.upquery.com/conhecimento/dwu.fcl.download?arquivo=');
+
+            -- limpar_formatacao (ws_ds_conteudo);
 
             if a.cd_pergunta = nvl(ws_cd_ante,'-1') then 
                 ws_json_pergunta := ws_json_pergunta||' '||ws_ds_conteudo;
