@@ -870,10 +870,11 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
     
     procedure monta_conteudo_json ( prm_classe    varchar2) as
         cursor c_conteudo is 
-            select c.cd_pergunta, p.pergunta ds_sessao, c.ds_titulo, c.ds_texto 
+            select c.cd_pergunta, p.pergunta ds_sessao, c.ds_titulo, c.ds_texto, c.tp_conteudo 
              from doc_perguntas p, doc_conteudos c
             where p.cd_pergunta = c.cd_pergunta
               and p.classe = decode(prm_classe,'T', p.classe, prm_classe) 
+              and c.tp_conteudo <> 'IMAGEM'
             order by c.cd_pergunta, c.sq_conteudo;
 
         ws_cd_ante doc_perguntas.cd_pergunta%type; 
