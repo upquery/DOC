@@ -458,9 +458,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
-                    if gbl.getusuario <> 'NOUSER' then 
+                    --if gbl.getusuario <> 'NOUSER' then   - liberado para todos 22/01/2025 
                         doc.MONTA_MENU_LATERAL(0, 1, 2);
-                    end if;     
+                    --end if;     
                 htp.p('</div>');    
             htp.p('</div>');
 
@@ -491,13 +491,13 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     ws_count := ws_count + 1;
                 end loop;   
                 
-                if gbl.getusuario <> 'NOUSER' then 
-                    ws_conteudo := null;
-                    doc.monta_conteudo_html(prm_valor, ws_conteudo);
-                    if ws_conteudo is not null then 
-                        ws_detalhes := ws_conteudo;
-                    end if;     
-                end if; 
+                --if gbl.getusuario <> 'NOUSER' then 
+                ws_conteudo := null;
+                doc.monta_conteudo_html(prm_valor, ws_conteudo);
+                if ws_conteudo is not null then 
+                    ws_detalhes := ws_conteudo;
+                end if;     
+                --end if; 
                                 
                 htp.p('<div class="detalhe-conteudo">');
                     
