@@ -24,6 +24,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 		end loop;
 		htp.prn('TR_END = "";');
         htp.p('const USUARIO = "'||gbl.getusuario||'";');
+        htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
 
 	htp.p('</script>');
 

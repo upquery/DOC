@@ -33,10 +33,22 @@ document.addEventListener('click', function(e){
 
     if(e.target.classList.contains('flex-perguntas')){ 
         e.target.parentNode.classList.toggle('selected');
+
+        if (e.target.parentNode.classList.contains('selected')){
+            e.target.parentNode.querySelector('.mais').src = URL_DOWNLOAD + "menos.png";
+        } else {
+            e.target.parentNode.querySelector('.mais').src = URL_DOWNLOAD + "mais.png";
+        }
     }
 
     if(e.target.classList.contains('mais')){ 
         e.target.parentNode.parentNode.classList.toggle('selected');
+
+        if (e.target.parentNode.parentNode.classList.contains('selected')){
+            e.target.src = URL_DOWNLOAD + "menos.png";
+        } else {
+            e.target.src = URL_DOWNLOAD + "mais.png";
+        }
     }
 
     if(e.target.classList.contains('cxmsg')){
