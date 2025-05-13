@@ -37,6 +37,8 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
                 htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=doc.css"/>' );
                 htp.p('<script src="dwu.fcl.download?arquivo=doc.js"></script>');
+                --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
+                htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
                 htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
                 htp.p('<link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css">');
                 htp.p('<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css">');
@@ -448,8 +450,11 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_ds_titulo    varchar2(1000);
         ws_count        number;
         ws_cd_aux       number; 
+        ws_tp_conteudo  varchar2(20);
 
     BEGIN
+
+        select nvl(max(tp_conteudo),'HTML') into ws_tp_conteudo from doc_perguntas where cd_pergunta = prm_valor;
 
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
@@ -459,21 +464,19 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
-                    --if gbl.getusuario <> 'NOUSER' then   - liberado para todos 22/01/2025 
                         doc.MONTA_MENU_LATERAL(0, 1, 2);
-                    --end if;     
                 htp.p('</div>');    
             htp.p('</div>');
-
-            htp.p('<div id="fundo-conteudo" class="fundo-conteudo">');
+            
+            htp.p('<div id="fundo-conteudo" class="fundo-conteudo '||lower(ws_tp_conteudo)||'">');
                 select detalhes,pergunta,categoria,versao,classe into ws_detalhes,ws_pergunta,ws_categoria,ws_versao,ws_classe
-                  from ( select t1.detalhes detalhes,t2.pergunta pergunta,t2.categoria categoria,t1.versao versao ,t2.classe
-                           from doc_detalhes t1
-                           left join doc_perguntas t2  on t2.cd_pergunta = t1.cd_pergunta
-                          where t2.cd_pergunta = prm_valor
+                from ( select t1.detalhes detalhes,t2.pergunta pergunta,t2.categoria categoria,t1.versao versao ,t2.classe
+                        from doc_detalhes t1
+                        left join doc_perguntas t2  on t2.cd_pergunta = t1.cd_pergunta
+                        where t2.cd_pergunta = prm_valor
                             and t1.versao      = nvl(prm_versao,t1.versao) 
-                         order by t1.versao desc
-                       )
+                        order by t1.versao desc
+                    )
                     where rownum = 1; 
 
                 ws_ds_titulo := ws_pergunta; 
@@ -481,8 +484,8 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 ws_count     := 0;
                 while ws_count < 20  loop
                     select max(t2.cd_pergunta_pai), max(t1.pergunta) into ws_cd_pai, ws_ds_pai 
-                      from doc_perguntas t1, doc_estrutura t2 
-                      where t1.cd_pergunta = t2.cd_pergunta_pai and t2.cd_pergunta = ws_cd_aux ;
+                    from doc_perguntas t1, doc_estrutura t2 
+                    where t1.cd_pergunta = t2.cd_pergunta_pai and t2.cd_pergunta = ws_cd_aux ;
                     if ws_cd_pai is null then 
                         ws_count := 20;
                     else 
@@ -491,19 +494,27 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                     end if;  
                     ws_count := ws_count + 1;
                 end loop;   
-                
-                --if gbl.getusuario <> 'NOUSER' then 
-                ws_conteudo := null;
-                doc.monta_conteudo_html(prm_valor, ws_conteudo);
-                if ws_conteudo is not null then 
-                    ws_detalhes := ws_conteudo;
+
+                if ws_tp_conteudo = 'ARQUIVOS' then 
+                    ws_conteudo := null;
+                    doc.monta_conteudo_arquivos(prm_valor, ws_conteudo);
+
+                    if ws_conteudo is not null then 
+                        ws_detalhes := ws_conteudo;
+                    end if;     
+                else 
+                    ws_conteudo := null;
+                    doc.monta_conteudo_html(prm_valor, ws_conteudo);
+                    if ws_conteudo is not null then 
+                        ws_detalhes := ws_conteudo;
+                    end if;     
                 end if;     
-                --end if; 
+
                                 
                 htp.p('<div class="detalhe-conteudo">');
                     
                     htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
-                    htp.p('<span class="detalhe-resposta  resposta_conteudo">'||WS_DETALHES||'</span>');
+                    htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
 
                 htp.p('</div>');
 
@@ -553,7 +564,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 htp.p('</div>');    -- detalhe-conteudo2
             htp.p('</div>');        -- fundo-conteudo 
 
-            htp.p('<div class="bloco-direito-conteudo"></div>');
+            if ws_tp_conteudo <> 'ARQUIVOS' then 
+                htp.p('<div class="bloco-direito-conteudo"></div>');
+            end if;     
 
         htp.p('</div>');            -- principal-conteudo 
 
@@ -926,6 +939,57 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         end if; 
         commit; 
     end monta_conteudo_json; 
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------
+    procedure monta_conteudo_arquivos ( prm_pergunta     varchar2,
+                                        prm_conteudo out clob ) as
+        ws_conteudo       clob;
+        ws_html           clob;
+        ws_primeiro_arq   varchar2(300);
+        ws_primeiro_tipo  varchar2(20);
+        ws_url_doc        varchar2(300);
+        ws_link_arquivo   varchar2(300);
+
+    begin
+        ws_conteudo         := null;
+        --select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
+        ws_url_doc := 'https://cloud.upquery.com/conhecimento/dwu';
+
+        ws_html         := null;
+        ws_primeiro_arq := null;
+        for a in (select * from doc_conteudos where cd_pergunta = prm_pergunta and tp_conteudo in ('PDF','GIFT') and upper(id_ativo) = 'S' 
+                   order by decode(tp_conteudo,'PDF',1,'GIFT',2,3), sq_conteudo) loop
+            ws_link_arquivo := ws_url_doc||'.fcl.download_tab?prm_arquivo='||a.ds_titulo;
+            if ws_primeiro_arq is null then
+                ws_primeiro_tipo := a.tp_conteudo;
+                ws_primeiro_arq := ws_link_arquivo;
+            end if;    
+            ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="mostrar_conteudo_pdf('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');">'||a.ds_texto||'</a>';
+        end loop;
+        
+        -- Monta lista de arquivos 
+        ws_conteudo := '<div class="conteudo-arquivos-lista">'||ws_html||'</div>';
+
+        -- Monta bloco para mostrar o conteúo do arquivo
+        if ws_primeiro_tipo = 'PDF' then 
+            ws_primeiro_arq := 'https://docs.google.com/viewer?url='||ws_primeiro_arq||'&embedded=true';
+            ws_conteudo     := ws_conteudo|| '<iframe id="iframe_conteudo_arquivo" class="conteudo-arquivo-visualiza" src="'||ws_primeiro_arq||'"></iframe>'; 
+            ws_conteudo     := ws_conteudo|| '<img id="img_conteudo_arquivo" class="conteudo-arquivo-visualiza disabled" src=""></iframe>'; 
+        else 
+            ws_primeiro_arq := ws_primeiro_arq;
+            ws_conteudo     := ws_conteudo|| '<iframe id="iframe_conteudo_arquivo" class="conteudo-arquivo-visualiza disabled" src=""></iframe>'; 
+            ws_conteudo     := ws_conteudo|| '<img id="img_conteudo_arquivo" class="conteudo-arquivo-visualiza" src="'||ws_primeiro_arq||'"></iframe>'; 
+        end if;
+
+        prm_conteudo := ws_conteudo;
+
+
+    exception
+        when others then
+            insert into bi_log_sistema values (sysdate, 'monta_conteudo_arquivos: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+            commit;
+
+    END monta_conteudo_arquivos; 
 
 
     -----------------------------------------------------------------------------------------------------------------------------------------------
