@@ -332,7 +332,7 @@ document.addEventListener('change', function(e){
     
 });
 
-function mostrar_conteudo_pdf(prm_pergunta, prm_arquivo, prm_tipo){
+function mostrar_conteudo_arquivo(prm_pergunta, prm_arquivo, prm_tipo){
 
     let link = '';
     if (prm_tipo == 'PDF') {

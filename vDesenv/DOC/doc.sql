@@ -957,14 +957,14 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
         ws_html         := null;
         ws_primeiro_arq := null;
-        for a in (select * from doc_conteudos where cd_pergunta = prm_pergunta and tp_conteudo in ('PDF','GIFT') and upper(id_ativo) = 'S' 
-                   order by decode(tp_conteudo,'PDF',1,'GIFT',2,3), sq_conteudo) loop
+        for a in (select * from doc_conteudos where cd_pergunta = prm_pergunta and tp_conteudo in ('PDF','GIF') and upper(id_ativo) = 'S' 
+                   order by decode(tp_conteudo,'PDF',1,'GIF',2,3), sq_conteudo) loop
             ws_link_arquivo := ws_url_doc||'.fcl.download_tab?prm_arquivo='||a.ds_titulo;
             if ws_primeiro_arq is null then
                 ws_primeiro_tipo := a.tp_conteudo;
                 ws_primeiro_arq := ws_link_arquivo;
             end if;    
-            ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="mostrar_conteudo_pdf('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');">'||a.ds_texto||'</a>';
+            ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="mostrar_conteudo_arquivo('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');">'||a.ds_texto||'</a>';
         end loop;
         
         -- Monta lista de arquivos 
