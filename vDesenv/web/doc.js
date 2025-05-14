@@ -332,36 +332,25 @@ document.addEventListener('change', function(e){
     
 });
 
-function mostrar_conteudo_arquivo(prm_pergunta, prm_arquivo, prm_tipo){
+function carrega_conteudo_arquivo(prm_pergunta, prm_arquivo, prm_tipo){
 
     let link = '';
     if (prm_tipo == 'PDF') {
-        document.getElementById('iframe_conteudo_arquivo').src = '';
+        document.getElementById('iframe_conteudo_arquivo').style.display = 'none';
+        document.getElementById('img_conteudo_arquivo').style.display    = 'none';        
+        document.getElementById('pdf-loader').style.display              = 'flex';
         document.getElementById('iframe_conteudo_arquivo').src = 'https://docs.google.com/viewer?url=' + prm_arquivo + '&embedded=true';
-        document.getElementById('iframe_conteudo_arquivo').classList.remove('disabled');
-        document.getElementById('img_conteudo_arquivo').classList.add('disabled');
     } else {
         link = prm_arquivo;
+        document.getElementById('pdf-loader').style.display              = 'none';
+        document.getElementById('iframe_conteudo_arquivo').style.display = 'none';
+        document.getElementById('img_conteudo_arquivo').style.display    = 'block';       
         document.getElementById('img_conteudo_arquivo').src = prm_arquivo;
-        document.getElementById('img_conteudo_arquivo').classList.remove('disabled');       
-        document.getElementById('iframe_conteudo_arquivo').classList.add('disabled');
     }   
-
-    /*
-    pdfjsLib.getDocument(prm_arquivo).promise.then(function(pdf) {
-        return pdf.getPage(1); // Página 1
-      }).then(function(page) {
-        const viewport = page.getViewport({ scale: 1.0 });
-        const canvas = document.getElementById('pdf-viewer');
-        const context = canvas.getContext('2d');
-        
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        
-        page.render({
-          canvasContext: context,
-          viewport: viewport
-        });
-      });
-    */ 
 }    
+
+function mostra_conteudo_pdf(){
+    document.getElementById('pdf-loader').style.display              = 'none';
+    document.getElementById('iframe_conteudo_arquivo').style.display = 'block';
+    document.getElementById('img_conteudo_arquivo').style.display    = 'none';
+}

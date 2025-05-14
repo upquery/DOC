@@ -387,9 +387,9 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_limit := ' order by categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
 
             IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-                execute immediate 'select * from doc_perguntas where '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             ELSE
-                execute immediate 'select * from doc_perguntas where '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+                execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
             END IF;
             
             FOR i in 1..ws_linha.COUNT
@@ -949,6 +949,10 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_primeiro_tipo  varchar2(20);
         ws_url_doc        varchar2(300);
         ws_link_arquivo   varchar2(300);
+        ws_style_load     varchar2(200);
+        ws_style_gif      varchar2(200);
+        ws_src_pdf        varchar2(200);
+        ws_src_gif        varchar2(200);
 
     begin
         ws_conteudo         := null;
@@ -964,7 +968,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
                 ws_primeiro_tipo := a.tp_conteudo;
                 ws_primeiro_arq := ws_link_arquivo;
             end if;    
-            ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="mostrar_conteudo_arquivo('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');">'||a.ds_texto||'</a>';
+            ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="carrega_conteudo_arquivo('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');" title="'||a.ds_texto||'">'||a.ds_texto||'</a>';
         end loop;
         
         -- Monta lista de arquivos 
@@ -972,15 +976,20 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
         -- Monta bloco para mostrar o conteúo do arquivo
         if ws_primeiro_tipo = 'PDF' then 
-            ws_primeiro_arq := 'https://docs.google.com/viewer?url='||ws_primeiro_arq||'&embedded=true';
-            ws_conteudo     := ws_conteudo|| '<iframe id="iframe_conteudo_arquivo" class="conteudo-arquivo-visualiza" src="'||ws_primeiro_arq||'"></iframe>'; 
-            ws_conteudo     := ws_conteudo|| '<img id="img_conteudo_arquivo" class="conteudo-arquivo-visualiza disabled" src=""></iframe>'; 
+            ws_style_load   := ' style="display:flex;"' ;
+            ws_style_gif    := ' style="display:none;"' ;
+            ws_src_pdf      := 'https://docs.google.com/viewer?url='||ws_primeiro_arq||'&embedded=true';
+            ws_src_gif      := '';
         else 
-            ws_primeiro_arq := ws_primeiro_arq;
-            ws_conteudo     := ws_conteudo|| '<iframe id="iframe_conteudo_arquivo" class="conteudo-arquivo-visualiza disabled" src=""></iframe>'; 
-            ws_conteudo     := ws_conteudo|| '<img id="img_conteudo_arquivo" class="conteudo-arquivo-visualiza" src="'||ws_primeiro_arq||'"></iframe>'; 
+            ws_style_load   := ' style="display:none;"' ;
+            ws_style_gif    := ' style="display:block;"' ;
+            ws_src_pdf      := '';
+            ws_src_gif      := ws_primeiro_arq;
         end if;
 
+        ws_conteudo  := ws_conteudo|| '<div id="pdf-loader" '||ws_style_load||'><div class="spinner"></div></div>'; 
+        ws_conteudo  := ws_conteudo|| '<iframe id="iframe_conteudo_arquivo" class="conteudo-arquivo-visualiza" style="display:none;" src="'||ws_src_pdf||'" onload="mostra_conteudo_pdf();" onerror="console.log(''erro carregando pdf'');"></iframe>'; 
+        ws_conteudo  := ws_conteudo|| '<img id="img_conteudo_arquivo" class="conteudo-arquivo-visualiza" '||ws_style_gif||' src="'||ws_src_gif||'"></img>'; 
         prm_conteudo := ws_conteudo;
 
 
