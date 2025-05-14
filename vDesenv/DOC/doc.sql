@@ -377,49 +377,47 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             ws_where := 'DOC.TRADUZIR(lower(pergunta)) like '||chr(39)||ws_where||'%''';
         end if;
 
-        
+
         if gbl.getNivel = 'A' then 
             ws_liberado := ' ';
         else    
             ws_liberado := ' id_liberado = ''S'' and ';
         end if; 
 
-        ws_limit := ' order by categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
+        ws_limit := ' order by nvl(id_notas_versao,''N'') desc, categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
 
-            IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-                execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
-            ELSE
-                execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
-            END IF;
-            
-            FOR i in 1..ws_linha.COUNT
+        IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
+            execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+        ELSE
+            execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+        END IF;
+        
+        FOR i in 1..ws_linha.COUNT LOOP			
 
-                LOOP			
-
-                    IF (WS_CATEGORIA<>WS_LINHA(I).CATEGORIA) THEN			   
-                        
-                        IF WS_CATEGORIA<>'N/A' THEN
-                            HTP.P('</UL>');
-                                HTP.P('</LI>');
-                        END IF;
-                        HTP.P('<LI CLASS="flex-categorias" TITLE="'||WS_LINHA(I).CATEGORIA||'">');
-                            
-                            HTP.P('<UL CLASS ="">');
-                                WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
+                IF (WS_CATEGORIA<>WS_LINHA(I).CATEGORIA) THEN			   
+                    
+                    IF WS_CATEGORIA<>'N/A' THEN
+                        HTP.P('</UL>');
+                            HTP.P('</LI>');
                     END IF;
+                    HTP.P('<LI CLASS="flex-categorias" TITLE="'||WS_LINHA(I).CATEGORIA||'">');
+                        
+                        HTP.P('<UL CLASS ="">');
+                            WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
+                END IF;
 
-                        htp.p('<li>');
-                            htp.p('<span class="flex-perguntas"><img src="dwu.fcl.download?arquivo=mais.png" class="mais" />'||ws_linha(i).pergunta||'</span>');
+                    htp.p('<li>');
+                        htp.p('<span class="flex-perguntas"><img src="dwu.fcl.download?arquivo=mais.png" class="mais" />'||ws_linha(i).pergunta||'</span>');
 
-                            if prm_classe <> 'F' then
-                                htp.p('<span class="flex-resposta">'||ws_linha(i).resposta||'<a class ="ler-mais" title="'||ws_linha(i).cd_pergunta||'">Ler mais</a></span>');                        
-                            else
-                                htp.p('<span class="flex-resposta-faq">'||ws_linha(i).resposta||'</span>');
-                            end if;
+                        if prm_classe <> 'F' then
+                            htp.p('<span class="flex-resposta">'||ws_linha(i).resposta||'<a class ="ler-mais" title="'||ws_linha(i).cd_pergunta||'">Ler mais</a></span>');                        
+                        else
+                            htp.p('<span class="flex-resposta-faq">'||ws_linha(i).resposta||'</span>');
+                        end if;
 
-                        htp.p('</li>');
-                
-                END LOOP;
+                    htp.p('</li>');
+            
+        END LOOP;
 
     EXCEPTION
         WHEN OTHERS THEN
@@ -442,7 +440,7 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_categoria	varchar2(80);
         ws_pergunta_rel	varchar2(1000);
         ws_versao       varchar2(80);
-        ws_classe       varchar2(3);
+        ws_classe       varchar2(10);
         ws_link_pag     varchar2(100);
         ws_conteudo     clob;
         ws_cd_pai       number;
@@ -451,117 +449,146 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
         ws_count        number;
         ws_cd_aux       number; 
         ws_tp_conteudo  varchar2(20);
+        ws_cd_pergunta  varchar2(20);
 
+        ws_raise_erro   exception;
     BEGIN
+        if PRM_VALOR = 'VERSIONAMENTO' then 
+            select max(cd_pergunta) into ws_cd_pergunta 
+              from doc_perguntas 
+             where nvl(id_notas_versao,'N') = 'S' 
+              and ordem_categoria = (select max(ordem_categoria) from doc_perguntas where nvl(id_notas_versao,'N') = 'S') ;
+        else 
+            ws_cd_pergunta := PRM_VALOR;
+        end if;            
 
-        select nvl(max(tp_conteudo),'HTML') into ws_tp_conteudo from doc_perguntas where cd_pergunta = prm_valor;
+        select nvl(max(tp_conteudo),'HTML'), nvl(max(classe),'X') into ws_tp_conteudo, ws_classe 
+          from doc_perguntas where cd_pergunta = ws_cd_pergunta;
 
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="spinner"></div>');
         
-        htp.p('<div class="main-conteudo">');
+        htp.p('<div class="main-conteudo" data-pergunta="'||ws_cd_pergunta||'">');
             
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
+                    if ws_classe = 'D' then  -- menu somente para documentação do BI
                         doc.MONTA_MENU_LATERAL(0, 1, 2);
+                    end if;    
                 htp.p('</div>');    
             htp.p('</div>');
             
             htp.p('<div id="fundo-conteudo" class="fundo-conteudo '||lower(ws_tp_conteudo)||'">');
-                select detalhes,pergunta,categoria,versao,classe into ws_detalhes,ws_pergunta,ws_categoria,ws_versao,ws_classe
-                from ( select t1.detalhes detalhes,t2.pergunta pergunta,t2.categoria categoria,t1.versao versao ,t2.classe
-                        from doc_detalhes t1
-                        left join doc_perguntas t2  on t2.cd_pergunta = t1.cd_pergunta
-                        where t2.cd_pergunta = prm_valor
-                            and t1.versao      = nvl(prm_versao,t1.versao) 
-                        order by t1.versao desc
-                    )
-                    where rownum = 1; 
 
-                ws_ds_titulo := ws_pergunta; 
-                ws_cd_aux    := prm_valor;
-                ws_count     := 0;
-                while ws_count < 20  loop
-                    select max(t2.cd_pergunta_pai), max(t1.pergunta) into ws_cd_pai, ws_ds_pai 
-                    from doc_perguntas t1, doc_estrutura t2 
-                    where t1.cd_pergunta = t2.cd_pergunta_pai and t2.cd_pergunta = ws_cd_aux ;
-                    if ws_cd_pai is null then 
-                        ws_count := 20;
-                    else 
-                        ws_cd_aux    := ws_cd_pai;
-                        ws_ds_titulo := ws_ds_pai||' > '||ws_ds_titulo;
-                    end if;  
-                    ws_count := ws_count + 1;
-                end loop;   
+                if ws_classe = 'P' and nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then   -- se for documentação Privada é necessário logon no sistema 
 
-                if ws_tp_conteudo = 'ARQUIVOS' then 
-                    ws_conteudo := null;
-                    doc.monta_conteudo_arquivos(prm_valor, ws_conteudo);
+                    htp.p('<div class="detalhe-conteudo">');
 
-                    if ws_conteudo is not null then 
-                        ws_detalhes := ws_conteudo;
-                    end if;     
-                else 
-                    ws_conteudo := null;
-                    doc.monta_conteudo_html(prm_valor, ws_conteudo);
-                    if ws_conteudo is not null then 
-                        ws_detalhes := ws_conteudo;
-                    end if;     
-                end if;     
+                        htp.p('<span class="detalhe-resposta resposta_conteudo">'); 
+                            htp.p('<p style="color: #f00;">Acesso bloqueado !</p>');
+                            htp.p('<p>Para acesso a essa documenta&ccedil;&atilde;o &eacute; necess&aacute;rio estar logado no BI da base de conhecimento Upquery.</p>');
+                            htp.p('<p>Se necess&aacute;rio solicite essa documenta&ccedil;&atilde;o ao nosso suporte.</p>');                                                
+                        htp.p('</span>');
 
-                                
-                htp.p('<div class="detalhe-conteudo">');
-                    
-                    htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
-                    htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
-
-                htp.p('</div>');
-
-                htp.p('<div class="detalhe-conteudo2">');
-                                                            
-                    htp.p('<div class= "voto">');
-
-                        htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                        htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
-
-                        htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-                        
                     htp.p('</div>');
-                    htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
-                    htp.p('<span class="relacionados">Artigos relacionados</span>');
-                    htp.p('<ul id="perg-rel">');
+                else               
 
-                        IF NVL(PRM_TIPUSER,'T') = 'T' THEN
+                    select detalhes,pergunta,categoria,versao,classe into ws_detalhes,ws_pergunta,ws_categoria,ws_versao,ws_classe
+                    from ( select t1.detalhes detalhes,t2.pergunta pergunta,t2.categoria categoria,t1.versao versao ,t2.classe
+                            from doc_detalhes t1
+                            left join doc_perguntas t2  on t2.cd_pergunta = t1.cd_pergunta
+                            where t2.cd_pergunta = ws_cd_pergunta
+                                and t1.versao      = nvl(prm_versao,t1.versao) 
+                            order by t1.versao desc
+                        )
+                        where rownum = 1; 
 
-                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
-                                        WHERE (ID_LIBERADO = 'S' or gbl.getNivel = 'A')
-                                          AND CATEGORIA   = WS_CATEGORIA 
-                                          AND CLASSE      = WS_CLASSE 
-                                          AND CD_PERGUNTA <> PRM_VALOR 
-                                        ORDER BY CD_PERGUNTA ) 
-                                LOOP
-                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                                END LOOP;
-                        ELSE 
-                            FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
-                                        WHERE ( ID_LIBERADO = 'S' or gbl.getNivel = 'A' )
-                                          AND CATEGORIA   = WS_CATEGORIA 
-                                          AND CLASSE      = WS_CLASSE 
-                                          AND CD_PERGUNTA <> PRM_VALOR
-                                          AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T')  
-                                        ORDER BY CD_PERGUNTA ) 
-                                LOOP
-                                    htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                    htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
-                                END LOOP;
-                        END IF;
+                    ws_ds_titulo := ws_pergunta; 
+                    ws_cd_aux    := ws_cd_pergunta;
+                    ws_count     := 0;
+                    while ws_count < 20  loop
+                        select max(t2.cd_pergunta_pai), max(t1.pergunta) into ws_cd_pai, ws_ds_pai 
+                        from doc_perguntas t1, doc_estrutura t2 
+                        where t1.cd_pergunta = t2.cd_pergunta_pai and t2.cd_pergunta = ws_cd_aux ;
+                        if ws_cd_pai is null then 
+                            ws_count := 20;
+                        else 
+                            ws_cd_aux    := ws_cd_pai;
+                            ws_ds_titulo := ws_ds_pai||' > '||ws_ds_titulo;
+                        end if;  
+                        ws_count := ws_count + 1;
+                    end loop;   
 
-                    htp.p('</ul>');
-                    
-                htp.p('</div>');    -- detalhe-conteudo2
+                    if ws_tp_conteudo = 'ARQUIVOS' then 
+                        ws_conteudo := null;
+                        doc.monta_conteudo_arquivos(ws_cd_pergunta, ws_conteudo);
+
+                        if ws_conteudo is not null then 
+                            ws_detalhes := ws_conteudo;
+                        end if;     
+                    else 
+                        ws_conteudo := null;
+                        doc.monta_conteudo_html(ws_cd_pergunta, ws_conteudo);
+                        if ws_conteudo is not null then 
+                            ws_detalhes := ws_conteudo;
+                        end if;     
+                    end if;     
+
+                                    
+                    htp.p('<div class="detalhe-conteudo">');
+                        
+                        htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
+                        htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
+
+                    htp.p('</div>');
+
+                    htp.p('<div class="detalhe-conteudo2">');
+                                                                
+                        htp.p('<div class= "voto">');
+
+                            htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                            htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
+
+                            htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
+                            
+                        htp.p('</div>');
+                        htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
+
+                        htp.p('<span class="relacionados">Artigos relacionados</span>');
+                        htp.p('<ul id="perg-rel">');
+
+                            IF NVL(PRM_TIPUSER,'T') = 'T' THEN
+
+                                FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
+                                            WHERE (ID_LIBERADO = 'S' or gbl.getNivel = 'A')
+                                            AND CATEGORIA   = WS_CATEGORIA 
+                                            AND CLASSE      = WS_CLASSE 
+                                            AND CD_PERGUNTA <> ws_cd_pergunta 
+                                            ORDER BY CD_PERGUNTA ) 
+                                    LOOP
+                                        htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                    END LOOP;
+                            ELSE 
+                                FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
+                                            WHERE ( ID_LIBERADO = 'S' or gbl.getNivel = 'A' )
+                                            AND CATEGORIA   = WS_CATEGORIA 
+                                            AND CLASSE      = WS_CLASSE 
+                                            AND CD_PERGUNTA <> ws_cd_pergunta
+                                            AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T')  
+                                            ORDER BY CD_PERGUNTA ) 
+                                    LOOP
+                                        htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
+                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                    END LOOP;
+                            END IF;
+
+                        htp.p('</ul>');
+                        
+                    htp.p('</div>');    -- detalhe-conteudo2
+                end if;
             htp.p('</div>');        -- fundo-conteudo 
 
             if ws_tp_conteudo <> 'ARQUIVOS' then 
@@ -570,6 +597,8 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
 
         htp.p('</div>');            -- principal-conteudo 
 
+    exception when others then
+        null;
     END DETALHE_PERGUNTA;
 
 
