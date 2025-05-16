@@ -413,38 +413,54 @@ img.retorna-princ {
   margin-left: 4%;
 }
 
-  a.go-doc-public {
-    cursor: pointer;
-    display: block;
-    width: 16%;
-    height: 50%;
-    float: right;
-    background-color: #3C8846;
-    border-radius: 25px;
-    line-height: 65px;
-    font-family: 'Quicksand';
-    margin-right: 4%;
-    margin-top: 2%;
-    color: var(--branco-primario);
-    box-shadow: 0 5px #999;
+a.go-doc-public {
+  cursor: pointer;
+  display: block;
+  width: 16%;
+  height: 50%;
+  float: right;
+  background-color: #3C8846;
+  border-radius: 25px;
+  line-height: 65px;
+  font-family: 'Quicksand';
+  margin-right: 4%;
+  margin-top: 2%;
+  color: var(--branco-primario);
+  box-shadow: 0 5px #999;
 }
   
 
-  a.go-doc-private {
-    cursor: pointer;
-    display: block;
-    width: 16%;
-    height: 50%;
-    float: right;
-    background-color: #1E1655;
-    border-radius: 25px;
-    line-height: 65px;
-    font-family: 'Quicksand';
-    margin-right: 4%;
-    margin-top: 2%;
-    color: var(--branco-primario);
-    box-shadow: 0 5px #999;
-  }
+a.go-doc-private {
+  cursor: pointer;
+  display: block;
+  width: 16%;
+  height: 50%;
+  float: right;
+  background-color: #1E1655;
+  border-radius: 25px;
+  line-height: 65px;
+  font-family: 'Quicksand';
+  margin-right: 4%;
+  margin-top: 2%;
+  color: var(--branco-primario);
+  box-shadow: 0 5px #999;
+}
+
+a.go-doc-cadastro {
+  cursor: pointer;
+  display: block;
+  width: 10%;
+  height: 50%;
+  float: right;
+  background-color: #7e1a1a;
+  border-radius: 25px;
+  line-height: 65px;
+  font-family: 'Quicksand';
+  margin-right: 4%;
+  margin-top: 2%;
+  color: var(--branco-primario);
+  box-shadow: 0 5px #999;
+}
 
 .desfocar{
   filter: blur(2.5px);
@@ -1743,3 +1759,21 @@ a.link-conteudo-arquivo:hover {
   100% { transform: rotate(360deg); }
 }
 
+.cadastro-main {
+  display: block;
+}
+
+.cadastro-menu-esquerdo {
+  display: block;
+  width: 300px;
+}
+
+.cadastro-conteudo {
+  display: block;
+  width: 300px;
+}
+
+.cadastro-menu-direito {
+  display: block;
+  width: 300px;
+}

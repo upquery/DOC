@@ -1,153 +1,135 @@
 SET DEFINE OFF
 CREATE OR REPLACE PACKAGE BODY DOC  IS
 
-    PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
-                    PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
-                    utm_source      VARCHAR2 DEFAULT NULL,
-                    utm_medium      VARCHAR2 DEFAULT NULL,
-                    utm_campaign    VARCHAR2 DEFAULT NULL,
-                    utm_content     VARCHAR2 DEFAULT NULL,
-                    utm_term        VARCHAR2 DEFAULT NULL,
-                    fbclid          VARCHAR2 DEFAULT NULL) AS
-    
-    WS_CSS          VARCHAR2(80);
-    ws_usuario      VARCHAR2(200);
-    ws_tipouser     VARCHAR2(200);
-    ws_externo      VARCHAR2(200);
+PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
+                PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
+                utm_source      VARCHAR2 DEFAULT NULL,
+                utm_medium      VARCHAR2 DEFAULT NULL,
+                utm_campaign    VARCHAR2 DEFAULT NULL,
+                utm_content     VARCHAR2 DEFAULT NULL,
+                utm_term        VARCHAR2 DEFAULT NULL,
+                fbclid          VARCHAR2 DEFAULT NULL) AS
 
-    BEGIN
-        htp.p('<script>');
+WS_CSS          VARCHAR2(80);
+ws_usuario      VARCHAR2(200);
+ws_tipouser     VARCHAR2(200);
+ws_externo      VARCHAR2(200);
 
-	    htp.prn('const ');
-		for i in(select cd_constante, vl_constante from bi_constantes) loop
-			htp.prn(i.cd_constante||' = "'||fun.lang(i.vl_constante)||'", ');
-		end loop;
-		htp.prn('TR_END = "";');
+BEGIN
+    htp.p('<script>');
+        htp.prn('const ');
+        for i in(select cd_constante, vl_constante from bi_constantes) loop
+            htp.prn(i.cd_constante||' = "'||fun.lang(i.vl_constante)||'", ');
+        end loop;
+        htp.prn('TR_END = "";');
         htp.p('const USUARIO = "'||gbl.getusuario||'";');
         htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
+    htp.p('</script>');
 
-	htp.p('</script>');
+    htp.p('<!DOCTYPE html>');
+    htp.p('<html lang="pt-br">');
+            
+        htp.p('<head>');
 
-        htp.p('<!DOCTYPE html>');
-        htp.p('<html lang="pt-br">');
-                
-            htp.p('<head>');
+            htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
+            htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
+            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=doc.css"/>' );
+            htp.p('<script src="dwu.fcl.download?arquivo=doc.js"></script>');
+            --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
+            htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
+            htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
+            htp.p('<link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css">');
+            htp.p('<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css">');
+            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
+            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=MADETOMMY.otf">');
+            htp.p('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">');
+            htp.p('<meta http-equiv="Content-Language" content="pt-br">');
+            htp.p('<title>Conhecimento - UPQUERY</title>');
 
-                htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
-                htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
-                htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=doc.css"/>' );
-                htp.p('<script src="dwu.fcl.download?arquivo=doc.js"></script>');
-                --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
-                htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
-                htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
-                htp.p('<link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css">');
-                htp.p('<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css">');
-                htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
-                htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=MADETOMMY.otf">');
-                htp.p('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">');
-                htp.p('<meta http-equiv="Content-Language" content="pt-br">');
-                htp.p('<title>Conhecimento - UPQUERY</title>');
+        htp.p('</head>');
 
-            htp.p('</head>');
+        htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
 
-            htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
+            htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
+                for a in (select variavel, conteudo from doc_variaveis) loop
+                    htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
+                end loop;
+            htp.p('></div>'); 
 
-                htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
-                    for a in (select variavel, conteudo from doc_variaveis) loop
-                       htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
-                    end loop;
-                htp.p('></div>'); 
+            htp.p('<div class="header-doc">');  
+                ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
+                htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
+                    htp.p('<a class="go-faq">Central de Ajuda</a>');
+                    htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
+                    if upper(trim(ws_usuario)) <> 'NOUSER' then
+                        htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
+                    end if;
+                    if upper(trim(ws_usuario)) <> 'NOUSER' then
+                        htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
+                    end if;
+            htp.p('</div>');
 
-                htp.p('<div class="header-doc">');  
-
-                    ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
-                                            
-                    htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
-
-                        htp.p('<a class="go-faq">Central de Ajuda</a>');
-                        htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
-                    
-                        if upper(trim(ws_usuario)) <> 'NOUSER' then
-                            htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
-                        end if;
-
-                htp.p('</div>');
-
-                htp.p('<div class="spinner"></div>');
-                -- Condição criada para quando a DOC for chamada pelo BI 23/11/22
-                IF PRM_EXTERNO IS NOT NULL THEN
+            htp.p('<div class="spinner"></div>');
+            
+            -- Condição criada para quando a DOC for chamada pelo BI 23/11/22
+            IF PRM_EXTERNO IS NOT NULL THEN
+                IF PRM_EXTERNO = 'CADASTRO' THEN
+                    htp.p('<script>chamar(''doc_cad_conteudo'','''','''','''','''',''N'');</script>');
+                else 
                     ws_tipouser:=prm_usuario;
                     ws_externo:=prm_externo;
                     htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
                     htp.p('<script>gopage=document.getElementById(''prm_externo'');chamar(''detalhe_pergunta'',gopage.getAttribute(''data-search''),'''',gopage.getAttribute(''data-usuario''),'''',''S'');</script>');
                     ws_tipouser:='';
                     ws_externo:='';
-                END IF;
-                
-                								
-                htp.p('<div class="main">');
-
-                    
-                    doc.principal;
-
-                htp.p('</div>');
-
-                htp.p('<div class="footer-doc">');
-                    
-                    htp.p('<span>');
-                        htp.p('<a class="links" title="WhatsApp" href="https://wa.me/message/DWVS7MC4FU2RF1"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="sociais" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M440.164,71.836C393.84,25.511,332.249,0,266.737,0S139.633,25.511,93.308,71.836S21.473,179.751,21.473,245.263    c0,41.499,10.505,82.279,30.445,118.402L0,512l148.333-51.917c36.124,19.938,76.904,30.444,118.403,30.444    c65.512,0,127.104-25.512,173.427-71.836C486.488,372.367,512,310.776,512,245.263S486.488,118.16,440.164,71.836z     M266.737,460.495c-38.497,0-76.282-10.296-109.267-29.776l-6.009-3.549L48.952,463.047l35.878-102.508l-3.549-6.009    c-19.479-32.985-29.775-70.769-29.775-109.266c0-118.679,96.553-215.231,215.231-215.231s215.231,96.553,215.231,215.231    C481.968,363.943,385.415,460.495,266.737,460.495z"/></g></g><g><g><path d="M398.601,304.521l-35.392-35.393c-11.709-11.71-30.762-11.71-42.473,0l-13.538,13.538    c-32.877-17.834-60.031-44.988-77.866-77.865l13.538-13.539c5.673-5.672,8.796-13.214,8.796-21.236    c0-8.022-3.124-15.564-8.796-21.236l-35.393-35.393c-5.672-5.672-13.214-8.796-21.236-8.796c-8.023,0-15.564,3.124-21.236,8.796    l-28.314,28.314c-15.98,15.98-16.732,43.563-2.117,77.664c12.768,29.791,36.145,62.543,65.825,92.223    c29.68,29.68,62.432,53.057,92.223,65.825c16.254,6.965,31.022,10.44,43.763,10.44c13.992,0,25.538-4.193,33.901-12.557    l28.314-28.314c5.673-5.672,8.796-13.214,8.796-21.236S404.273,310.193,398.601,304.521z M349.052,354.072    c-6.321,6.32-23.827,4.651-44.599-4.252c-26.362-11.298-55.775-32.414-82.818-59.457c-27.043-27.043-48.158-56.455-59.457-82.818    c-8.903-20.772-10.571-38.278-4.252-44.599l28.315-28.314l35.393,35.393l-28.719,28.719l4.53,9.563    c22.022,46.49,59.753,84.221,106.244,106.244l9.563,4.53l28.719-28.719l35.393,35.393L349.052,354.072z"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg></a>');                        
-                        htp.p('<a class="links" title="Instagram" href="https://www.instagram.com/upquery/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sociais" feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>');
-                        htp.p('<a class="links" title="LinkedIn" href="https://www.linkedin.com/company/upquery-do-brasil/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="sociais"><path d="m437 0h-362c-41.355469 0-75 33.644531-75 75v362c0 41.355469 33.644531 75 75 75h362c41.355469 0 75-33.644531 75-75v-362c0-41.355469-33.644531-75-75-75zm45 437c0 24.8125-20.1875 45-45 45h-362c-24.8125 0-45-20.1875-45-45v-362c0-24.8125 20.1875-45 45-45h362c24.8125 0 45 20.1875 45 45zm0 0"/><path d="m91 422h90v-212h-90zm30-182h30v152h-30zm0 0"/><path d="m331.085938 210c-.027344 0-.058594 0-.085938 0-10.371094 0-20.472656 1.734375-30 5.101562v-5.101562h-90v212h90v-107c0-8.269531 6.730469-15 15-15s15 6.730469 15 15v107h90v-117.3125c0-48.546875-39.382812-94.640625-89.914062-94.6875zm59.914062 182h-30v-77c0-24.8125-20.1875-45-45-45s-44.996094 20.1875-45 44.996094v77.003906h-30v-152h30v30.019531l24.007812-18.03125c10.441407-7.84375 22.886719-11.988281 35.992188-11.988281h.058594c31.929687.03125 59.941406 30.257812 59.941406 64.6875zm0 0"/><path d="m91 180h90v-90h-90zm30-60h30v30h-30zm0 0"/></svg></a>');
-                    htp.p('</span>');
-
-                    htp.p('<span >');
-                        htp.p('<a class="links" href="https://www.upquery.com">2021 © UpQuery do Brasil</a>');
-                    htp.p('</span>');
-                   
-                    -- Retirado a pedido do suporte
-                    /*htp.p('<span class="cversion"> Current Version: ');
-                    --     gbl.getVersion;
-                    htp.p('</span>');*/
-
-                    htp.p('<span >');
-                        htp.p('<a class="links" href="https://www.upquery.com/politica-de-privacidade">Pol&iacute;tica de Privacidade | </a>');
-                        htp.p('<a class="links" href="https://www.upquery.com/termos-de-uso">Termos de Uso</a>');
-                    htp.p('</span>');
-
-                htp.p('</div>');
-                
-                htp.p('<div id="loadingscreens">');					
-				htp.p('</div>');
-
-			htp.p('</body>');
-    
-    END MAIN;
-
-    PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
-
-    BEGIN
-
-        htp.p('<div class="apresentation">');
-            -- testa para ver se o dispositivo acessado é mobile ou não para ajustar o tamanho da imagem  no css
-            if instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'iPhone') = 0 and instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'Android') = 0 then
-                htp.p('<img src="dwu.fcl.download?arquivo=doc_apresentation_main.png" class="bgmenur" />');
-            else
-                --utilizado background-image para quando o dispositivo for do tipo mobile.
-                htp.p('<div class="bgmenur" ></div>');
-            end if;
-
+                end if; 
+            END IF;
             
-            /*htp.p('<span>');                
+                                            
+            htp.p('<div class="main">');
 
-                htp.p('COLOQUE AQUI O CONTEUDO DE APRESENTAÇÃO/NOTAS DA VERSÃO');
+                doc.principal;
+
+            htp.p('</div>');
+
+            htp.p('<div class="footer-doc">');
+                htp.p('<span>');
+                    htp.p('<a class="links" title="WhatsApp" href="https://wa.me/message/DWVS7MC4FU2RF1"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="sociais" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M440.164,71.836C393.84,25.511,332.249,0,266.737,0S139.633,25.511,93.308,71.836S21.473,179.751,21.473,245.263    c0,41.499,10.505,82.279,30.445,118.402L0,512l148.333-51.917c36.124,19.938,76.904,30.444,118.403,30.444    c65.512,0,127.104-25.512,173.427-71.836C486.488,372.367,512,310.776,512,245.263S486.488,118.16,440.164,71.836z     M266.737,460.495c-38.497,0-76.282-10.296-109.267-29.776l-6.009-3.549L48.952,463.047l35.878-102.508l-3.549-6.009    c-19.479-32.985-29.775-70.769-29.775-109.266c0-118.679,96.553-215.231,215.231-215.231s215.231,96.553,215.231,215.231    C481.968,363.943,385.415,460.495,266.737,460.495z"/></g></g><g><g><path d="M398.601,304.521l-35.392-35.393c-11.709-11.71-30.762-11.71-42.473,0l-13.538,13.538    c-32.877-17.834-60.031-44.988-77.866-77.865l13.538-13.539c5.673-5.672,8.796-13.214,8.796-21.236    c0-8.022-3.124-15.564-8.796-21.236l-35.393-35.393c-5.672-5.672-13.214-8.796-21.236-8.796c-8.023,0-15.564,3.124-21.236,8.796    l-28.314,28.314c-15.98,15.98-16.732,43.563-2.117,77.664c12.768,29.791,36.145,62.543,65.825,92.223    c29.68,29.68,62.432,53.057,92.223,65.825c16.254,6.965,31.022,10.44,43.763,10.44c13.992,0,25.538-4.193,33.901-12.557    l28.314-28.314c5.673-5.672,8.796-13.214,8.796-21.236S404.273,310.193,398.601,304.521z M349.052,354.072    c-6.321,6.32-23.827,4.651-44.599-4.252c-26.362-11.298-55.775-32.414-82.818-59.457c-27.043-27.043-48.158-56.455-59.457-82.818    c-8.903-20.772-10.571-38.278-4.252-44.599l28.315-28.314l35.393,35.393l-28.719,28.719l4.53,9.563    c22.022,46.49,59.753,84.221,106.244,106.244l9.563,4.53l28.719-28.719l35.393,35.393L349.052,354.072z"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg></a>');                        
+                    htp.p('<a class="links" title="Instagram" href="https://www.instagram.com/upquery/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sociais" feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>');
+                    htp.p('<a class="links" title="LinkedIn" href="https://www.linkedin.com/company/upquery-do-brasil/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="sociais"><path d="m437 0h-362c-41.355469 0-75 33.644531-75 75v362c0 41.355469 33.644531 75 75 75h362c41.355469 0 75-33.644531 75-75v-362c0-41.355469-33.644531-75-75-75zm45 437c0 24.8125-20.1875 45-45 45h-362c-24.8125 0-45-20.1875-45-45v-362c0-24.8125 20.1875-45 45-45h362c24.8125 0 45 20.1875 45 45zm0 0"/><path d="m91 422h90v-212h-90zm30-182h30v152h-30zm0 0"/><path d="m331.085938 210c-.027344 0-.058594 0-.085938 0-10.371094 0-20.472656 1.734375-30 5.101562v-5.101562h-90v212h90v-107c0-8.269531 6.730469-15 15-15s15 6.730469 15 15v107h90v-117.3125c0-48.546875-39.382812-94.640625-89.914062-94.6875zm59.914062 182h-30v-77c0-24.8125-20.1875-45-45-45s-44.996094 20.1875-45 44.996094v77.003906h-30v-152h30v30.019531l24.007812-18.03125c10.441407-7.84375 22.886719-11.988281 35.992188-11.988281h.058594c31.929687.03125 59.941406 30.257812 59.941406 64.6875zm0 0"/><path d="m91 180h90v-90h-90zm30-60h30v30h-30zm0 0"/></svg></a>');
+                htp.p('</span>');
+
+                htp.p('<span >');
+                    htp.p('<a class="links" href="https://www.upquery.com">2021 © UpQuery do Brasil</a>');
+                htp.p('</span>');
+
+                htp.p('<span >');
+                    htp.p('<a class="links" href="https://www.upquery.com/politica-de-privacidade">Pol&iacute;tica de Privacidade | </a>');
+                    htp.p('<a class="links" href="https://www.upquery.com/termos-de-uso">Termos de Uso</a>');
+                htp.p('</span>');
+            htp.p('</div>');
             
-            htp.p('</span>');*/
+            htp.p('<div id="loadingscreens">');					
+            htp.p('</div>');
+
+        htp.p('</body>');
+
+END MAIN;
+
+------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
+BEGIN
+    htp.p('<div class="apresentation">');
+        if instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'iPhone') = 0 and instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'Android') = 0 then
+            htp.p('<img src="dwu.fcl.download?arquivo=doc_apresentation_main.png" class="bgmenur" />');
+        else
+            htp.p('<div class="bgmenur" ></div>');
+        end if;
+    htp.p('</div>');
+END PRINCIPAL;
 
 
-        htp.p('</div>');
-
-    END PRINCIPAL;
-
+------------------------------------------------------------------------------------------------------------------------------
     PROCEDURE FAQ (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                     PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                     PRM_USUARIO VARCHAR2 DEFAULT NULL,
@@ -211,135 +193,138 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             htp.p('</div>');
 
     END FAQ;
+
+---------------------------------------------------------------------------------------------------------------    
+PROCEDURE DOC_PUBLIC (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
+                        PRM_CLASSE  VARCHAR2 DEFAULT NULL,
+                        PRM_USUARIO VARCHAR2 DEFAULT NULL,
+                        PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
     
-    PROCEDURE DOC_PUBLIC (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
-                            PRM_CLASSE  VARCHAR2 DEFAULT NULL,
-                            PRM_USUARIO VARCHAR2 DEFAULT NULL,
-                            PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
-        WS_USUARIO	    VARCHAR2(80);
-        WS_CSS		    VARCHAR2(80);
-        WS_TIPUSER      VARCHAR2(2);
+    WS_USUARIO	    VARCHAR2(80);
+    WS_CSS		    VARCHAR2(80);
+    WS_TIPUSER      VARCHAR2(2);
 
-    BEGIN
-        WS_TIPUSER:=PRM_TIPUSER;
-        htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
+BEGIN
+    WS_TIPUSER:=PRM_TIPUSER;
+    htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
-            htp.p('<div class="conteudo-faq">');
+        htp.p('<div class="conteudo-faq">');
 
-                htp.p('<div class="fundo-busca">');
-                        
-                        htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O</h1>');
+            htp.p('<div class="fundo-busca">');
+                    
+                    htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O</h1>');
 
-                        htp.p('<div class="mensagem">');
-                            htp.p('<span class="label-tipUser">');
-                                htp.p('<a>Tipo de usuario:</a>');
-                                htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
-                                    
-                                    if WS_TIPUSER = 'T' THEN
-                                        htp.p('<option value="T" selected>Todos</option>');
-                                    ELSE
-                                        htp.p('<option value="T" >Todos</option>');
-                                    END IF;
+                    htp.p('<div class="mensagem">');
+                        htp.p('<span class="label-tipUser">');
+                            htp.p('<a>Tipo de usuario:</a>');
+                            htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
+                                
+                                if WS_TIPUSER = 'T' THEN
+                                    htp.p('<option value="T" selected>Todos</option>');
+                                ELSE
+                                    htp.p('<option value="T" >Todos</option>');
+                                END IF;
 
-                                    if WS_TIPUSER = 'A' THEN
-                                        htp.p('<option value="A" selected>Admin</option>');
-                                    ELSE
-                                        htp.p('<option value="A" >Admin</option>');
-                                    END IF;
+                                if WS_TIPUSER = 'A' THEN
+                                    htp.p('<option value="A" selected>Admin</option>');
+                                ELSE
+                                    htp.p('<option value="A" >Admin</option>');
+                                END IF;
 
-                                    if WS_TIPUSER = 'N' THEN
-                                        htp.p('<option value="N" selected>Normal</option>');
-                                    ELSE
-                                        htp.p('<option value="N" >Normal</option>');
-                                    END IF;
+                                if WS_TIPUSER = 'N' THEN
+                                    htp.p('<option value="N" selected>Normal</option>');
+                                ELSE
+                                    htp.p('<option value="N" >Normal</option>');
+                                END IF;
 
-                                htp.p('</select>');
-                            htp.p('</span>');                            
-                            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
-                            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
-                        htp.p('</div>');
+                            htp.p('</select>');
+                        htp.p('</span>');                            
+                        htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
+                        htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
+                    htp.p('</div>');
 
-                        htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
-
-                htp.p('</div>');
-                        
-                        htp.p('<ul class="flex-container">');
-                            doc.consulta(PRM_VALOR,'D',WS_TIPUSER);
-                        htp.p('</ul>');
+                    htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
             htp.p('</div>');
+                    
+                    htp.p('<ul class="flex-container">');
+                        doc.consulta(PRM_VALOR,'D',WS_TIPUSER);
+                    htp.p('</ul>');
 
-    EXCEPTION
-        WHEN OTHERS THEN
+        htp.p('</div>');
 
-            INSERT INTO BI_LOG_SISTEMA VALUES (SYSDATE, 'DOC_PUBLIC: '|| DBMS_UTILITY.FORMAT_ERROR_STACK||'-'||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE, 'DWU', 'ERRO');	
-            COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
 
-    END DOC_PUBLIC;
+        INSERT INTO BI_LOG_SISTEMA VALUES (SYSDATE, 'DOC_PUBLIC: '|| DBMS_UTILITY.FORMAT_ERROR_STACK||'-'||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE, 'DWU', 'ERRO');	
+        COMMIT;
+
+END DOC_PUBLIC;
     
-    PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
-                            PRM_CLASSE  VARCHAR2 DEFAULT NULL,
-                            PRM_USUARIO VARCHAR2 DEFAULT NULL,
-                            PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
-        WS_USUARIO	    VARCHAR2(80);
-        WS_CSS		    VARCHAR2(80);
-        WS_TIPUSER      VARCHAR2(2);
+------------------------------------------------------------------------------------------------------------------------
+PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
+                        PRM_CLASSE  VARCHAR2 DEFAULT NULL,
+                        PRM_USUARIO VARCHAR2 DEFAULT NULL,
+                        PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
+    
+    WS_USUARIO	    VARCHAR2(80);
+    WS_CSS		    VARCHAR2(80);
+    WS_TIPUSER      VARCHAR2(2);
 
-    BEGIN
+BEGIN
 
-        WS_TIPUSER:=PRM_TIPUSER;
-      
-        htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
+    WS_TIPUSER:=PRM_TIPUSER;
+    
+    htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
-            htp.p('<div class="conteudo-faq">');
+        htp.p('<div class="conteudo-faq">');
 
-                htp.p('<div class="fundo-busca">');
-                        
-                        htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
+            htp.p('<div class="fundo-busca">');
+                    
+                    htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
 
-                        htp.p('<div class="mensagem">');
-                            htp.p('<span class="label-tipUser">');
-                                htp.p('<a>Tipo de usuario:</a>');
-                                htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
-                                    
-                                    if WS_TIPUSER = 'T' THEN
-                                        htp.p('<option value="T" selected>Todos</option>');
-                                    ELSE
-                                        htp.p('<option value="T" >Todos</option>');
-                                    END IF;
+                    htp.p('<div class="mensagem">');
+                        htp.p('<span class="label-tipUser">');
+                            htp.p('<a>Tipo de usuario:</a>');
+                            htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
+                                
+                                if WS_TIPUSER = 'T' THEN
+                                    htp.p('<option value="T" selected>Todos</option>');
+                                ELSE
+                                    htp.p('<option value="T" >Todos</option>');
+                                END IF;
 
-                                    if WS_TIPUSER = 'A' THEN
-                                        htp.p('<option value="A" selected>Admin</option>');
-                                    ELSE
-                                        htp.p('<option value="A" >Admin</option>');
-                                    END IF;
+                                if WS_TIPUSER = 'A' THEN
+                                    htp.p('<option value="A" selected>Admin</option>');
+                                ELSE
+                                    htp.p('<option value="A" >Admin</option>');
+                                END IF;
 
-                                    if WS_TIPUSER = 'N' THEN
-                                        htp.p('<option value="N" selected>Normal</option>');
-                                    ELSE
-                                        htp.p('<option value="N" >Normal</option>');
-                                    END IF;
+                                if WS_TIPUSER = 'N' THEN
+                                    htp.p('<option value="N" selected>Normal</option>');
+                                ELSE
+                                    htp.p('<option value="N" >Normal</option>');
+                                END IF;
 
-                                htp.p('</select>');
-                            htp.p('</span>');                            
-                            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
-                            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
-                        htp.p('</div>');
+                            htp.p('</select>');
+                        htp.p('</span>');                            
+                        htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
+                        htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
+                    htp.p('</div>');
 
-                        htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
-
-                htp.p('</div>');
-              
-                        htp.p('<ul class="flex-container">');
-                            doc.consulta(PRM_VALOR,'P',WS_TIPUSER);
-                        htp.p('</ul>');
+                    htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
             htp.p('</div>');
-       
-    END DOC_PRIVATE;
+            
+                    htp.p('<ul class="flex-container">');
+                        doc.consulta(PRM_VALOR,'P',WS_TIPUSER);
+                    htp.p('</ul>');
 
+        htp.p('</div>');
+    
+END DOC_PRIVATE;
+
+------------------------------------------------------------------------------------------------------------------------
     PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
@@ -1067,6 +1052,65 @@ CREATE OR REPLACE PACKAGE BODY DOC  IS
             commit;
 
     end limpar_formatacao; 
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
+    
+    ws_cd_pergunta  varchar2(20);
+    ws_usuario	    varchar2(80);
+    ws_css		    varchar2(80);
+    ws_tipuser      varchar2(2);
+    
+    ws_raise_fim    exception;
+begin
+    
+    ws_cd_pergunta := prm_valor; 
+    
+    ws_cd_pergunta := 243; 
+
+    if nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then 
+        htp.p('<div class="cadastro-main">');
+
+            htp.p('<span class="cadastro-main-erro">'); 
+                htp.p('<p style="color: #f00;">Acesso bloqueado !</p>');
+                htp.p('<p>Para acesso a essa documenta&ccedil;&atilde;o &eacute; necess&aacute;rio estar logado no BI da base de conhecimento Upquery.</p>');
+                htp.p('<p>Se necess&aacute;rio solicite essa documenta&ccedil;&atilde;o ao nosso suporte.</p>');                                                
+            htp.p('</span>');
+
+        htp.p('</div>');
+        raise ws_raise_fim; 
+    end if; 
+
+    htp.p('<div class="cadastro-main">');
+
+        htp.p('<div class="cadastro-menu-esquerdo">');
+            htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
+            htp.p('</div>');    
+        htp.p('</div>');
+            
+        htp.p('<div id="cadastro-conteudo" class="cadastro-conteudo">');
+
+            for a in (select * from doc_conteudos where cd_pergunta = ws_cd_pergunta order by sq_conteudo) loop
+                htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem">ORDEM</div>');
+                htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo">');
+                    htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" class="cadcon-titulo">'||a.ds_titulo||'</div>');
+                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto">'||a.ds_texto||'</div>');
+                htp.p('</div>');    
+            end loop;     
+
+        htp.p('</div>'); 
+
+        htp.p('<div class="cadastro-menu-direito"></div>');
+
+    htp.p('</div>');
+
+exception 
+    when ws_raise_fim then 
+        null;
+end doc_cad_conteudo;
+
 
 
 END DOC;

@@ -98,6 +98,15 @@ document.addEventListener('click', function(e){
         e.target.classList.add('escolhido');
     }
 
+    if(e.target.className == "go-doc-cadastro"){
+        let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+        window.open(url_doc + '.doc.main?prm_externo=CADASTRO','_blank');
+        if(document.querySelector('.escolhido')){
+            document.querySelector('.escolhido').classList.remove('escolhido');
+        }
+        e.target.classList.add('escolhido');
+    }
+
     if(e.target.className == "go-faq"){
         classe_doc = 'F';
         chamar('faq', e.target.title,'',tip_user);
@@ -198,6 +207,8 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
     } else if (proc == 'main'){
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
         window.location.replace(url_doc + '.doc.main');
+    } else if (proc.toLowerCase() == 'doc_cad_conteudo'){
+        request.send('prm_valor='+search); 
     }else{
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
@@ -353,4 +364,38 @@ function mostra_conteudo_pdf(){
     document.getElementById('pdf-loader').style.display              = 'none';
     document.getElementById('iframe_conteudo_arquivo').style.display = 'block';
     document.getElementById('img_conteudo_arquivo').style.display    = 'none';
+}
+
+function call(req, par, tipo){
+
+    var tipo  = tipo || 'POST',
+        par   = par || '',
+        pkg   = 'doc',
+        owner = 'dwu';
+    
+    return new Promise(function(resolve, reject){
+        var request = new XMLHttpRequest();
+
+        if(tipo == 'POST'){
+            request.open(tipo, OWNER_BI + '.'+pkg+'.'+req, true);
+        } else {
+            request.open(tipo, OWNER_BI + '.'+pkg+'.'+req+'?'+par, true);
+        }  
+
+        if(tipo == 'POST'){
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");  
+            request.send(par);
+        } else {
+            request.send(null);
+        }
+
+        request.onload = function(){
+            if(request.status == 200){
+                resolve(request.responseText.trim());
+            } else {
+                reject('ERRO');
+            }
+        }
+    });
+
 }
