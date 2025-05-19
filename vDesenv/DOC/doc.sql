@@ -55,22 +55,24 @@ BEGIN
                     htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
                 end loop;
             htp.p('></div>'); 
-
-            htp.p('<div class="header-doc">');  
-                ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
-                htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
-                    htp.p('<a class="go-faq">Central de Ajuda</a>');
-                    htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
-                    if upper(trim(ws_usuario)) <> 'NOUSER' then
-                        htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
-                    end if;
-                    if upper(trim(ws_usuario)) <> 'NOUSER' then
-                        htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
-                    end if;
-            htp.p('</div>');
+            
+            if nvl(prm_externo,'.') <> 'CADASTRO' THEN
+                htp.p('<div class="header-doc">');  
+                    ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
+                    htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
+                        htp.p('<a class="go-faq">Central de Ajuda</a>');
+                        htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
+                        if upper(trim(ws_usuario)) <> 'NOUSER' then
+                            htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
+                        end if;
+                        if upper(trim(ws_usuario)) <> 'NOUSER' then
+                            htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
+                        end if;
+                htp.p('</div>');
+            end if;
 
             htp.p('<div class="spinner"></div>');
-            
+
             -- Condição criada para quando a DOC for chamada pelo BI 23/11/22
             IF PRM_EXTERNO IS NOT NULL THEN
                 IF PRM_EXTERNO = 'CADASTRO' THEN
@@ -1061,14 +1063,17 @@ procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
     ws_cd_pergunta  varchar2(20);
     ws_usuario	    varchar2(80);
     ws_css		    varchar2(80);
-    ws_tipuser      varchar2(2);
+    ws_class        varchar2(4000); 
+    ws_class2       varchar2(4000); 
+    ws_class_tot    varchar2(4000); 
+    ws_url_doc      varchar2(300);
     
     ws_raise_fim    exception;
 begin
     
     ws_cd_pergunta := prm_valor; 
     
-    ws_cd_pergunta := 243; 
+    ws_cd_pergunta := 236; 
 
     if nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then 
         htp.p('<div class="cadastro-main">');
@@ -1083,6 +1088,8 @@ begin
         raise ws_raise_fim; 
     end if; 
 
+    select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
+
     htp.p('<div class="cadastro-main">');
 
         htp.p('<div class="cadastro-menu-esquerdo">');
@@ -1090,15 +1097,57 @@ begin
             htp.p('</div>');    
         htp.p('</div>');
             
-        htp.p('<div id="cadastro-conteudo" class="cadastro-conteudo">');
+        htp.p('<div class="cadastro-conteudo-fundo">');
 
             for a in (select * from doc_conteudos where cd_pergunta = ws_cd_pergunta order by sq_conteudo) loop
-                htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem">ORDEM</div>');
-                htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo">');
-                    htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" class="cadcon-titulo">'||a.ds_titulo||'</div>');
-                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto">'||a.ds_texto||'</div>');
-                htp.p('</div>');    
-            end loop;     
+
+            -- Monta class/estilo do elemento 
+                ws_class := null;
+                if a.id_estilo is not null then 
+                    ws_class     := replace(a.id_estilo,'|',' ')||'"';
+                    ws_class_tot := replace(ws_class_tot, a.id_estilo||'|','');
+                    ws_class_tot := ws_class_tot||'|'||a.id_estilo||'|';
+                end if; 
+
+                htp.p('<div class="cadastro-conteudo">');
+                    htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem"></div>');
+                    htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo" data-tp_conteudo="'||a.tp_conteudo||'">');
+                        if a.tp_conteudo = 'LINHA' then 
+                            htp.p('<hr>');
+                        elsif a.tp_conteudo like 'IMAGEM' then  
+                            -- Alinhamento não funciona em objeto IMG, alinha um span externo 
+                            ws_class2 := null;
+                            select max(lower(css_estilo)) into ws_class2 
+                            from doc_estilos 
+                            where id_estilo in (select column_value from table(fun.vpipe(a.id_estilo)))
+                            and lower(css_estilo) like '%text-align%'; 
+
+                            if ws_class2 is not null then    
+                                ws_class2 := substr(ws_class2,instr(ws_class2,'text-align:',1,1), 100);
+                                ws_class2 := substr(ws_class2,1,instr(ws_class2,';',1,1));
+                                ws_class2 := 'style="display: block ruby; width: 100%; '||ws_class2||'"';
+                            end if; 
+                            htp.p('<span '||ws_class2||'><img class="'||ws_class||'" src="dwu.fcl.download?arquivo='||a.ds_titulo||'"></span>');
+                        elsif a.tp_conteudo like 'LINK' then  
+                            htp.p('<a class="'||ws_class||'" href="'||a.ds_titulo||'" target="_blank">');
+                        elsif a.tp_conteudo like 'PERGUNTA' then  
+                            htp.p('<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'" target="_blank">');
+                        else     
+                            if a.tp_conteudo like 'MARCADOR%' then 
+                                htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" class="cadcon-titulo '||a.tp_conteudo||'"><li>'||a.ds_titulo||'</li></div>');
+                            end if;     
+                            htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'">'||a.ds_texto||'</div>');
+                        end if;        
+                    htp.p('</div>');    
+                htp.p('</div>');     
+            end loop;    
+
+            htp.p('<style id="style-conteudo">');
+            for a in (select id_estilo, css_estilo from doc_estilos order by id_estilo ) loop
+                htp.p(' .'||a.id_estilo||' {'||a.css_estilo||'} ');
+            end loop;
+            htp.p('</style>');
+ 
 
         htp.p('</div>'); 
 

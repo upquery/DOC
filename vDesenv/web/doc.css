@@ -1760,20 +1760,90 @@ a.link-conteudo-arquivo:hover {
 }
 
 .cadastro-main {
-  display: block;
+  display: flex;
 }
 
 .cadastro-menu-esquerdo {
   display: block;
   width: 300px;
+  min-width: 300px;
 }
 
-.cadastro-conteudo {
+.cadastro-conteudo-fundo {
   display: block;
-  width: 300px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
 .cadastro-menu-direito {
   display: block;
   width: 300px;
+  min-width: 300px;
 }
+
+.cadastro-conteudo {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 30px ;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+}  
+
+.cadcon-ordem {
+  width: 50px;
+  height: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  background-color: red;
+}
+
+.cadcon-conteudo {
+  display: flex;
+  width: 100%;
+  border: 1px solid #ccc;
+}
+
+.cadcon-titulo {
+  width: auto;
+  height: auto;
+  margin-right: 5px;
+}
+.cadcon-texto {
+  width: auto;
+  height: auto;
+}
+
+
+div.MARCADOR1 li, div.MARCADOR2 li, div.MARCADOR3 li, div.MARCADOR4 li{
+  font-weight: bold;
+} 
+
+div.MARCADOR1 li {
+  list-style-type: disc;
+  margin-left: 40px;
+}
+
+div.MARCADOR2 li {
+  list-style-type: circle;
+  margin-left: 40px;
+}
+
+div.MARCADOR3 li {
+  list-style-type: square;
+  margin-left: 40px;
+}
+
+div.MARCADOR4 li {
+  list-style-type: square;
+  margin-left: 40px;
+}
+
+
+
