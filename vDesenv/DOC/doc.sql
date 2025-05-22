@@ -1123,13 +1123,13 @@ begin
             htp.p('<table style="width:100%; border-collapse: collapse;">');
                 htp.p('<thead>');
                     htp.p('<tr>');
-                        htp.p('<th>Cód.</th><th>Descrição</th><th>Ativo</th>');
+                        htp.p('<th>Cód.</th><th>Descrição</th><th>Categoria</th><th>Ativo</th>');
                     htp.p('</tr>');
                 htp.p('</thead>');
                 htp.p('<tbody>');
                 
                 -- Loop através das perguntas na tabela doc_perguntas
-                for a in (select cd_pergunta, pergunta, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
+                for a in (select cd_pergunta, pergunta, categoria, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
                     htp.p('<tr data-pergunta="'||a.cd_pergunta||'" class="lista-topico-item">');
                         htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
                             htp.p('<span>'||a.cd_pergunta||'</span>');
@@ -1138,6 +1138,11 @@ begin
                         htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
                             htp.p('<span>'||a.pergunta||'</span>');
                         htp.p('</td>');
+
+                        htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
+                            htp.p('<span>'||a.categoria||'</span>');
+                        htp.p('</td>');
+
 
                         htp.p('<td style="text-align: center;">');
                             ws_checked := '';
@@ -1304,6 +1309,11 @@ begin
         htp.p('</div>'); 
     htp.p('</div>'); 
 
+    htp.p('<div class="cadastro-conteudo-botoes">');
+        htp.p('<a onclick="cadastro_conteudo_inserir();" title="Cria um novo conteúdo do tópico atual." class="cadastro-conteudo-botao">NOVO</a>'); 
+        htp.p('<a onclick="cadastro_conteudo_refresh();" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">REFRESH</a>'); 
+        htp.p('<a onclick="cadastro_conteudo_excluir();" title="Excluí o conteúdo selecionado." class="cadastro-conteudo-botao">EXCLUIR</a>'); 
+    htp.p('</div>');
 
 exception
   when ws_raise_erro then
