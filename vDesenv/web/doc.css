@@ -1,3 +1,10 @@
+*:root {
+  --cad-fundo-titulo:  #191147;
+  --cad-cabecalho:     #817f95;
+  --cad-botao:         #817f95;
+  --cad-botao-move:    #817f95;
+}
+
 html, body, div, span { margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline; border-spacing: 0; }
 object, iframe, h1, h2, h3 { margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline; border-spacing: 0; }
 h4, h5, h6, p { margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline; border-spacing: 0; }
@@ -1888,7 +1895,7 @@ ul#feed-fixo li span.show {
 
 .cadastro-lista-titulo, .cadastro-conteudo-titulo { 
   border-radius: 8px;
-  background-color: #1E1655;
+  background-color: var(--cad-fundo-titulo);
   color: white;
   padding: 8px;
   text-align: left;
@@ -1896,7 +1903,7 @@ ul#feed-fixo li span.show {
 }  
 
 .cadastro-lista-topico th {
-  background-color:#817f95;
+  background-color: var(--cad-cabecalho);
   color: white;
   padding: 8px;
   text-align: left; 
@@ -1950,6 +1957,25 @@ ul#feed-fixo li span.show {
   padding: 10px;
 }
 
+.cadastro-conteudo-botoes {
+  display: flex ;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cadastro-conteudo-botao {
+  flex: auto;
+  background-color: var(--cad-botao);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 18px;
+  color: white;
+  text-align: center;
+  margin: 4px 0;
+  transition: background-color .1s linear;
+  cursor: pointer;
+}
+
 .cadcon-ordem {
   display: block;
   width: 35px;
@@ -1957,7 +1983,7 @@ ul#feed-fixo li span.show {
   margin-right: 5px;
   align-content: center;
   justify-content: center;
-  background-color: #817f95;
+  background-color: var(--cad-botao-move);
   color: white;
   border-radius: 8px; /* Bordas arredondadas */
   cursor: pointer;
