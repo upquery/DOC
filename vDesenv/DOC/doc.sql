@@ -50,6 +50,16 @@ BEGIN
 
         htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
 
+            htp.p('<ul id="feed-fixo"></ul>');
+            htp.p('<ul style="display: none;" id="alerta-template">');
+                htp.p('<li>');
+                    htp.p('<span></span>');
+                    htp.p('<a onclick="var template = this.parentNode; template.classList.add(''clicked''); setTimeout(function(){ template.parentNode.removeChild(template); }, 300);">'||fun.lang('FECHAR')||'</a>');
+                    htp.p('<span style="display: none;" onclick="this.nextElementSibling.classList.toggle(''show'');">mais detalhes</span>');
+                    htp.p('<span></span>');
+                htp.p('</li>');
+            htp.p('</ul>');
+
             htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
                 for a in (select variavel, conteudo from doc_variaveis) loop
                     htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
@@ -1067,6 +1077,7 @@ procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
     ws_class2       varchar2(4000); 
     ws_class_tot    varchar2(4000); 
     ws_url_doc      varchar2(300);
+
     
     ws_raise_fim    exception;
 begin
@@ -1109,7 +1120,7 @@ begin
                     ws_class_tot := ws_class_tot||'|'||a.id_estilo||'|';
                 end if; 
 
-                htp.p('<div class="cadastro-conteudo">');
+                htp.p('<div class="cadastro-conteudo" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
                     htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem"></div>');
                     htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo" data-tp_conteudo="'||a.tp_conteudo||'">');
                         if a.tp_conteudo = 'LINHA' then 
@@ -1134,9 +1145,13 @@ begin
                             htp.p('<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'" target="_blank">');
                         else     
                             if a.tp_conteudo like 'MARCADOR%' then 
-                                htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" class="cadcon-titulo '||a.tp_conteudo||'"><li>'||a.ds_titulo||'</li></div>');
+                                htp.p('<div class="cadcon-titulo '||a.tp_conteudo||'"><li></li>');
+                                htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_titulo||'</div>');                                
+                                htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" contenteditable="true" onblur="atualiza_conteudo(this,'''||a.id_conteudo||''',''DS_TITULO'');">'||a.ds_titulo||'</div>');
+                                htp.p('</div>');
                             end if;     
-                            htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'">'||a.ds_texto||'</div>');
+                            htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</div>');
+                            htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" contenteditable="true" class="cadcon-texto '||ws_class||'" onblur="atualiza_conteudo(this,'''||a.id_conteudo||''',''DS_TEXTO'');">'||a.ds_texto||'</div>');
                         end if;        
                     htp.p('</div>');    
                 htp.p('</div>');     
@@ -1151,7 +1166,7 @@ begin
 
         htp.p('</div>'); 
 
-        htp.p('<div class="cadastro-menu-direito"></div>');
+        htp.p('<div id="cadastro-menu-direito" class="cadastro-menu-direito"></div>');
 
     htp.p('</div>');
 
@@ -1160,6 +1175,106 @@ exception
         null;
 end doc_cad_conteudo;
 
+-----------------------------------------------------------------------------------------------------------------
+procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2)as 
+    cursor c1 is 
+      select * from doc_conteudos 
+      where id_conteudo = prm_id_conteudo;
+    
+    ws_cont       c1%rowtype;  
+    ws_checked    varchar2(20);
+    ws_erro       varchar2(300);
+    ws_raise_erro exception;
+begin
+    open  c1;
+    fetch c1 into ws_cont;
+    close c1;
+    if ws_cont.id_conteudo is null then 
+        raise ws_raise_erro;
+        ws_erro := 'Conteúdo não localizado.';
+    end if; 
+    htp.p('<div class="cadcon-cadastro">'); 
+
+        htp.p('<div class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="tp_conteudo">TIPO:</label>'); 
+            htp.p('<select id="tp_conteudo" name="tp_conteudo" data-old="'||ws_cont.tp_conteudo||'">'); 
+            for a in (  select 'PARAGRAFO' cd, 'Paragrafo' ds from dual union all 
+                        select 'PARAGRAFO', 'PARAGRAFO' from dual union all 
+                        select 'LINHA'    , 'LINHA'     from dual union all 
+                        select 'IMAGEM'   , 'IMAGEM'    from dual union all 
+                        select 'MARCADOR1', 'MARCADOR1' from dual union all  
+                        select 'MARCADOR2', 'MARCADOR2' from dual union all  
+                        select 'MARCADOR3', 'MARCADOR3' from dual union all  
+                        select 'MARCADOR4', 'MARCADOR4' from dual union all  
+                        select 'PDF'      , 'PDF'       from dual union all 
+                        select 'GIF'      , 'GIF'       from dual
+                    ) loop
+                    if a.cd = ws_cont.tp_conteudo then 
+                        htp.p('<option value="'||a.cd||'" selected>'||a.ds||'</option>');
+                    else
+                        htp.p('<option value="'||a.cd||'" >'||a.ds||'</option>');
+                    end if;    
+            end loop;   
+        htp.p('</div>'); 
+
+        htp.p('<div class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="id_estilo">ESTILOS/label>'); 
+            htp.p('<select id="id_estilo" name="id_estilo" data-old="'||ws_cont.id_estilo||'">'); 
+            for a in (  select id_estilo as cd from doc_estilos order by id_estilo) loop
+                    if instr(ws_cont.id_estilo||'|', a.cd||'|') > 0 then 
+                        htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
+                    else
+                        htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
+                    end if;    
+            end loop;  
+        htp.p('</div>'); 
+
+        htp.p('<div class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
+            htp.p('<input type="number" id="nr_linhas_antes" name="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
+        htp.p('</div>'); 
+
+        htp.p('<div class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="id_ativo">id_ativo:</label>');
+            htp.p('<input type="checkbox" id="id_ativo" name="id_ativo" value="S">');
+            ws_checked := '';
+            if ws_cont.id_ativo = 'S' then 
+                ws_checked := 'checked';
+            end if;    
+            htp.p('<input type="checkbox"  '||ws_checked||' value="'||ws_cont.id_ativo||'"  data-ant="'||ws_cont.id_ativo||'"/>');
+        htp.p('</div>'); 
+    htp.p('</div>'); 
+
+
+exception
+  when ws_raise_erro then
+    htp.p(ws_erro);
+
+
+end conteudo_tela_cadastro; 
+
+procedure conteudo_atualiza (prm_id_conteudo    varchar2, 
+                             prm_coluna         varchar2,
+                             prm_conteudo       varchar2 default null) as
+begin 
+    update doc_conteudos
+       set  sq_conteudo     = decode(upper(prm_coluna),'SQ_CONTEUDO'    , prm_conteudo, sq_conteudo     ),
+            tp_conteudo     = decode(upper(prm_coluna),'TP_CONTEUDO'    , prm_conteudo, tp_conteudo     ),
+            id_estilo       = decode(upper(prm_coluna),'ID_ESTILO'      , prm_conteudo, id_estilo       ),
+            nr_linhas_antes = decode(upper(prm_coluna),'NR_LINHAS_ANTES', prm_conteudo, nr_linhas_antes ),
+            ds_titulo       = decode(upper(prm_coluna),'DS_TITULO'      , prm_conteudo, ds_titulo       ),
+            ds_texto        = decode(upper(prm_coluna),'DS_TEXTO'       , prm_conteudo, ds_texto        ),
+            id_ativo        = decode(upper(prm_coluna),'ID_ATIVO'       , prm_conteudo, id_ativo        )
+    where id_conteudo = prm_id_conteudo;
+    if sql%notfound then 
+        htp.p('ERRO|Conteúdo não localizado para atualização.');
+    else 
+        htp.p('OK|Conteúdo atualizado.');
+    end if;             
+exception 
+    when others then 
+        htp.p('ERRO|Erro atualizando conteúdo.');
+end conteudo_atualiza;
 
 
 END DOC;

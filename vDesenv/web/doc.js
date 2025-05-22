@@ -377,9 +377,9 @@ function call(req, par, tipo){
         var request = new XMLHttpRequest();
 
         if(tipo == 'POST'){
-            request.open(tipo, OWNER_BI + '.'+pkg+'.'+req, true);
+            request.open(tipo, owner + '.'+pkg+'.'+req, true);
         } else {
-            request.open(tipo, OWNER_BI + '.'+pkg+'.'+req+'?'+par, true);
+            request.open(tipo, owner + '.'+pkg+'.'+req+'?'+par, true);
         }  
 
         if(tipo == 'POST'){
@@ -397,5 +397,76 @@ function call(req, par, tipo){
             }
         }
     });
-
 }
+
+function alerta(tipo, msg){
+  tipo = tipo || 'feed-fixo';  
+  if(msg){
+    var template;
+    if(tipo == "alert"){ 
+        alert(msg); 
+    } else {
+
+      template = document.getElementById("alerta-template").children[0].cloneNode(true);
+      template.innerHTML = msg;
+      if (tipo.toUpperCase() == 'ERRO') { 
+        template.classList.add("erro"); 
+      }
+
+      document.getElementById("feed-fixo").appendChild(template);
+
+      setTimeout(function(){ template.classList.add("show"); }, 100);
+      setTimeout(function(){ if(template){ template.classList.remove("show"); } }, 4700);
+      setTimeout(function(){ if(template){ template.remove(); } }, 5000);
+      
+
+
+      //li.classList.add("show"); 
+
+      //setTimeout(function(){ 
+      //  template.classList.add("show"); 
+      //}, 200);
+    }
+  }
+}
+  
+function conteudo_atualiza(ele, id_conteudo, coluna){
+    
+    let conteudo_ant = '',
+        tipo_ant    = '';
+    if (document.getElementById(ele.id+'-anterior')) {
+        conteudo_ant = ele_ant.innerHTML;
+        tipo_ant     = 'elemento';
+    } else {
+        if (ele.getAttribute('data-ant')) {
+            conteudo_ant = ele.getAttribute('data-ant');
+            tipo_ant     = 'atributo';
+        }
+    }
+
+    if (ele.innerHTML != conteudo_ant) {
+        call('conteudo_atualiza', 'prm_id_conteudo='+id_conteudo+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(ele.innerHTML)).then(function(resposta){ 
+            alerta('',resposta.split('|')[1]); 
+            if(resposta.split('|')[0] == 'OK'){ 
+                if (tipo_ant == 'elemento') {
+                    document.getElementById(ele.id+'-anterior').innerHTML = ele.innerHTML;
+                } else if (tipo_ant == 'atributo') {
+                    ele.setAttribute('data-ant') = ele.innerHTML;
+                }
+            };    
+        });    
+    }    
+}    
+
+function conteudo_tela_cadastro(ele, id_conteudo){
+    
+    call('conteudo_tela_cadastro', 'prm_id_conteudo='+id_conteudo).then(function(resposta){ 
+        if(resposta.split('|')[0] == 'ERRO|'){ 
+            alerta('',resposta.split('|')[1]); 
+        } else {
+            document.getElementById('cadastro-menu-direito').innerHTML = resposta; 
+        }    
+    });    
+
+}    
+
