@@ -429,31 +429,75 @@ function alerta(tipo, msg){
     }
   }
 }
-  
-function conteudo_atualiza(ele, id_conteudo, coluna){
+
+function topico_atualiza(ele, pergunta, coluna){
     
     let conteudo_ant = '',
-        tipo_ant    = '';
+        conteudo     = '';
+
+    if (ele.tagName === 'INPUT' && ele.type === 'checkbox') {
+        conteudo     = ele.checked ? 'S' : 'N';
+    } else {
+        conteudo = ele.innerHTML;    
+        if (ele.getAttribute('data-old')) {
+            conteudo_ant = ele.getAttribute('data-old');
+        }   
+    }    
+
+    if (conteudo != conteudo_ant) {
+        call('topico_atualiza', 'prm_pergunta='+pergunta+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(conteudo)).then(function(resposta){ 
+            alerta('',resposta.split('|')[1]); 
+        });    
+    }    
+}    
+
+
+function conteudo_atualiza(ele, id_conteudo, coluna){
+    
+    if (!coluna) {
+        coluna = ele.id.toUpperCase();
+    }    
+
+    let conteudo = '';
+    if (ele.tagName === 'SELECT') {
+        conteudo = Array.from(ele.options)
+        .filter(option => option.selected)
+        .map(option => option.text) // Usando text em vez de value
+        .join('|');
+    } else {
+        conteudo = ele.innerHTML;    
+    }
+
+    console.log('a1',conteudo);
+
+    let conteudo_ant = '',
+        tipo_ant     = '';
     if (document.getElementById(ele.id+'-anterior')) {
         conteudo_ant = ele_ant.innerHTML;
         tipo_ant     = 'elemento';
     } else {
-        if (ele.getAttribute('data-ant')) {
-            conteudo_ant = ele.getAttribute('data-ant');
-            tipo_ant     = 'atributo';
+        if (ele.getAttribute('data-old')) {
+            if (ele.tagName === 'INPUT' && ele.type === 'checkbox') {
+                conteudo     = ele.checked ? 'S' : 'N';
+            } else if (ele.tagName === 'INPUT' && ( ele.type === 'number' || ele.type === 'text')) {
+                conteudo = ele.value;
+            } else {   
+                conteudo_ant = ele.getAttribute('data-old');
+                tipo_ant     = 'atributo';
+            }    
         }
     }
 
-    if (ele.innerHTML != conteudo_ant) {
-        call('conteudo_atualiza', 'prm_id_conteudo='+id_conteudo+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(ele.innerHTML)).then(function(resposta){ 
+    if (conteudo != conteudo_ant) {
+        call('conteudo_atualiza', 'prm_id_conteudo='+id_conteudo+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(conteudo)).then(function(resposta){ 
             alerta('',resposta.split('|')[1]); 
             if(resposta.split('|')[0] == 'OK'){ 
                 if (tipo_ant == 'elemento') {
-                    document.getElementById(ele.id+'-anterior').innerHTML = ele.innerHTML;
+                    document.getElementById(ele.id+'-anterior').innerHTML = conteudo;
                 } else if (tipo_ant == 'atributo') {
-                    ele.setAttribute('data-ant') = ele.innerHTML;
+                    ele.setAttribute('data-old') = conteudo;
                 }
-            };    
+            }    
         });    
     }    
 }    
@@ -464,9 +508,23 @@ function conteudo_tela_cadastro(ele, id_conteudo){
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
         } else {
-            document.getElementById('cadastro-menu-direito').innerHTML = resposta; 
+            document.getElementById('cadastro-conteudo-altera').innerHTML = resposta; 
         }    
     });    
 
+}    
+
+function conteudo_tela_conteudos(ele, cd_pergunta){
+  
+    console.log('x1');
+    console.log(ele); 
+
+    call('conteudo_tela_conteudos', 'prm_pergunta='+cd_pergunta).then(function(resposta){ 
+        if(resposta.split('|')[0] == 'ERRO|'){ 
+            alerta('',resposta.split('|')[1]); 
+        } else {
+            document.getElementById('cadastro-conteudo-detalhe').innerHTML = resposta; 
+        }    
+    });    
 }    
 

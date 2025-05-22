@@ -1856,49 +1856,132 @@ ul#feed-fixo li span.show {
   overflow: auto;
 }
 
+.main.cadastro {
+  height: calc(100% - 40px);
+  margin-top: 5px;
+}
+
 .cadastro-main {
   display: flex;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15;
+  height: 100%;
 }
 
 .cadastro-menu-esquerdo {
   display: block;
-  width: 300px;
+  width: 500px;
   min-width: 300px;
+  height: 100%;
 }
 
-.cadastro-conteudo-fundo {
+.cadastro-lista-topico {
+  height: 40%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: 5px;
+}
+
+.cadastro-lista-titulo, .cadastro-conteudo-titulo { 
+  border-radius: 8px;
+  background-color: #1E1655;
+  color: white;
+  padding: 8px;
+  text-align: left;
+  margin-bottom: 5px;
+}  
+
+.cadastro-lista-topico th {
+  background-color:#817f95;
+  color: white;
+  padding: 8px;
+  text-align: left; 
+}
+
+.cadastro-lista-topico td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}  
+
+.lista-topico-item td:has(span) {
+  cursor:pointer;
+}  
+
+
+
+.cadastro-conteudo-altera {
+  display: block;
+  height: 60%x;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin: 5px;
+}
+
+.cadastro-conteudo {
+  display: block;
+  width: calc(100% - 550px);
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.cadastro-conteudo-detalhe {
   display: block;
   width: 100%;
+  height: 100%;
+  overflow-x: scroll;
+}
+
+.cadastro-conteudo-item {
+  display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 10px;
 }
 
-.cadastro-menu-direito {
+.cadcon-ordem {
   display: block;
-  width: 300px;
-  min-width: 300px;
+  width: 35px;
+  height: 35px;
+  margin-right: 5px;
+  align-content: center;
+  justify-content: center;
+  background-color: #817f95;
+  color: white;
+  border-radius: 8px; /* Bordas arredondadas */
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  /* border: 2px solid #817f95;*/ 
+  user-select: none;
+  border: 2px solid transparent;
 }
 
-.cadastro-conteudo {
-  display: flex;
-  width: 100%;
-  height: auto;
-  min-height: 30px ;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 5px;
-}  
+.cadcon-ordem svg {
+  width: 35px;
+  height: 25px;
+  fill: white;
+}
 
-.cadcon-ordem {
-  width: 50px;
-  height: 30px;
-  margin-left: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  background-color: red;
+.cadcon-ordem:hover {
+  border-color: #1765cc;
+}
+
+.cadcon-ordem.selecionado {
+  border: 2px solid #0d47a1;
+  box-shadow: 0 0 0 2px #bbdefb; /* Efeito de foco */
+  transform: scale(0.98);
 }
 
 .cadcon-conteudo {
@@ -1923,38 +2006,15 @@ ul#feed-fixo li span.show {
   white-space: pre-wrap;  
 }
 
-/* 
-.cadcon-texto textarea{
-  resize: none;
-  overflow: hidden;
-  width: 100%;
-}
-*/ 
-
 
 div.MARCADOR1 li, div.MARCADOR2 li, div.MARCADOR3 li, div.MARCADOR4 li{
   font-weight: bold;
 } 
 
-div.MARCADOR1 li {
-  list-style-type: disc;
-  margin-left: 40px;
-}
-
-div.MARCADOR2 li {
-  list-style-type: circle;
-  margin-left: 40px;
-}
-
-div.MARCADOR3 li {
-  list-style-type: square;
-  margin-left: 40px;
-}
-
-div.MARCADOR4 li {
-  list-style-type: square;
-  margin-left: 40px;
-}
+div.MARCADOR1 li { list-style-type: disc;   margin-left: 40px;}
+div.MARCADOR2 li { list-style-type: circle; margin-left: 80px;}
+div.MARCADOR3 li { list-style-type: square; margin-left: 120px;}
+div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 
 .cadcon-cadastro {
   max-width: 500px;

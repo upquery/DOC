@@ -80,11 +80,21 @@ procedure limpar_formatacao ( prm_texto     in out clob ) ;
 
 procedure doc_cad_conteudo (prm_valor 	varchar2 default null);
 
+procedure topico_atualiza (prm_pergunta       varchar2, 
+                           prm_coluna         varchar2,
+                           prm_conteudo       varchar2 default null);
+
 procedure conteudo_atualiza (prm_id_conteudo    varchar2, 
                              prm_coluna         varchar2,
                              prm_conteudo       varchar2 default null);
 
 procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2);
+
+procedure conteudo_tela_topicos;
+
+procedure conteudo_tela_conteudos (prm_pergunta    varchar2,
+                                   prm_id_conteudo varchar2 default null) ;
+
 
 END DOC;
 /
