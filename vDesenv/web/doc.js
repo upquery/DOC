@@ -468,8 +468,6 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
         conteudo = ele.innerHTML;    
     }
 
-    console.log('a1',conteudo);
-
     var conteudo_ant = '',
         tipo_ant     = '';
     if (document.getElementById(ele.id+'-anterior')) {
@@ -520,7 +518,7 @@ function conteudo_tela_cadastro(ele, id_conteudo){
 
 }    
 
-function conteudo_tela_conteudos(ele, cd_pergunta){
+function conteudo_tela_conteudos(cd_pergunta){
   
     call('conteudo_tela_conteudos', 'prm_pergunta='+cd_pergunta).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
@@ -552,7 +550,7 @@ function cadastro_conteudo_inserir(pergunta, id_conteudo) {
         
         if (resultado[0] == 'OK') {
             // Refresh the content area to show the new item
-            conteudo_tela_conteudos(null, pergunta);
+            conteudo_tela_conteudos(pergunta);
             alerta('', resultado[1]);
             
             // Select the new content for editing
@@ -566,6 +564,46 @@ function cadastro_conteudo_inserir(pergunta, id_conteudo) {
             }, 500);
         } else {
             alerta('', resultado[1]);
+        }
+    });
+}    
+
+
+function cadastro_conteudo_salvar(id_conteudo) {
+    // Get the form container
+    let form = document.querySelector('.cadcon-cadastro');
+    if (!form) {
+        alerta('', 'Formulário não encontrado.');
+        return;
+    }
+
+    let dados = {
+        tp_conteudo: form.querySelector('#tp_conteudo')?.value || '',
+        id_estilo: Array.from(form.querySelector('#id_estilo')?.selectedOptions || [])
+                        .map(opt => opt.value)
+                        .filter(val => val)
+                        .join('|') || null,
+        nr_linhas_antes: form.querySelector('#nr_linhas_antes')?.value || '0',
+        id_ativo: form.querySelector('#id_ativo')?.checked ? 'S' : 'N'
+    };
+
+    call('cadastro_conteudo_salvar', 
+            'prm_id_conteudo=' + id_conteudo + 
+            '&prm_tp_conteudo=' + encodeURIComponent(dados.tp_conteudo) +
+            '&prm_id_estilo=' + encodeURIComponent(dados.id_estilo || '') +
+            '&prm_nr_linhas_antes=' + dados.nr_linhas_antes +
+            '&prm_id_ativo=' + dados.id_ativo
+    ).then(function(resposta) {
+        alerta('', resposta.split('|')[1]);
+        if (resposta.split('|')[0] == 'OK') {
+            // Refresh a tela de conteudos 
+            let cd_pergunta = document.getElementById('cadastro-conteudo-id').getAttribute('data-pergunta');
+            if (cd_pergunta) {
+                conteudo_tela_conteudos(cd_pergunta);
+                setTimeout(function() {
+                    document.getElementById('conteudo-item-' + id_conteudo).classList.add('selecionado');
+                }, 500);
+            }
         }
     });
 }

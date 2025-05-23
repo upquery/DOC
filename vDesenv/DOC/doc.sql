@@ -1131,15 +1131,15 @@ begin
                 -- Loop através das perguntas na tabela doc_perguntas
                 for a in (select cd_pergunta, pergunta, categoria, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
                     htp.p('<tr data-pergunta="'||a.cd_pergunta||'" class="lista-topico-item">');
-                        htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
                             htp.p('<span>'||a.cd_pergunta||'</span>');
                         htp.p('</td>');
 
-                        htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
                             htp.p('<span>'||a.pergunta||'</span>');
                         htp.p('</td>');
 
-                        htp.p('<td onclick="conteudo_tela_conteudos(this, '''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
                             htp.p('<span>'||a.categoria||'</span>');
                         htp.p('</td>');
 
@@ -1186,7 +1186,7 @@ begin
             ws_class     := replace(a.id_estilo,'|',' ')||'"';
         end if; 
 
-        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
+        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" data-id_conteudo="'||a.id_conteudo||'" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
             
             htp.p('<div id="cadcon-botoes-'||a.id_conteudo||'" class="cadcon-botoes">');
                 htp.p('<a id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-conteudo-botao" onclick="this.classList.toggle(''selecionado'');">');
@@ -1266,7 +1266,7 @@ begin
 
         htp.p('<div class="cadcon-cadastro-linha">'); 
             htp.p('<label for="tp_conteudo">TIPO:</label>'); 
-            htp.p('<select id="tp_conteudo" name="tp_conteudo" data-old="'||ws_cont.tp_conteudo||'" onchange='||ws_script_atu||'>'); 
+            htp.p('<select id="tp_conteudo" name="tp_conteudo">'); 
             for a in (  select 'PARAGRAFO' cd, 'Paragrafo' ds from dual union all 
                         select 'PARAGRAFO', 'PARAGRAFO' from dual union all 
                         select 'LINHA'    , 'LINHA'     from dual union all 
@@ -1289,7 +1289,7 @@ begin
 
         htp.p('<div class="cadcon-cadastro-linha">'); 
             htp.p('<label for="id_estilo">ESTILOS:</label>'); 
-            htp.p('<select multiple id="id_estilo" name="id_estilo" data-old="'||ws_cont.id_estilo||'" onchange='||ws_script_atu||'>'); 
+            htp.p('<select multiple id="id_estilo">'); 
             for a in (  select 2 ordem, id_estilo as cd from doc_estilos union all 
                         select 1 ordem, null      as cd from dual 
                         order by ordem, cd ) loop
@@ -1304,7 +1304,7 @@ begin
 
         htp.p('<div class="cadcon-cadastro-linha">'); 
             htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
-            htp.p('<input type="number" id="nr_linhas_antes" data-old="'||ws_cont.nr_linhas_antes||'" value="'||ws_cont.nr_linhas_antes||'" onblur='||ws_script_atu||'>'); 
+            htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
         htp.p('</div>'); 
 
         htp.p('<div class="cadcon-cadastro-linha">'); 
@@ -1313,12 +1313,12 @@ begin
             if ws_cont.id_ativo = 'S' then 
                 ws_checked := 'checked';
             end if;    
-            htp.p('<input type="checkbox" id="id_ativo" data-old="'||ws_cont.id_ativo||'" '||ws_checked||' value="'||ws_cont.id_ativo||'"  data-old="'||ws_cont.id_ativo||'" onchange='||ws_script_atu||'/>');
+            htp.p('<input type="checkbox" id="id_ativo" '||ws_checked||' value="'||ws_cont.id_ativo||'"/>');
         htp.p('</div>'); 
     htp.p('</div>'); 
 
     htp.p('<div class="cadastro-conteudo-botoes">');
-        htp.p('<a onclick="cadastro_conteudo_salvar();" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">REFRESH</a>'); 
+        htp.p('<a onclick="cadastro_conteudo_salvar('''||prm_id_conteudo||''');" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">SALVAR</a>'); 
     htp.p('</div>');
 
 exception
@@ -1455,6 +1455,34 @@ exception
         commit;
         htp.p('ERRO|Erro ao criar conteúdo.');
 end cadastro_conteudo_inserir;
+
+---------------------------------------------------------------------------------------------------------------------
+procedure cadastro_conteudo_salvar (prm_id_conteudo     varchar2,
+                                    prm_tp_conteudo     varchar2,
+                                    prm_id_estilo       varchar2,
+                                    prm_nr_linhas_antes varchar2,
+                                    prm_id_ativo        varchar2) as
+begin
+    update doc_conteudos
+       set tp_conteudo     = prm_tp_conteudo,
+           id_estilo       = prm_id_estilo,
+           nr_linhas_antes = prm_nr_linhas_antes,
+           id_ativo        = prm_id_ativo
+     where id_conteudo = prm_id_conteudo;
+     
+    if sql%notfound then 
+        htp.p('ERRO|Conteúdo não localizado para atualização.');
+    else 
+        commit;
+        htp.p('OK|Conteúdo atualizado com sucesso.');
+    end if;
+exception
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'cadastro_conteudo_salvar: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro ao salvar conteúdo.');
+end cadastro_conteudo_salvar;
 
 
 END DOC;

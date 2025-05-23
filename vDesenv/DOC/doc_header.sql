@@ -100,5 +100,11 @@ procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2);
 procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
 								     prm_id_conteudo varchar2);
 
+procedure cadastro_conteudo_salvar (prm_id_conteudo     varchar2,
+                                    prm_tp_conteudo     varchar2,
+                                    prm_id_estilo       varchar2,
+                                    prm_nr_linhas_antes varchar2,
+                                    prm_id_ativo        varchar2);
+
 END DOC;
 /
