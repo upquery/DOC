@@ -470,10 +470,10 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
 
     console.log('a1',conteudo);
 
-    let conteudo_ant = '',
+    var conteudo_ant = '',
         tipo_ant     = '';
     if (document.getElementById(ele.id+'-anterior')) {
-        conteudo_ant = ele_ant.innerHTML;
+        conteudo_ant = document.getElementById(ele.id+'-anterior').innerHTML;
         tipo_ant     = 'elemento';
     } else {
         if (ele.getAttribute('data-old')) {
@@ -509,6 +509,12 @@ function conteudo_tela_cadastro(ele, id_conteudo){
             alerta('',resposta.split('|')[1]); 
         } else {
             document.getElementById('cadastro-conteudo-altera').innerHTML = resposta; 
+
+            let selecionados  = document.getElementById('cadastro-conteudo-detalhe').querySelectorAll('.cadastro-conteudo-item.selecionado');
+            for (let a=0;a<selecionados.length;a++){
+                selecionados[a].classList.remove('selecionado');
+            }
+            ele.classList.add('selecionado');
         }    
     });    
 
@@ -516,9 +522,6 @@ function conteudo_tela_cadastro(ele, id_conteudo){
 
 function conteudo_tela_conteudos(ele, cd_pergunta){
   
-    console.log('x1');
-    console.log(ele); 
-
     call('conteudo_tela_conteudos', 'prm_pergunta='+cd_pergunta).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
@@ -528,3 +531,41 @@ function conteudo_tela_conteudos(ele, cd_pergunta){
     });    
 }    
 
+function cadastro_conteudo_excluir(id_conteudo) {
+
+    if (confirm('Confirma a exclusão do conteúdo selecionando?')) {
+        call('cadastro_conteudo_excluir', 'prm_id_conteudo=' + id_conteudo).then(function(resposta) { 
+            alerta('', resposta.split('|')[1]); 
+            if(resposta.split('|')[0] == 'OK') { 
+                document.getElementById('conteudo-item-' + id_conteudo).remove();
+                document.getElementById('cadastro-conteudo-altera').innerHTML = '';
+            }
+        });    
+    }
+}
+
+function cadastro_conteudo_inserir(pergunta, id_conteudo) {
+    
+    // Call the server to insert a new content record
+    call('cadastro_conteudo_inserir', 'prm_pergunta=' + pergunta+'&prm_id_conteudo='+id_conteudo).then(function(resposta) {
+        let resultado = resposta.split('|');
+        
+        if (resultado[0] == 'OK') {
+            // Refresh the content area to show the new item
+            conteudo_tela_conteudos(null, pergunta);
+            alerta('', resultado[1]);
+            
+            // Select the new content for editing
+            let id_conteudo = resultado[2];
+            setTimeout(function() {
+                //let novoConteudo = document.querySelector('#cadcon-conteudo-' + id_conteudo)?.closest('.cadastro-conteudo-item');
+                let novoConteudo = document.querySelector('#cadcon-conteudo-' + id_conteudo);
+                if (novoConteudo) {
+                    conteudo_tela_cadastro(novoConteudo, id_conteudo);
+                }
+            }, 500);
+        } else {
+            alerta('', resultado[1]);
+        }
+    });
+}

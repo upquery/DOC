@@ -95,6 +95,10 @@ procedure conteudo_tela_topicos;
 procedure conteudo_tela_conteudos (prm_pergunta    varchar2,
                                    prm_id_conteudo varchar2 default null) ;
 
+procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2);
+
+procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
+								     prm_id_conteudo varchar2);
 
 END DOC;
 /

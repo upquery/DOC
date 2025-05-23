@@ -1173,6 +1173,8 @@ begin
 
     select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
 
+    htp.p('<input type="hidden" id="cadastro-conteudo-id" data-pergunta="'||prm_pergunta||'"/>');
+
     for a in (select * from doc_conteudos 
               where cd_pergunta = prm_pergunta 
                 and id_conteudo = nvl(prm_id_conteudo,id_conteudo)
@@ -1184,10 +1186,16 @@ begin
             ws_class     := replace(a.id_estilo,'|',' ')||'"';
         end if; 
 
-        htp.p('<div class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
-            htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem" onclick="this.classList.toggle(''selecionado'');">');
-                htp.p('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490" xml:space="preserve"><g><g><path d="M487.557,237.789l-64-64c-3.051-3.051-7.659-3.947-11.627-2.304c-3.989,1.643-6.592,5.547-6.592,9.856v32h-128v-128h32 c4.309,0,8.213-2.603,9.856-6.592c1.643-3.989,0.725-8.576-2.304-11.627l-64-64c-4.16-4.16-10.923-4.16-15.083,0l-64,64 c-3.051,3.072-3.968,7.637-2.325,11.627c1.643,3.989,5.547,6.592,9.856,6.592h32v128h-128v-32c0-4.309-2.603-8.213-6.592-9.856 c-3.925-1.664-8.555-0.747-11.627,2.304l-64,64c-4.16,4.16-4.16,10.923,0,15.083l64,64c3.072,3.072,7.68,4.011,11.627,2.304 c3.989-1.621,6.592-5.525,6.592-9.835v-32h128v128h-32c-4.309,0-8.213,2.603-9.856,6.592c-1.643,3.989-0.725,8.576,2.304,11.627 l64,64c2.091,2.069,4.821,3.115,7.552,3.115s5.461-1.045,7.552-3.115l64-64c3.051-3.051,3.968-7.637,2.304-11.627 c-1.664-3.989-5.547-6.592-9.856-6.592h-32v-128h128v32c0,4.309,2.603,8.213,6.592,9.856c3.947,1.685,8.576,0.747,11.627-2.304 l64-64C491.717,248.712,491.717,241.971,487.557,237.789z"></path></g></g></svg>');
+        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
+            
+            htp.p('<div id="cadcon-botoes-'||a.id_conteudo||'" class="cadcon-botoes">');
+                htp.p('<a id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-conteudo-botao" onclick="this.classList.toggle(''selecionado'');">');
+                    htp.p('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490" xml:space="preserve"><g><g><path d="M487.557,237.789l-64-64c-3.051-3.051-7.659-3.947-11.627-2.304c-3.989,1.643-6.592,5.547-6.592,9.856v32h-128v-128h32 c4.309,0,8.213-2.603,9.856-6.592c1.643-3.989,0.725-8.576-2.304-11.627l-64-64c-4.16-4.16-10.923-4.16-15.083,0l-64,64 c-3.051,3.072-3.968,7.637-2.325,11.627c1.643,3.989,5.547,6.592,9.856,6.592h32v128h-128v-32c0-4.309-2.603-8.213-6.592-9.856 c-3.925-1.664-8.555-0.747-11.627,2.304l-64,64c-4.16,4.16-4.16,10.923,0,15.083l64,64c3.072,3.072,7.68,4.011,11.627,2.304 c3.989-1.621,6.592-5.525,6.592-9.835v-32h128v128h-32c-4.309,0-8.213,2.603-9.856,6.592c-1.643,3.989-0.725,8.576,2.304,11.627 l64,64c2.091,2.069,4.821,3.115,7.552,3.115s5.461-1.045,7.552-3.115l64-64c3.051-3.051,3.968-7.637,2.304-11.627 c-1.664-3.989-5.547-6.592-9.856-6.592h-32v-128h128v32c0,4.309,2.603,8.213,6.592,9.856c3.947,1.685,8.576,0.747,11.627-2.304 l64-64C491.717,248.712,491.717,241.971,487.557,237.789z"></path></g></g></svg>');
+                htp.p('</a>');
+                htp.p('<a id="cadcon-inserir-'||a.id_conteudo||'" class="cadcon-conteudo-botao inserir" onclick="cadastro_conteudo_inserir('''||prm_pergunta||''','''||a.id_conteudo||''');" title="Cria um novo conteúdo abaixo." class="cadcon-conteudo-botao">+</a>'); 
+                htp.p('<a id="cadcon-excluir-'||a.id_conteudo||'" class="cadcon-conteudo-botao excluir" onclick="cadastro_conteudo_excluir('''||a.id_conteudo||''');" title="Exclui o conteúdo atual." class="cadcon-conteudo-botao">x</a>'); 
             htp.p('</div>');
+
             htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo" data-tp_conteudo="'||a.tp_conteudo||'">');
                 if a.tp_conteudo = 'LINHA' then 
                     htp.p('<hr>');
@@ -1213,11 +1221,11 @@ begin
                     if a.tp_conteudo like 'MARCADOR%' then 
                         htp.p('<div class="cadcon-titulo '||a.tp_conteudo||'"><li></li>');
                         htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_titulo||'</div>');                                
-                        htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" contenteditable="true" onblur="atualiza_conteudo(this,'''||a.id_conteudo||''',''DS_TITULO'');">'||a.ds_titulo||'</div>');
+                        htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" contenteditable="true" onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TITULO'');">'||a.ds_titulo||'</div>');
                         htp.p('</div>');
                     end if;     
                     htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</div>');
-                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" contenteditable="true" class="cadcon-texto '||ws_class||'" onblur="atualiza_conteudo(this,'''||a.id_conteudo||''',''DS_TEXTO'');">'||a.ds_texto||'</div>');
+                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" contenteditable="true" class="cadcon-texto '||ws_class||'" onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');">'||a.ds_texto||'</div>');
                 end if;        
             htp.p('</div>');    
         htp.p('</div>');     
@@ -1310,9 +1318,7 @@ begin
     htp.p('</div>'); 
 
     htp.p('<div class="cadastro-conteudo-botoes">');
-        htp.p('<a onclick="cadastro_conteudo_inserir();" title="Cria um novo conteúdo do tópico atual." class="cadastro-conteudo-botao">NOVO</a>'); 
-        htp.p('<a onclick="cadastro_conteudo_refresh();" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">REFRESH</a>'); 
-        htp.p('<a onclick="cadastro_conteudo_excluir();" title="Excluí o conteúdo selecionado." class="cadastro-conteudo-botao">EXCLUIR</a>'); 
+        htp.p('<a onclick="cadastro_conteudo_salvar();" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">REFRESH</a>'); 
     htp.p('</div>');
 
 exception
@@ -1370,6 +1376,85 @@ exception
         commit;
         htp.p('ERRO|Erro atualizando conteúdo.');
 end conteudo_atualiza;
+
+
+-----------------------------------------------------------------------------------------------------------
+procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2) as
+begin 
+    delete from doc_conteudos
+    where id_conteudo = prm_id_conteudo;
+    
+    if sql%notfound then 
+        htp.p('ERRO|Conteúdo não localizado para exclusão.');
+    else 
+        htp.p('OK|Conteúdo excluído com sucesso.');
+    end if;             
+exception 
+    when others then 
+        insert into bi_log_sistema values (sysdate, 'cadastro_conteudo_excluir: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+        commit;
+        htp.p('ERRO|Erro excluindo conteúdo.');
+end cadastro_conteudo_excluir;
+
+---------------------------------------------------------------------------------------
+procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
+                                     prm_id_conteudo varchar2) as
+    ws_id_conteudo number;
+    ws_sq_conteudo number;
+    ws_sq_atual    number; 
+begin
+    
+    select nvl(max(id_conteudo), 0) + 1 into ws_id_conteudo from doc_conteudos;
+    
+    -- Get the next sequence number for this topic
+    select nvl(max(sq_conteudo), 0) + 1 into ws_sq_conteudo 
+    from doc_conteudos 
+    where cd_pergunta = prm_pergunta;
+
+    select nvl(max(sq_conteudo), 0) into ws_sq_atual 
+    from doc_conteudos 
+    where id_conteudo = prm_id_conteudo;
+
+    if (ws_sq_atual+1) < ws_sq_conteudo Then
+        ws_sq_conteudo := ws_sq_atual+1;
+        update doc_conteudos set sq_conteudo = sq_conteudo + 1
+         where cd_pergunta = prm_pergunta
+           and sq_conteudo > ws_sq_atual;
+    end if;
+
+    -- Insert the new record
+    insert into doc_conteudos (
+        id_conteudo, 
+        cd_pergunta, 
+        sq_conteudo, 
+        tp_conteudo, 
+        id_estilo, 
+        nr_linhas_antes, 
+        ds_titulo, 
+        ds_texto, 
+        id_ativo
+    ) values (
+        ws_id_conteudo, 
+        prm_pergunta, 
+        ws_sq_conteudo, 
+        'PARAGRAFO', 
+        null, 
+        0, 
+        null, 
+        'Novo conteúdo - '||ws_sq_conteudo, 
+        'S'
+    );
+
+    commit;
+    
+    htp.p('OK|Conteúdo criado com sucesso.|' || ws_id_conteudo);
+exception
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'cadastro_conteudo_inserir: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro ao criar conteúdo.');
+end cadastro_conteudo_inserir;
 
 
 END DOC;

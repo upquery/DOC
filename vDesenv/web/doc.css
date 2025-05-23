@@ -1951,10 +1951,17 @@ ul#feed-fixo li span.show {
 
 .cadastro-conteudo-item {
   display: flex;
-  border: 1px solid #ccc;
+  border: 3px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.cadastro-conteudo-item.selecionado {
+  display: flex;
+  border-style: dashed;
+  border-color:#252121;  
 }
 
 .cadastro-conteudo-botoes {
@@ -1974,40 +1981,6 @@ ul#feed-fixo li span.show {
   margin: 4px 0;
   transition: background-color .1s linear;
   cursor: pointer;
-}
-
-.cadcon-ordem {
-  display: block;
-  width: 35px;
-  height: 35px;
-  margin-right: 5px;
-  align-content: center;
-  justify-content: center;
-  background-color: var(--cad-botao-move);
-  color: white;
-  border-radius: 8px; /* Bordas arredondadas */
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  /* border: 2px solid #817f95;*/ 
-  user-select: none;
-  border: 2px solid transparent;
-}
-
-.cadcon-ordem svg {
-  width: 35px;
-  height: 25px;
-  fill: white;
-}
-
-.cadcon-ordem:hover {
-  border-color: #1765cc;
-}
-
-.cadcon-ordem.selecionado {
-  border: 2px solid #0d47a1;
-  box-shadow: 0 0 0 2px #bbdefb; /* Efeito de foco */
-  transform: scale(0.98);
 }
 
 .cadcon-conteudo {
@@ -2030,6 +2003,53 @@ ul#feed-fixo li span.show {
   width: 100%;
   overflow-y: hidden;
   white-space: pre-wrap;  
+  padding: 5px;
+}
+
+.cadcon-conteudo-botao {
+  display: block;
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
+  align-content: center;
+  justify-content: center;
+  background-color: var(--cad-botao-move);
+  color: white;
+  border-radius: 8px; /* Bordas arredondadas */
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  /* border: 2px solid #817f95;*/ 
+  user-select: none;
+  border: 2px solid transparent;
+  margin-bottom: 2px;
+}
+
+.cadcon-conteudo-botao.inserir {
+  font-size: 25px;
+  text-align: center;
+}
+
+.cadcon-conteudo-botao.excluir {
+  font-size: 22px;
+  text-align: center;
+}
+
+.cadcon-conteudo-botao svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+  margin-left: 2px;
+}
+
+.cadcon-conteudo-botao:hover {
+  border-color: #1765cc;
+}
+
+.cadcon-conteudo-botao.selecionado {
+  border: 2px solid #0d47a1;
+  box-shadow: 0 0 0 2px #bbdefb; /* Efeito de foco */
+  transform: scale(0.98);
 }
 
 
