@@ -1071,6 +1071,61 @@ END DOC_PRIVATE;
 
 
 ------------------------------------------------------------------------------------------------------------------------
+procedure upload (arquivo  IN  varchar2) AS
+        
+    l_nome_real       varchar2(1000);
+    ws_usuario        varchar2(80);
+    ws_doc_limit      varchar2(100);
+    ws_objeto         varchar2(100);
+    ws_carrega_painel varchar2(100);
+    ws_doc_size       number;
+    ws_count          number; 
+    ws_nofile         exception;
+    ws_limit_doc      exception;
+    ws_many_rows      exception;
+    ws_existe_dwu     exception;
+    ws_existe_atual   exception;
+
+  begin
+
+    if nvl(arquivo, 'N/A') = 'N/A' then
+        raise ws_nofile;
+    end if;
+
+    ws_usuario  := 'DWU';
+    l_nome_real := lower(replace(substr(arquivo, instr(arquivo, '/') + 1), ' ', '_'));
+
+    select count(*) into ws_count from tab_documentos
+        where  trim(lower(name)) = l_nome_real 
+        and  usuario           = 'DWU';
+    if ws_count > 0 then 
+        raise ws_existe_dwu; 
+    end if;    
+
+    delete from tab_documentos   -- retirado o dwu
+        where  trim(lower(name)) = l_nome_real 
+        and  usuario = ws_usuario;
+
+    update tab_documentos  
+        set name         = l_nome_real,
+            usuario      = ws_usuario,
+            last_updated = sysdate    -- corrigido a data de inclusão do arquivo, a data utilizada pelo navegador geralmente não bate data do banco de dados
+        where name = arquivo;
+
+    commit;
+    htp.p('OK|Arquivo enviado com sucesso');
+
+exception
+    when ws_nofile then
+        htp.p('ERRO|Nenhum arquivo selecionado!');
+    when ws_existe_dwu then
+        htp.p('ERRO|Arquivo já existe no sistema no usuário DWU!');
+    when others then 
+        htp.p('ERRO|Erro importando arquivo: '||sqlerrm);
+
+end upload;
+
+------------------------------------------------------------------------------------------------------------------------
 procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
    
     ws_cd_pergunta  varchar2(20);
@@ -1264,11 +1319,10 @@ begin
     htp.p('<div class="cadastro-conteudo-titulo">CONTEÚDO</div>');
     htp.p('<div class="cadcon-cadastro">'); 
 
-        htp.p('<div class="cadcon-cadastro-linha">'); 
+        htp.p('<div id="cadastro-tp_conteudo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="tp_conteudo">TIPO:</label>'); 
-            htp.p('<select id="tp_conteudo" name="tp_conteudo">'); 
-            for a in (  select 'PARAGRAFO' cd, 'Paragrafo' ds from dual union all 
-                        select 'PARAGRAFO', 'PARAGRAFO' from dual union all 
+            htp.p('<select id="tp_conteudo" name="tp_conteudo" onchange="conteudo_tela_cadastro_altera(this)">'); 
+            for a in (  select 'PARAGRAFO' cd, 'PARAGRAFO' ds from dual union all 
                         select 'LINHA'    , 'LINHA'     from dual union all 
                         select 'IMAGEM'   , 'IMAGEM'    from dual union all 
                         select 'MARCADOR1', 'MARCADOR1' from dual union all  
@@ -1287,7 +1341,12 @@ begin
             htp.p('/<select>'); 
         htp.p('</div>'); 
 
-        htp.p('<div class="cadcon-cadastro-linha">'); 
+        htp.p('<div id="cadastro-nr_linhas_antes" class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
+            htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
+        htp.p('</div>'); 
+
+        htp.p('<div id="cadastro-id_estilo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="id_estilo">ESTILOS:</label>'); 
             htp.p('<select multiple id="id_estilo">'); 
             for a in (  select 2 ordem, id_estilo as cd from doc_estilos union all 
@@ -1302,12 +1361,25 @@ begin
             htp.p('/<select>'); 
         htp.p('</div>'); 
 
-        htp.p('<div class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
-            htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
+        htp.p('<div id="cadastro-ds_titulo" class="cadcon-cadastro-linha">'); 
+            htp.p('<label for="ds_titulo">ARQUIVO:</label>'); 
+            
+            --htp.p('<input type="file" multiple id="arquivos" name="arquivos">');
+            --htp.p('<button id="btnUploadArquivos" onclick="uploadArquivos()">upload</button>');
+            --multiple 
+
+        	htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">ESCOLHER ARQUIVO...</a>');
+    		htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
+    		htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
+		
+--            htp.p('<form enctype="multipart/form-data" action="DWU.doc.upload" method="post" style="float: left;">');      
+--                htp.p('<input type="file" name="arquivo" data-arquivo="" class="cadcon-cadastro-imagem-botao" onchange="this.setAttribute(''data-arquivo'', this.value.replace(/\\/g, ''|''));">');
+--                htp.p('<input type="hidden" name="prm_usuario" style="display: none;" value="">');
+--                htp.p('<input type="submit" value="Upload" class="cadcon-cadastro-imagem-botao">');
+--            htp.p('</form>');
         htp.p('</div>'); 
 
-        htp.p('<div class="cadcon-cadastro-linha">'); 
+        htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="id_ativo">id_ativo:</label>');
             ws_checked := '';
             if ws_cont.id_ativo = 'S' then 

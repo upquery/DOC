@@ -77,6 +77,8 @@ procedure monta_conteudo_arquivos ( prm_pergunta     varchar2,
 
 procedure limpar_formatacao ( prm_texto     in out clob ) ; 
 
+procedure upload (arquivo  IN  varchar2);
+
 
 procedure doc_cad_conteudo (prm_valor 	varchar2 default null);
 

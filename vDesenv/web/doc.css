@@ -2073,13 +2073,17 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   align-items: center;
 }
 
+.cadcon-cadastro-linha.ocultar {
+  display: none !important;
+}  
+
 .cadcon-cadastro-linha label {
-  width: 150px;
+  width: 120px;
   text-align: right;
   margin-right: 10px;
 }
 
-.cadcon-cadastro-linha input, .cadcon-cadastro-linha select {
+.cadcon-cadastro-linha input[type="number"], .cadcon-cadastro-linha select {
   flex: 1;
   padding: 8px;
   box-sizing: border-box;
@@ -2093,4 +2097,14 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 .cadcon-cadastro-linha select[multiple] {
   height: 80px;
 }
+
+#escolherArquivoButton {
+  width: 250px;
+  padding-left: 2px;
+}  
+
+#btnUploadArquivos {
+  width: 70px;
+  text-align: center;
+}  
 

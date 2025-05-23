@@ -418,17 +418,65 @@ function alerta(tipo, msg){
       setTimeout(function(){ template.classList.add("show"); }, 100);
       setTimeout(function(){ if(template){ template.classList.remove("show"); } }, 4700);
       setTimeout(function(){ if(template){ template.remove(); } }, 5000);
-      
-
-
-      //li.classList.add("show"); 
-
-      //setTimeout(function(){ 
-      //  template.classList.add("show"); 
-      //}, 200);
     }
   }
 }
+
+async function uploadArquivos(prm_alternativo, input_id) {
+    var arquivosInput = document.getElementById(input_id||'arquivos');
+    var arquivos = arquivosInput.files;
+    var acao = 'dwu.doc.upload';
+   
+    let ele = document.getElementById('escolherArquivoButton');
+    let id_conteudo = ele.getAttribute('data-id_topico');
+    conteudo_atualiza(ele, id_conteudo, 'DS_TITULO');
+
+    var arquivo = arquivos[0];
+    await enviarArquivo(arquivo, acao);
+}
+
+function enviarArquivo(arquivo, acao) {
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', acao, true);
+      xhr.onload = function () {
+        alerta('feed-fixo', xhr.responseText.split('|')[1]);
+        resolve();
+      };
+      xhr.onerror = function () {
+        reject(xhr.statusText);
+      };
+      var formData = new FormData();
+      formData.append('arquivo', arquivo);
+      xhr.send(formData);
+    });
+}
+  
+function  mostrarArquivosSelecionados(btn_id, input_id) {
+
+    var arquivosInput = document.getElementById(input_id || 'arquivos');
+    var arquivos = arquivosInput.files;
+    var totalArquivos = arquivos.length;
+    
+    var escolherArquivoButton = document.getElementById(btn_id || 'escolherArquivoButton');
+    
+    if (totalArquivos > 1) {
+      
+      var arquivosString = "";
+      
+      for (var i = 0; i < totalArquivos; i++) {
+        arquivosString += arquivos[i].name + '\n';
+      }
+  
+      escolherArquivoButton.title = arquivosString;
+      escolherArquivoButton.innerHTML = totalArquivos + ' ARQUIVOS';
+    } else {
+      escolherArquivoButton.title = arquivos[0].name;
+      escolherArquivoButton.innerHTML = arquivos[0].name;
+    }
+  
+  }
+  
 
 function topico_atualiza(ele, pergunta, coluna){
     
@@ -467,6 +515,11 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
     } else {
         conteudo = ele.innerHTML;    
     }
+
+console.log('x2');
+console.log(conteudo)    ;
+console.log(ele)    ;
+
 
     var conteudo_ant = '',
         tipo_ant     = '';
@@ -515,6 +568,27 @@ function conteudo_tela_cadastro(ele, id_conteudo){
             ele.classList.add('selecionado');
         }    
     });    
+}    
+
+function conteudo_tela_cadastro_altera(ele){
+    
+    let tp_conteudo = ele.value;
+    let campos = document.querySelector('.cadcon-cadastro').querySelectorAll('.cadcon-cadastro-linha');
+
+    for (let a=0;a<campos.length;a++){
+        if (campos[a].id != 'cadastro-tp_conteudo' && campos[a].id != 'cadastro-id_ativo' && campos[a].id != 'cadastro-nr_linhas_antes') {
+            campos[a].classList.add('ocultar');
+        }
+    }
+
+    if (tp_conteudo == 'IMAGEM') {
+        document.getElementById('cadastro-id_estilo').classList.remove('ocultar');
+        document.getElementById('cadastro-ds_titulo').classList.remove('ocultar');
+    }    
+
+    if (['PARAGRAFO','MARCADOR1','MARCADOR2','MARCADOR3','MARCADOR4'].indexOf(tp_conteudo) != -1) {
+        document.getElementById('cadastro-id_estilo').classList.remove('ocultar');
+    }    
 
 }    
 
