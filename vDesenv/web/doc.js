@@ -513,13 +513,18 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
         .map(option => option.text) // Usando text em vez de value
         .join('|');
     } else {
-        conteudo = ele.innerHTML;    
+        if (ele.tagName === 'TEXTAREA') {
+            conteudo = ele.value;    
+        } else {
+            conteudo = ele.innerHTML;    
+        }    
     }
+
 
     var conteudo_ant = '',
         tipo_ant     = '';
     if (document.getElementById(ele.id+'-anterior')) {
-        conteudo_ant = document.getElementById(ele.id+'-anterior').innerHTML;
+        conteudo_ant = document.getElementById(ele.id+'-anterior').value;
         tipo_ant     = 'elemento';
     } else {
         if (ele.getAttribute('data-old')) {
@@ -534,7 +539,13 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
         }
     }
 
+console.log('f1');
+console.log(conteudo);
+console.log(conteudo_ant);
+
     if (conteudo != conteudo_ant) {
+
+        console.log('f2');
         call('conteudo_atualiza', 'prm_id_conteudo='+id_conteudo+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(conteudo)).then(function(resposta){ 
             alerta('',resposta.split('|')[1]); 
             if(resposta.split('|')[0] == 'OK'){ 
@@ -545,7 +556,7 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
                 }
             }    
         });    
-    }    
+    }
 }    
 
 function conteudo_tela_cadastro(ele, id_conteudo){
@@ -570,9 +581,6 @@ function conteudo_tela_cadastro(ele, id_conteudo){
 }    
 
 function conteudo_tela_cadastro_altera(ele){
-    
-console.log('ele');
-console.log(ele);
 
     let tp_conteudo = ele.value;
     let id_conteudo = ele.getAttribute('data-id_conteudo');
@@ -701,4 +709,54 @@ function cadastro_conteudo_salvar(id_conteudo) {
             }
         }
     });
+}
+
+function cadcon_toolbar_habilita (id_conteudo, habita) {
+    let toolbar = document.getElementById('cadcon-texto-toolbar-' + id_conteudo);
+    if (toolbar) {
+        if (habita) {
+            toolbar.classList.add('visible');
+        } else {
+            toolbar.classList.remove('visible');
+        }
+    }
+}
+
+
+// Set up click handlers for toolbar buttons
+function cadcon_toolbar_actions(ele) {
+
+console.log('x0');
+    let acao        = ele.getAttribute('data-action');
+    let id_conteudo = ele.parentNode.getAttribute('data-id_conteudo');
+
+    let textarea  = document.getElementById('cadcon-texto-'+id_conteudo);
+    let texto     = textarea.value;
+    let pos_sel_i = textarea.selectionStart,
+        pos_sel_f = textarea.selectionEnd;
+    let texto_sel = texto.substring(pos_sel_i, pos_sel_f);
+    let formatado = '';
+
+    console.log('t1');
+        console.log(texto);
+        console.log('start', pos_sel_i); 
+        console.log('end', pos_sel_f);
+        console.log('sel', texto_sel);
+
+    if (acao == "ESTILO") {
+        if ((pos_sel_f - pos_sel_i) == 0) {
+            alerta('feed-fixo', 'Necess&aacute;rio selecionar o texto a ser formatado.'); 
+        } else {
+            const estilos = window.prompt('Informe c\u00f3digos de estilos separados por | (pipe):')
+            if (estilos) { 
+            formatado = '<DOCF CLASSE=' + estilos.toUpperCase().trim() + '>'+texto_sel+'</DOCF>';
+            }  
+        } 
+
+        if (formatado.length > 0) {
+            texto = texto.substring(0,pos_sel_i) + formatado + texto.substring(pos_sel_f,texto.length+1); 
+            textarea.value = texto; 
+        }  
+      
+    }   
 }

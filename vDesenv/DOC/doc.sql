@@ -1279,8 +1279,23 @@ begin
                         htp.p('<div id="cadcon-titulo-'||a.id_conteudo||'" contenteditable="true" onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TITULO'');">'||a.ds_titulo||'</div>');
                         htp.p('</div>');
                     end if;     
-                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</div>');
-                    htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" contenteditable="true" class="cadcon-texto '||ws_class||'" onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');">'||a.ds_texto||'</div>');
+
+                    htp.p('<div style="width: 100%;" onblur="cadcon_toolbar_habilita(this,'''||a.id_conteudo||''',false);">'); 
+                        htp.p('<div id="cadcon-texto-toolbar-' || a.id_conteudo || '" class="cadcon-texto-toolbar" data-id_conteudo="' || a.id_conteudo || '">');
+                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="ESTILO"  onclick="console.log(''t1'');  cadcon_toolbar_actions(this);" title="Aplica o estilo CSS no texto selecionado">{} Estilos</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="URL"     onclick="console.log(''t1''); cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona para um site.">URL</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="TOPICO"  onclick="cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona a um outro tópico da documentação.">Tópico</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="IMAGEM"  onclick="cadcon_toolbar_actions(this);" title="Adiciona uma imagem no meio do texto.">Imagem</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="LIMPAR"  onclick="cadcon_toolbar_actions(this);" title="Limpa qualquer formatação/estilo aplicado dentro do texto.">Limpar</button>');
+                        htp.p('</div>');
+                        --
+                        --htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" autofocus contenteditable="true" class="cadcon-texto '||ws_class||'" '||
+                        htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" '||
+                            ' onblur="console.log(''g1'');conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');"'||
+                            ' onclick="console.log(''onclick''); cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
+                        htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</textarea>');
+                        --htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</div>');
+                    htp.p('</div>'); 
                 end if;        
             htp.p('</div>');    
         htp.p('</div>');     
@@ -1333,12 +1348,12 @@ begin
                         select 'GIF'      , 'GIF'       from dual
                     ) loop
                     if a.cd = ws_cont.tp_conteudo then 
-                        htp.p('<option value="'||a.cd||'" selected>'||a.ds||'</option>');
+                        htp.p('<option value="'||a.cd||'" selected >'||a.ds||'</option>');
                     else
                         htp.p('<option value="'||a.cd||'" >'||a.ds||'</option>');
                     end if;    
             end loop;   
-            htp.p('/<select>'); 
+            htp.p('</select>'); 
         htp.p('</div>'); 
 
         htp.p('<div id="cadastro-nr_linhas_antes" class="cadcon-cadastro-linha">'); 
@@ -1351,16 +1366,7 @@ begin
             htp.p('<label for="id_estilo">ESTILOS:</label>'); 
             htp.p('<select multiple id="id_estilo">'); 
                 conteudo_tela_id_estilo(prm_id_conteudo);
-        --     for a in (  select 2 ordem, id_estilo as cd from doc_estilos union all 
-        --                 select 1 ordem, null      as cd from dual 
-        --                 order by ordem, cd ) loop
-        --             if instr(ws_cont.id_estilo||'|', a.cd||'|') > 0 or (ws_cont.id_estilo is null and a.cd is null ) then 
-        --                 htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
-        --             else
-        --                 htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
-        --             end if;    
-        --     end loop;  
-            htp.p('/<select>'); 
+            htp.p('</select>'); 
         htp.p('</div>'); 
 
         htp.p('<div id="cadastro-ds_titulo" class="cadcon-cadastro-linha">'); 
