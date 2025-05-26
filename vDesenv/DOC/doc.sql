@@ -1321,7 +1321,7 @@ begin
 
         htp.p('<div id="cadastro-tp_conteudo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="tp_conteudo">TIPO:</label>'); 
-            htp.p('<select id="tp_conteudo" name="tp_conteudo" onchange="conteudo_tela_cadastro_altera(this)">'); 
+            htp.p('<select id="tp_conteudo" name="tp_conteudo" onchange="conteudo_tela_cadastro_altera(this);" data-id_conteudo="'||prm_id_conteudo||'">'); 
             for a in (  select 'PARAGRAFO' cd, 'PARAGRAFO' ds from dual union all 
                         select 'LINHA'    , 'LINHA'     from dual union all 
                         select 'IMAGEM'   , 'IMAGEM'    from dual union all 
@@ -1346,37 +1346,30 @@ begin
             htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
         htp.p('</div>'); 
 
+        
         htp.p('<div id="cadastro-id_estilo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="id_estilo">ESTILOS:</label>'); 
             htp.p('<select multiple id="id_estilo">'); 
-            for a in (  select 2 ordem, id_estilo as cd from doc_estilos union all 
-                        select 1 ordem, null      as cd from dual 
-                        order by ordem, cd ) loop
-                    if instr(ws_cont.id_estilo||'|', a.cd||'|') > 0 or (ws_cont.id_estilo is null and a.cd is null ) then 
-                        htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
-                    else
-                        htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
-                    end if;    
-            end loop;  
+                conteudo_tela_id_estilo(prm_id_conteudo);
+        --     for a in (  select 2 ordem, id_estilo as cd from doc_estilos union all 
+        --                 select 1 ordem, null      as cd from dual 
+        --                 order by ordem, cd ) loop
+        --             if instr(ws_cont.id_estilo||'|', a.cd||'|') > 0 or (ws_cont.id_estilo is null and a.cd is null ) then 
+        --                 htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
+        --             else
+        --                 htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
+        --             end if;    
+        --     end loop;  
             htp.p('/<select>'); 
         htp.p('</div>'); 
 
         htp.p('<div id="cadastro-ds_titulo" class="cadcon-cadastro-linha">'); 
             htp.p('<label for="ds_titulo">ARQUIVO:</label>'); 
-            
-            --htp.p('<input type="file" multiple id="arquivos" name="arquivos">');
-            --htp.p('<button id="btnUploadArquivos" onclick="uploadArquivos()">upload</button>');
-            --multiple 
 
-        	htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">ESCOLHER ARQUIVO...</a>');
+        	htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">'||nvl(ws_cont.ds_titulo,'ESCOLHER ARQUIVO...')||'</a>');
     		htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
     		htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
 		
---            htp.p('<form enctype="multipart/form-data" action="DWU.doc.upload" method="post" style="float: left;">');      
---                htp.p('<input type="file" name="arquivo" data-arquivo="" class="cadcon-cadastro-imagem-botao" onchange="this.setAttribute(''data-arquivo'', this.value.replace(/\\/g, ''|''));">');
---                htp.p('<input type="hidden" name="prm_usuario" style="display: none;" value="">');
---                htp.p('<input type="submit" value="Upload" class="cadcon-cadastro-imagem-botao">');
---            htp.p('</form>');
         htp.p('</div>'); 
 
         htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
@@ -1399,6 +1392,35 @@ exception
 
 
 end conteudo_tela_cadastro; 
+
+
+------------------------------------------------------------------------------------------------------------------------------
+procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2) as  
+    
+    ws_tp_conteudo varchar2(100);
+    ws_id_estilo   varchar2(100);
+    ws_erro        varchar2(300);
+
+    ws_raise_erro exception;
+begin
+
+    select max(tp_conteudo), max(id_estilo) into ws_tp_conteudo, ws_id_estilo from doc_conteudos where id_conteudo = prm_id_conteudo;
+
+    for a in (  select 2 ordem, id_estilo as cd from doc_estilos where instr(tp_conteudo||'|', ws_tp_conteudo||'|') > 0 or tp_conteudo = 'TODOS' union all 
+                select 1 ordem, null      as cd from dual 
+                order by ordem, cd ) loop
+            if instr(ws_id_estilo||'|', a.cd||'|') > 0 or (ws_id_estilo is null and a.cd is null ) then 
+                htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
+            else
+                htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
+            end if;    
+    end loop;  
+
+exception
+  when others then
+    htp.p('ERRO|'||sqlerrm);
+
+end conteudo_tela_id_estilo; 
 
 -------------------------------------------------------------------------------------------
 procedure topico_atualiza (prm_pergunta       varchar2, 

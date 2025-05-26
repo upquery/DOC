@@ -516,11 +516,6 @@ function conteudo_atualiza(ele, id_conteudo, coluna){
         conteudo = ele.innerHTML;    
     }
 
-console.log('x2');
-console.log(conteudo)    ;
-console.log(ele)    ;
-
-
     var conteudo_ant = '',
         tipo_ant     = '';
     if (document.getElementById(ele.id+'-anterior')) {
@@ -561,6 +556,10 @@ function conteudo_tela_cadastro(ele, id_conteudo){
         } else {
             document.getElementById('cadastro-conteudo-altera').innerHTML = resposta; 
 
+            let form = document.querySelector('.cadcon-cadastro');
+            let ele_tp = form.querySelector('#tp_conteudo');
+            conteudo_tela_cadastro_altera(ele_tp);
+
             let selecionados  = document.getElementById('cadastro-conteudo-detalhe').querySelectorAll('.cadastro-conteudo-item.selecionado');
             for (let a=0;a<selecionados.length;a++){
                 selecionados[a].classList.remove('selecionado');
@@ -572,7 +571,11 @@ function conteudo_tela_cadastro(ele, id_conteudo){
 
 function conteudo_tela_cadastro_altera(ele){
     
+console.log('ele');
+console.log(ele);
+
     let tp_conteudo = ele.value;
+    let id_conteudo = ele.getAttribute('data-id_conteudo');
     let campos = document.querySelector('.cadcon-cadastro').querySelectorAll('.cadcon-cadastro-linha');
 
     for (let a=0;a<campos.length;a++){
@@ -581,25 +584,43 @@ function conteudo_tela_cadastro_altera(ele){
         }
     }
 
-    if (tp_conteudo == 'IMAGEM') {
+    if (['IMAGEM','PDF','GIF'].indexOf(tp_conteudo) != -1) {        
         document.getElementById('cadastro-id_estilo').classList.remove('ocultar');
         document.getElementById('cadastro-ds_titulo').classList.remove('ocultar');
+        if (tp_conteudo == 'IMAGEM') {        
+            document.getElementById('arquivos').accept=".png,.jpg";
+        } else if (tp_conteudo == 'PDF') {        
+            document.getElementById('arquivos').accept=".pdf";
+        } else if (tp_conteudo == 'GIF') {        
+            document.getElementById('arquivos').accept=".gif";
+        }       
+
     }    
 
     if (['PARAGRAFO','MARCADOR1','MARCADOR2','MARCADOR3','MARCADOR4'].indexOf(tp_conteudo) != -1) {
         document.getElementById('cadastro-id_estilo').classList.remove('ocultar');
-    }    
+    } 
+
+    call('conteudo_tela_id_estilo', 'prm_id_conteudo='+id_conteudo).then(function(resposta){ 
+        if(resposta.split('|')[0] == 'ERRO|'){ 
+            alerta('',resposta.split('|')[1]); 
+        } else {
+            document.getElementById('id_estilo').innerHTML = resposta; 
+        }    
+    });    
+   
 
 }    
 
 function conteudo_tela_conteudos(cd_pergunta){
-  
+    
+    document.getElementById('cadastro-conteudo-altera').innerHTML = '';  // limpa tela de cadastro   
     call('conteudo_tela_conteudos', 'prm_pergunta='+cd_pergunta).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
         } else {
             document.getElementById('cadastro-conteudo-detalhe').innerHTML = resposta; 
-        }    
+        }  
     });    
 }    
 

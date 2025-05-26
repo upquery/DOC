@@ -1961,7 +1961,7 @@ ul#feed-fixo li span.show {
 .cadastro-conteudo-item.selecionado {
   display: flex;
   border-style: dashed;
-  border-color:#252121;  
+  border-color:#7d95dd;  
 }
 
 .cadastro-conteudo-botoes {
@@ -1986,6 +1986,11 @@ ul#feed-fixo li span.show {
 .cadcon-conteudo {
   display: flex;
   width: 100%;
+}
+
+.cadcon-conteudo hr{
+  width: 100%;
+  height: 0px;
 }
 
 .cadcon-titulo {
@@ -2095,7 +2100,7 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 }
 
 .cadcon-cadastro-linha select[multiple] {
-  height: 80px;
+  height: 130px;
 }
 
 #escolherArquivoButton {

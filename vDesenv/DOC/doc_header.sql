@@ -92,6 +92,8 @@ procedure conteudo_atualiza (prm_id_conteudo    varchar2,
 
 procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2);
 
+procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2); 
+
 procedure conteudo_tela_topicos;
 
 procedure conteudo_tela_conteudos (prm_pergunta    varchar2,
