@@ -733,11 +733,6 @@ function cadastro_conteudo_salvar(id_conteudo) {
 }
 
 function cadcon_toolbar_habilita (id_conteudo, habita) {
-
-console.log('cadcon_toolbar_habilita 1');       
-console.log(id_conteudo);   
-console.log(habita );
-
     let toolbar = document.getElementById('cadcon-texto-toolbar-' + id_conteudo);
     if (toolbar) {
         if (habita) {
@@ -752,7 +747,6 @@ console.log(habita );
 // Set up click handlers for toolbar buttons
 function cadcon_toolbar_actions(ele) {
 
-console.log('x0');
     let acao        = ele.getAttribute('data-action');
     let id_conteudo = ele.parentNode.getAttribute('data-id_conteudo');
 
@@ -1187,8 +1181,8 @@ function toggleTextareaEdit(id_conteudo) {
     const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
     
     if (viewDiv && textarea) {
-        let altura = viewDiv.clientHeight + 'px';
-        
+        let altura = (viewDiv.clientHeight - 42) + 'px';
+
 console.log('viewDiv.clientHeight', viewDiv.clientHeight)        ;        
         viewDiv.style.display = 'none';
         textarea.style.minHeight = altura;

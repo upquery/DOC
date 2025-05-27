@@ -2008,15 +2008,6 @@ ul#feed-fixo li span.show {
   width: max-content;
 }
 
-.cadcon-texto {
-  width: 100%;
-  white-space: pre-wrap;  
-  padding: 5px;
-  height: calc(100% - 50px);
-  font-family: 'Arial';
-  font-size: 14px;
-}
-
 .cadcon-conteudo-botao {
   display: block;
   width: 25px;
@@ -2118,48 +2109,74 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   text-align: center;
 }  
 
-/* Toolbar for text editing */
-.cadcon-texto-toolbar {
-  display: none;
-  width: fit-content;  
-  background-color: #333;
-  border-radius: 4px;
-  padding: 4px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  z-index: 1000;
-  height: 30px;
-  max-height: 0; /* Inicialmente fechada */
-  transition: max-height 0.5s ease-out;
-
-  /* transform: translateY(-100%); */ 
-  transition: transform 0.3s ease;
-}
-
-.cadcon-texto-toolbar.visible {
-  display: flex;
-  /* transform: translateY(0); */ 
-  max-height: 300px; /* Altura suficiente para conter todos os botões */
-  transition: max-height 0.3s ease-in;
-}
-
-.cadcon-texto-toolbar-btn {
-  width: 75px;
-  height: 30px;
-  margin: 0 2px;
-  background-color: #555;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.cadcon-texto {
+  position: relative;
+  top: -40px;
+  width: 100%;
+  white-space: pre-wrap;  
+  padding: 5px;
+  height: calc(100% - 10px);
+  font-family: 'Arial';
   font-size: 14px;
 }
 
-.cadcon-texto-toolbar-btn:hover {
-  background-color: #777;
+/* Toolbar for text editing */
+.cadcon-texto-toolbar {
+  display: flex;
+  width: fit-content;  
+  height: 30px;
+  top: -45px;
+  position: absolute;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border: 1px solid #ccc;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
 }
+
+.cadcon-texto-toolbar.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;  
+}
+
+.cadcon-texto-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #555;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 0 2px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  font-weight: normal;
+  height: 30px;
+  min-width: 60px;
+}
+
+.cadcon-texto-toolbar-btn:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cadcon-texto-toolbar-btn:active {
+  background-color: #d0d0d0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px);
+  border-color: #999;
+}
+
 
 /* Styles tela de seleção de estilos */
 .cadastro-tela-overlay {
