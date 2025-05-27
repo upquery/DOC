@@ -1186,15 +1186,15 @@ begin
                 -- Loop através das perguntas na tabela doc_perguntas
                 for a in (select cd_pergunta, pergunta, categoria, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
                     htp.p('<tr data-pergunta="'||a.cd_pergunta||'" class="lista-topico-item">');
-                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_topico_seleciona(this);">');
                             htp.p('<span>'||a.cd_pergunta||'</span>');
                         htp.p('</td>');
 
-                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_topico_seleciona(this);">');
                             htp.p('<span>'||a.pergunta||'</span>');
                         htp.p('</td>');
 
-                        htp.p('<td onclick="conteudo_tela_conteudos('''||a.cd_pergunta||''');">');
+                        htp.p('<td onclick="conteudo_topico_seleciona(this);">');
                             htp.p('<span>'||a.categoria||'</span>');
                         htp.p('</td>');
 
@@ -1280,7 +1280,7 @@ begin
                         htp.p('</div>');
                     end if;     
 
-                    htp.p('<div style="width: 100%;" onblur="cadcon_toolbar_habilita(this,'''||a.id_conteudo||''',false);">'); 
+                    htp.p('<div style="width: 100%;" onblur="console.log(''m1''); cadcon_toolbar_habilita('''||a.id_conteudo||''',false);">'); 
                         htp.p('<div id="cadcon-texto-toolbar-' || a.id_conteudo || '" class="cadcon-texto-toolbar" data-id_conteudo="' || a.id_conteudo || '">');
                             htp.p('<button class="cadcon-texto-toolbar-btn" data-action="ESTILO"  onclick="console.log(''t1'');  cadcon_toolbar_actions(this);" title="Aplica o estilo CSS no texto selecionado">{} Estilos</button>');
                             htp.p('<button class="cadcon-texto-toolbar-btn" data-action="URL"     onclick="console.log(''t1''); cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona para um site.">URL</button>');
@@ -1584,6 +1584,180 @@ exception
         htp.p('ERRO|Erro ao salvar conteúdo.');
 end cadastro_conteudo_salvar;
 
+------------------------------------------------------------------------------------------------------
+procedure estilo_popup (prm_id_conteudo    varchar2) as
+    ws_tp_conteudo   doc_conteudos.tp_conteudo%type;
+begin
+    select max(tp_conteudo) into ws_tp_conteudo from doc_conteudos where id_conteudo = prm_id_conteudo;
+    -- Create the popup container
+    htp.p('<div id="estilos-popup" class="cadastro-tela-popup">');
+    
+        -- Popup header
+        htp.p('<div class="cadastro-tela-popup-header">');
+        htp.p('<h3>Selecione os Estilos</h3>');
+        htp.p('</div>');
+        
+        -- Popup content with multi-select list
+        htp.p('<div class="cadastro-tela-popup-content">');
+        htp.p('<select id="estilos-select" multiple size="10">');
+        
+        -- Loop through all styles from DOC_ESTILOS table
+        for estilo in (select id_estilo, css_estilo from doc_estilos 
+                       where instr(tp_conteudo||'|', ws_tp_conteudo||'|') > 0 or tp_conteudo = 'TODOS'
+                        order by id_estilo) loop
+            htp.p('<option value="' || estilo.id_estilo || '">' || estilo.id_estilo || ' - ' || substr(estilo.css_estilo, 1, 50) || '</option>');
+        end loop;
+        
+        htp.p('</select>');
+        htp.p('</div>');
+        
+        -- Popup footer with buttons
+        htp.p('<div class="cadastro-tela-popup-footer">');
+        htp.p('<button id="estilos-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
+        htp.p('<button id="estilos-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
+        htp.p('</div>');
+    
+    htp.p('</div>');
+    
+    -- Overlay background
+    htp.p('<div id="estilos-overlay" class="cadastro-tela-overlay"></div>');
+
+exception
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'estilo_popup: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro montando tela.');
+end estilo_popup;
+
+---------------------------------------------------------------------------------------------------------------------------------
+procedure url_popup as
+begin
+    -- Create the popup container
+    htp.p('<div id="url-popup" class="cadastro-tela-popup">');
+    
+        -- Popup header
+        htp.p('<div class="cadastro-tela-popup-header">');
+        htp.p('<h3>Inserir URL</h3>');
+        htp.p('</div>');
+        
+        -- Popup content with URL input field
+        htp.p('<div class="cadastro-tela-popup-content">');
+        htp.p('<label for="url-input">URL:</label>');
+        htp.p('<input type="text" id="url-input" placeholder="https://" style="width:100%; padding:8px; margin-top:5px;">');
+        htp.p('</div>');
+        
+        -- Popup footer with buttons
+        htp.p('<div class="cadastro-tela-popup-footer">');
+        htp.p('<button id="url-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
+        htp.p('<button id="url-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
+        htp.p('</div>');
+    
+    htp.p('</div>');
+    
+    -- Overlay background
+    htp.p('<div id="url-overlay" class="cadastro-tela-overlay"></div>');
+exception 
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'url_popup: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro montando tela.');
+end url_popup;
+
+procedure topico_popup as
+begin
+    -- Create the popup container
+    htp.p('<div id="topico-popup" class="cadastro-tela-popup">');
+    
+        -- Popup header
+        htp.p('<div class="cadastro-tela-popup-header">');
+        htp.p('<h3>Selecionar Tópico</h3>');
+        htp.p('</div>');
+        
+        -- Popup content with search field and select
+        htp.p('<div class="cadastro-tela-popup-content">');
+        htp.p('<div style="margin-bottom:10px;">');
+        htp.p('<label for="topico-search">Pesquisar:</label>');
+        htp.p('<input type="text" id="topico-search" placeholder="Digite para filtrar..." style="width:100%; padding:8px; margin-top:5px;">');
+        htp.p('</div>');
+        
+        htp.p('<select id="topico-select" size="10" style="width:100%;">');
+        
+        -- Loop through all topics from DOC_PERGUNTAS table
+        for topico in (select cd_pergunta, pergunta from doc_perguntas order by cd_pergunta desc) loop
+            htp.p('<option value="' || topico.cd_pergunta || '">' || topico.cd_pergunta || ' - ' || topico.pergunta || '</option>');
+        end loop;
+        
+        htp.p('</select>');
+        htp.p('</div>');
+        
+        -- Popup footer with buttons
+        htp.p('<div class="cadastro-tela-popup-footer">');
+        htp.p('<button id="topico-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
+        htp.p('<button id="topico-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
+        htp.p('</div>');
+        
+    htp.p('</div>');
+    
+    -- Overlay background
+    htp.p('<div id="topico-overlay" class="cadastro-tela-overlay"></div>');
+
+exception 
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'topico_popup: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro montando tela.');
+end topico_popup;
+
+
+procedure imagem_popup as
+begin
+    -- Criar o container do popup
+    htp.p('<div id="imagem-popup" class="cadastro-tela-popup">');
+    
+        -- Cabeçalho do popup
+        htp.p('<div class="cadastro-tela-popup-header">');
+        htp.p('<h3>Inserir Imagem</h3>');
+        htp.p('</div>');
+        
+        -- Conteúdo do popup com campo para upload de arquivo
+        htp.p('<div class="cadastro-tela-popup-content">');
+        
+            -- Formulário para upload
+            htp.p('<form id="form-upload-imagem" enctype="multipart/form-data">');
+            
+                -- Campo para selecionar arquivo
+                htp.p('<div style="margin-bottom:10px;">');
+                    htp.p('<label for="arquivo-imagem">Selecione uma imagem:</label>');
+                    htp.p('<div style="display:flex; margin-top:5px;">');
+                        htp.p('<input type="text" id="nome-arquivo-imagem" readonly placeholder="Nenhum arquivo selecionado" style="flex:1; padding:8px; margin-right:5px;">');
+                        htp.p('<button type="button" id="btn-selecionar-arquivo" class="cadastro-tela-btn" style="width:auto;">Selecionar</button>');
+                        htp.p('<input type="file" id="imagem-arquivos" name="imagem-arquivos" accept=".jpg,.jpeg,.png,.gif" style="display:none;">');
+                    htp.p('</div>');
+                htp.p('</div>');
+            htp.p('</form>');
+        htp.p('</div>');
+        
+   
+        -- Rodapé do popup com botões
+        htp.p('<div class="cadastro-tela-popup-footer">');
+        htp.p('<button id="imagem-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
+        htp.p('<button id="imagem-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
+        htp.p('</div>');
+    
+    htp.p('</div>');
+    
+    -- Overlay de fundo
+    htp.p('<div id="imagem-overlay" class="estilos-overlay"></div>');
+exception 
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'imagem_popup: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro montando tela.');
+end imagem_popup;
 
 END DOC;
 /

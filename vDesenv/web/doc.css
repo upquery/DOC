@@ -1918,6 +1918,9 @@ ul#feed-fixo li span.show {
   cursor:pointer;
 }  
 
+.lista-topico-item.selecionado {
+  background-color: #c7c7fd;
+}  
 
 
 .cadastro-conteudo-altera {
@@ -2157,4 +2160,89 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 
 .cadcon-texto-toolbar-btn:hover {
   background-color: #777;
+}
+
+/* Styles tela de seleção de estilos */
+.cadastro-tela-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: none;
+}
+
+.cadastro-tela-popup {
+  display: none;
+  position: fixed;
+  background-color: white;
+  width: 400px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  overflow: hidden;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cadastro-tela-popup-header {
+  padding: 15px;
+  background-color: #1E1655;
+  color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.cadastro-tela-popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.cadastro-tela-popup-content {
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.cadastro-tela-popup-content select {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.cadastro-tela-popup-footer {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  text-align: right;
+}
+
+.cadastro-tela-btn {
+  padding: 8px 16px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cadastro-tela-btn.aplicar {
+  background-color: #1E1655;
+  color: white;
+}
+
+.cadastro-tela-btn.cancelar {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+#estilos-aplicar:hover {
+  background-color: #2a2277;
+}
+
+#estilos-cancelar:hover {
+  background-color: #e0e0e0;
 }

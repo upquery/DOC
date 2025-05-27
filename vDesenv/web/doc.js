@@ -19,12 +19,14 @@ var tip_user = 'T' ;
 
 
 document.addEventListener('keypress', function(e){
-    if(document.getElementById('busca').focus){
+    if (document.getElementById('busca')) {
+        if(document.getElementById('busca').focus){
 
-        if(e.key == "Enter"){
-            chamar('consulta',e.target.value, '.flex-container',tip_user);
+            if(e.key == "Enter"){
+                chamar('consulta',e.target.value, '.flex-container',tip_user);
+            }
         }
-    }
+    }    
 });
 
 var loading;  
@@ -422,28 +424,32 @@ function alerta(tipo, msg){
   }
 }
 
-async function uploadArquivos(prm_alternativo, input_id) {
+async function uploadArquivos(input_id) {
     var arquivosInput = document.getElementById(input_id||'arquivos');
     var arquivos = arquivosInput.files;
     var acao = 'dwu.doc.upload';
    
-    let ele = document.getElementById('escolherArquivoButton');
-    let id_conteudo = ele.getAttribute('data-id_topico');
-    conteudo_atualiza(ele, id_conteudo, 'DS_TITULO');
+    if (input_id.length == 0) {
+        let ele = document.getElementById('escolherArquivoButton');
+        let id_conteudo = ele.getAttribute('data-id_topico');
+        conteudo_atualiza(ele, id_conteudo, 'DS_TITULO');
+    }
 
     var arquivo = arquivos[0];
     await enviarArquivo(arquivo, acao);
 }
 
 function enviarArquivo(arquivo, acao) {
+    var acao = acao || 'dwu.doc.upload';
     return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', acao, true);
       xhr.onload = function () {
         alerta('feed-fixo', xhr.responseText.split('|')[1]);
-        resolve();
+        resolve(xhr.responseText);
       };
       xhr.onerror = function () {
+        console.log(xhr.statusText);
         reject(xhr.statusText);
       };
       var formData = new FormData();
@@ -502,6 +508,7 @@ function topico_atualiza(ele, pergunta, coluna){
 
 function conteudo_atualiza(ele, id_conteudo, coluna){
     
+console.log('conteudo_atualiza 1');     
     if (!coluna) {
         coluna = ele.id.toUpperCase();
     }    
@@ -554,7 +561,7 @@ console.log(conteudo_ant);
                 } else if (tipo_ant == 'atributo') {
                     ele.setAttribute('data-old') = conteudo;
                 }
-            }    
+            } 
         });    
     }
 }    
@@ -617,6 +624,20 @@ function conteudo_tela_cadastro_altera(ele){
         }    
     });    
    
+
+}    
+
+function conteudo_topico_seleciona(ele){
+    
+    let tr            = ele.parentNode;
+    let pergunta      = tr.getAttribute('data-pergunta');
+    let selecionados  = tr.parentNode.querySelectorAll('.lista-topico-item.selecionado');
+    for (let a=0;a<selecionados.length;a++){
+        selecionados[a].classList.remove('selecionado');
+    }
+    tr.classList.add('selecionado');
+
+    conteudo_tela_conteudos(pergunta);
 
 }    
 
@@ -712,6 +733,11 @@ function cadastro_conteudo_salvar(id_conteudo) {
 }
 
 function cadcon_toolbar_habilita (id_conteudo, habita) {
+
+console.log('cadcon_toolbar_habilita 1');       
+console.log(id_conteudo);   
+console.log(habita );
+
     let toolbar = document.getElementById('cadcon-texto-toolbar-' + id_conteudo);
     if (toolbar) {
         if (habita) {
@@ -743,20 +769,317 @@ console.log('x0');
         console.log('end', pos_sel_f);
         console.log('sel', texto_sel);
 
-    if (acao == "ESTILO") {
+    if (acao == 'ESTILO' || acao == 'URL') {
         if ((pos_sel_f - pos_sel_i) == 0) {
-            alerta('feed-fixo', 'Necess&aacute;rio selecionar o texto a ser formatado.'); 
-        } else {
-            const estilos = window.prompt('Informe c\u00f3digos de estilos separados por | (pipe):')
-            if (estilos) { 
-            formatado = '<DOCF CLASSE=' + estilos.toUpperCase().trim() + '>'+texto_sel+'</DOCF>';
-            }  
+            alerta('feed-fixo', 'Necess&aacute;rio selecionar um texto.'); 
+            return;
         } 
+    }    
 
-        if (formatado.length > 0) {
+                
+    if (acao == 'ESTILO') {
+        // Call the server to get the styles popup
+        call('estilo_popup', 'prm_id_conteudo='+id_conteudo).then(function(resposta) {
+            // Add the popup to the DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = resposta;
+
+            document.body.appendChild(tempDiv.children[1]); // Coloca primeiro o overlay 
+            document.body.appendChild(tempDiv.firstChild);  // coloca o popup 
+
+            // Show the popup
+            const popup   = document.getElementById('estilos-popup');
+            const overlay = document.getElementById('estilos-overlay');
+
+            popup.style.display   = 'block';
+            overlay.style.display = 'block';
+                    
+            // Set up event handlers for the buttons
+            document.getElementById('estilos-aplicar').addEventListener('click', function() {
+                // Get selected styles
+                const select = document.getElementById('estilos-select');
+                const estilos = Array.from(select.selectedOptions)
+                    .map(option => option.value)
+                    .join('|');
+                
+                if (estilos.length > 0) {
+                    formatado = '<DOCF CLASSE=' + estilos.toUpperCase().trim() + '>'+texto_sel+'</DOCF>';
+                    texto = texto.substring(0,pos_sel_i) + formatado + texto.substring(pos_sel_f,texto.length+1); 
+                    textarea.value = texto; 
+                }  
+                
+                // Close the popup
+                closeEstilosPopup();
+            });
+            
+            document.getElementById('estilos-cancelar').addEventListener('click', function() {
+                closeEstilosPopup();
+            });
+            
+            // Close popup when clicking on overlay
+            overlay.addEventListener('click', function() {
+                closeEstilosPopup();
+            });
+        });
+        
+        // Function to close the styles popup
+        function closeEstilosPopup() {
+            const popup   = document.getElementById('estilos-popup');
+            const overlay = document.getElementById('estilos-overlay');
+            textarea.focus();                
+            if (popup)   { popup.remove(); }
+            if (overlay) { overlay.remove();}
+        }
+
+    } else if (acao == 'URL') {
+        // Call the server to get the URL popup
+        call('url_popup', '').then(function(resposta) {
+            // Add the popup to the DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = resposta;
+
+            document.body.appendChild(tempDiv.children[1]); // Coloca primeiro o overlay 
+            document.body.appendChild(tempDiv.firstChild);  // coloca o popup 
+
+            // Show the popup
+            const popup = document.getElementById('url-popup');
+            const overlay = document.getElementById('url-overlay');
+
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+            
+            // Focus on the URL input
+            document.getElementById('url-input').focus();
+                    
+            // Set up event handlers for the buttons
+            document.getElementById('url-aplicar').addEventListener('click', function() {
+                // Get the URL
+                const url = document.getElementById('url-input').value.trim();
+                
+                if (url) {
+                    formatado = '<DOCF LINK=' + url + '>' + texto_sel + '</DOCF>';
+                    texto = texto.substring(0, pos_sel_i) + formatado + texto.substring(pos_sel_f, texto.length + 1); 
+                    textarea.value = texto; 
+                }
+                
+                // Close the popup
+                closeUrlPopup();
+            });
+            
+            document.getElementById('url-cancelar').addEventListener('click', function() {
+                closeUrlPopup();
+            });
+            
+            // Close popup when clicking on overlay
+            overlay.addEventListener('click', function() {
+                closeUrlPopup();
+            });
+            
+            // Handle Enter key in the input field
+            document.getElementById('url-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('url-aplicar').click();
+                }
+            });
+        });
+        
+        // Function to close the URL popup
+        function closeUrlPopup() {
+            const popup = document.getElementById('url-popup');
+            const overlay = document.getElementById('url-overlay');
+            textarea.focus();
+            if (popup)   { popup.remove(); }
+            if (overlay) { overlay.remove(); }
+        }
+    } else if (acao == 'TOPICO') {
+        // Call the server to get the topic popup
+        call('topico_popup', '').then(function(resposta) {
+            // Add the popup to the DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = resposta;
+    
+            document.body.appendChild(tempDiv.children[1]); // Coloca primeiro o overlay 
+            document.body.appendChild(tempDiv.firstChild);  // coloca o popup 
+    
+            // Show the popup
+            const popup = document.getElementById('topico-popup');
+            const overlay = document.getElementById('topico-overlay');
+    
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+            
+            // Focus on the search input
+            document.getElementById('topico-search').focus();
+            document.getElementById("topico-search").addEventListener("input", function() {
+              const searchText = this.value.toLowerCase();
+              const options = document.getElementById("topico-select").options;
+              for (let i = 0; i < options.length; i++) {
+                const optionText = options[i].text.toLowerCase();
+                options[i].style.display = optionText.includes(searchText) ? "" : "none";
+              }
+            });
+                    
+            // Set up event handlers for the buttons
+            document.getElementById('topico-aplicar').addEventListener('click', function() {
+                // Get the selected topic
+                const select = document.getElementById('topico-select');
+                const selectedOption = select.options[select.selectedIndex];
+                
+                if (selectedOption) {
+                    const topicoId = selectedOption.value;
+                    
+                    // If text is selected, use it as the link text, otherwise use the topic title
+                    const linkText = (pos_sel_f - pos_sel_i > 0) ? texto_sel : selectedOption.text.split(' - ')[1];
+                    formatado = '<DOCF PERG=' + topicoId + '>' + linkText + '</DOCF>';
+                    texto = texto.substring(0, pos_sel_i) + formatado + texto.substring(pos_sel_f, texto.length + 1);
+                    textarea.value = texto;
+                }
+                
+                // Close the popup
+                closeTopicoPopup();
+            });
+            
+            document.getElementById('topico-cancelar').addEventListener('click', function() {
+                closeTopicoPopup();
+            });
+            
+            // Close popup when clicking on overlay
+            overlay.addEventListener('click', function() {
+                closeTopicoPopup();
+            });
+            
+            // Handle double-click on select to apply
+            document.getElementById('topico-select').addEventListener('dblclick', function() {
+                document.getElementById('topico-aplicar').click();
+            });
+        });
+        
+        // Function to close the topic popup
+        function closeTopicoPopup() {
+            const popup = document.getElementById('topico-popup');
+            const overlay = document.getElementById('topico-overlay');
+            textarea.focus();
+            
+            if (popup) {
+                popup.remove();
+            }
+            
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+    } else if (acao == 'IMAGEM') {
+        // Chamar o servidor para obter o popup de imagem
+        call('imagem_popup', '').then(function(resposta) {
+            // Adicionar o popup ao DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = resposta;
+    
+            document.body.appendChild(tempDiv.children[1]); // Coloca primeiro o overlay 
+            document.body.appendChild(tempDiv.firstChild);  // coloca o popup 
+    
+            // Mostrar o popup
+            const popup = document.getElementById('imagem-popup');
+            const overlay = document.getElementById('imagem-overlay');
+    
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+            
+            // Configurar o botão de seleção de arquivo
+            document.getElementById('btn-selecionar-arquivo').addEventListener('click', function() {
+                document.getElementById('imagem-arquivos').click();
+            });
+            
+            // Atualizar o nome do arquivo quando selecionado
+            document.getElementById('imagem-arquivos').addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    document.getElementById('nome-arquivo-imagem').value = this.files[0].name;
+                }
+            });
+            
+            // Configurar manipuladores de eventos para os botões
+            document.getElementById('imagem-aplicar').addEventListener('click', function() {
+                const fileInput = document.getElementById('imagem-arquivos');
+
+                // Verificar se um arquivo foi selecionado
+                if (fileInput.files.length === 0) {
+                    alerta('feed-fixo', 'Selecione uma imagem primeiro.');
+                    return;
+                }
+
+                arquivo = fileInput.files[0];
+                const nomeArquivo = fileInput.files[0].name;                
+
+                const aplicar = async () => {
+                    console.log('antes');
+                    const retorno = await enviarArquivo(arquivo);
+                    console.log('depois');
+                    console.log(retorno);
+                    if (retorno.split('|')[0] == 'OK') {
+                        formatado = '<DOCF IMG=' + nomeArquivo + '>' + (texto_sel || '') + '</DOCF>';
+                        texto = texto.substring(0, pos_sel_i) + formatado + texto.substring(pos_sel_f, texto.length + 1);
+                        textarea.value = texto;
+                        closeImagemPopup();
+                    }
+                };
+                aplicar();
+            });
+            
+            document.getElementById('imagem-cancelar').addEventListener('click', function() {
+                closeImagemPopup();
+            });
+            
+            // Fechar popup ao clicar no overlay
+            overlay.addEventListener('click', function() {
+                closeImagemPopup();
+            });
+        });
+        
+        // Função para fechar o popup de imagem
+        function closeImagemPopup() {
+            const popup = document.getElementById('imagem-popup');
+            const overlay = document.getElementById('imagem-overlay');
+            textarea.focus();
+            
+            if (popup) {
+                popup.remove();
+            }
+            
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+    } else if (acao == 'LIMPAR') {
+        if (confirm('Deseja realmente limpar a formata\u00e7\u00e3o do texto?')) {
+console.log('x0', pos_sel_i, pos_sel_f);
+            if (pos_sel_i == pos_sel_f) {
+              pos_sel_i = 0; 
+              pos_sel_f = texto.length-1;
+            }  
+console.log('x1', pos_sel_i, pos_sel_f);            
+            formatado = texto.substring(pos_sel_i, pos_sel_f);
+            let achou = 'S',
+                count = 0,
+                pos_i = 0,
+                pos_f = 0;
+            formatado = formatado.replace(/\<\/DOCF\>/g,''); 
+            while (achou == 'S' && count < 100) {
+              count     = count + 1;
+              pos_i = formatado.indexOf('<DOCF');
+              pos_f = formatado.substring(pos_i, formatado.length+1).indexOf('>') + pos_i +1;
+              if (pos_i < 0 || pos_f < 0 || pos_f < pos_i) {
+                achou = 'N';
+              } else {
+                formatado = formatado.substring(0,pos_i) + formatado.substring(pos_f,formatado.length+1); 
+              }
+            }
             texto = texto.substring(0,pos_sel_i) + formatado + texto.substring(pos_sel_f,texto.length+1); 
-            textarea.value = texto; 
+            textarea.value = texto;          
         }  
-      
-    }   
+    
+    }    
+
+
+    
+     
 }
