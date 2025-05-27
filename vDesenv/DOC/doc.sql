@@ -1241,12 +1241,13 @@ begin
             ws_class     := replace(a.id_estilo,'|',' ')||'"';
         end if; 
 
-        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" data-id_conteudo="'||a.id_conteudo||'" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
-            
+        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
+
             htp.p('<div id="cadcon-botoes-'||a.id_conteudo||'" class="cadcon-botoes">');
-                htp.p('<a id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-conteudo-botao" onclick="this.classList.toggle(''selecionado'');">');
+                htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem" onclick="conteudo_ordem_click(event, '''||a.id_conteudo||''');">');
                     htp.p('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490" xml:space="preserve"><g><g><path d="M487.557,237.789l-64-64c-3.051-3.051-7.659-3.947-11.627-2.304c-3.989,1.643-6.592,5.547-6.592,9.856v32h-128v-128h32 c4.309,0,8.213-2.603,9.856-6.592c1.643-3.989,0.725-8.576-2.304-11.627l-64-64c-4.16-4.16-10.923-4.16-15.083,0l-64,64 c-3.051,3.072-3.968,7.637-2.325,11.627c1.643,3.989,5.547,6.592,9.856,6.592h32v128h-128v-32c0-4.309-2.603-8.213-6.592-9.856 c-3.925-1.664-8.555-0.747-11.627,2.304l-64,64c-4.16,4.16-4.16,10.923,0,15.083l64,64c3.072,3.072,7.68,4.011,11.627,2.304 c3.989-1.621,6.592-5.525,6.592-9.835v-32h128v128h-32c-4.309,0-8.213,2.603-9.856,6.592c-1.643,3.989-0.725,8.576,2.304,11.627 l64,64c2.091,2.069,4.821,3.115,7.552,3.115s5.461-1.045,7.552-3.115l64-64c3.051-3.051,3.968-7.637,2.304-11.627 c-1.664-3.989-5.547-6.592-9.856-6.592h-32v-128h128v32c0,4.309,2.603,8.213,6.592,9.856c3.947,1.685,8.576,0.747,11.627-2.304 l64-64C491.717,248.712,491.717,241.971,487.557,237.789z"></path></g></g></svg>');
-                htp.p('</a>');
+                htp.p('</div>');
+
                 htp.p('<a id="cadcon-inserir-'||a.id_conteudo||'" class="cadcon-conteudo-botao inserir" onclick="cadastro_conteudo_inserir('''||prm_pergunta||''','''||a.id_conteudo||''');" title="Cria um novo conteúdo abaixo." class="cadcon-conteudo-botao">+</a>'); 
                 htp.p('<a id="cadcon-excluir-'||a.id_conteudo||'" class="cadcon-conteudo-botao excluir" onclick="cadastro_conteudo_excluir('''||a.id_conteudo||''');" title="Exclui o conteúdo atual." class="cadcon-conteudo-botao">x</a>'); 
             htp.p('</div>');
@@ -1289,12 +1290,20 @@ begin
                             htp.p('<button class="cadcon-texto-toolbar-btn" data-action="LIMPAR"  onclick="cadcon_toolbar_actions(this);" title="Limpa qualquer formatação/estilo aplicado dentro do texto.">Limpar</button>');
                         htp.p('</div>');
                         --
-                        --htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'" autofocus contenteditable="true" class="cadcon-texto '||ws_class||'" '||
-                        htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" '||
-                            ' onblur="console.log(''g1'');conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');"'||
-                            ' onclick="console.log(''onclick''); cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
+                        -- Div para visualização (visível inicialmente)
+                        htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||a.ds_texto||'</div>');
+
+                        htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" style="display:none;"'||
+                            ' onblur="finishTextareaEdit('''||a.id_conteudo||''');"'||
+                            ' onclick="cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
+
+                        --htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" '||
+                        --    ' onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');"'||
+                        --    ' onclick="cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
+
+                        -- Campo oculto para armazenar o valor anterior
                         htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</textarea>');
-                        --htp.p('<div id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</div>');
+
                     htp.p('</div>'); 
                 end if;        
             htp.p('</div>');    
@@ -1476,6 +1485,66 @@ exception
         commit;
         htp.p('ERRO|Erro atualizando conteúdo.');
 end conteudo_atualiza;
+
+
+----------------------------------------------------------------------------------------------
+procedure conteudo_move (prm_id_conteudo_origem varchar2,
+                          prm_id_conteudo_destino varchar2) as
+    ws_cd_pergunta      varchar2(20);
+    ws_sq_origem        number;
+    ws_sq_destino       number;
+    ws_sq_temp          number := 9999;
+begin
+    -- Obter o cd_pergunta e as sequências dos conteúdos
+    select cd_pergunta, sq_conteudo into ws_cd_pergunta, ws_sq_origem
+    from doc_conteudos
+    where id_conteudo = prm_id_conteudo_origem;
+    
+    select sq_conteudo into ws_sq_destino
+    from doc_conteudos
+    where id_conteudo = prm_id_conteudo_destino;
+    
+    -- Primeiro, mover o item de origem para uma sequência temporária alta
+    update doc_conteudos
+    set sq_conteudo = ws_sq_temp
+    where id_conteudo = prm_id_conteudo_origem;
+    
+    -- Ajustar as sequências dos itens entre origem e destino
+    if ws_sq_origem < ws_sq_destino then
+        -- Movendo para baixo: diminuir a sequência dos itens entre origem e destino
+        update doc_conteudos
+        set sq_conteudo = sq_conteudo - 1
+        where cd_pergunta = ws_cd_pergunta
+        and sq_conteudo > ws_sq_origem
+        and sq_conteudo <= ws_sq_destino;
+        
+        -- Colocar o item de origem logo após o destino
+        update doc_conteudos
+        set sq_conteudo = ws_sq_destino
+        where id_conteudo = prm_id_conteudo_origem;
+    else
+        -- Movendo para cima: aumentar a sequência dos itens entre destino e origem
+        update doc_conteudos
+        set sq_conteudo = sq_conteudo + 1
+        where cd_pergunta = ws_cd_pergunta
+        and sq_conteudo >= ws_sq_destino
+        and sq_conteudo < ws_sq_origem;
+        
+        -- Colocar o item de origem logo no lugar do destino
+        update doc_conteudos
+        set sq_conteudo = ws_sq_destino
+        where id_conteudo = prm_id_conteudo_origem;
+    end if;
+    
+    commit;
+    htp.p('OK|Conteúdo movido com sucesso.');
+exception
+    when others then
+        rollback;
+        insert into bi_log_sistema values (sysdate, 'conteudo_mover: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');
+        commit;
+        htp.p('ERRO|Erro ao mover conteúdo: ' || sqlerrm);
+end conteudo_move;
 
 
 -----------------------------------------------------------------------------------------------------------

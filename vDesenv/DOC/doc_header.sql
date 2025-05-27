@@ -90,6 +90,9 @@ procedure conteudo_atualiza (prm_id_conteudo    varchar2,
                              prm_coluna         varchar2,
                              prm_conteudo       varchar2 default null);
 
+procedure conteudo_move (prm_id_conteudo_origem varchar2,
+                         prm_id_conteudo_destino varchar2);
+
 procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2);
 
 procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2); 

@@ -1051,12 +1051,10 @@ console.log('x0');
         }
     } else if (acao == 'LIMPAR') {
         if (confirm('Deseja realmente limpar a formata\u00e7\u00e3o do texto?')) {
-console.log('x0', pos_sel_i, pos_sel_f);
             if (pos_sel_i == pos_sel_f) {
               pos_sel_i = 0; 
               pos_sel_f = texto.length-1;
             }  
-console.log('x1', pos_sel_i, pos_sel_f);            
             formatado = texto.substring(pos_sel_i, pos_sel_f);
             let achou = 'S',
                 count = 0,
@@ -1078,8 +1076,146 @@ console.log('x1', pos_sel_i, pos_sel_f);
         }  
     
     }    
+}
 
+// Variável global para armazenar o ID do conteúdo selecionado para movimento
+let conteudoMovendoId = null;
 
+// Função para iniciar o modo de movimento de conteúdo
+function conteudo_mover_iniciar(id_conteudo) {
+    // Se já tiver um conteúdo selecionado, cancela a seleção
+    if (conteudoMovendoId) {
+        document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('selecionado');
+        conteudoMovendoId = null;
+        return;
+    }
     
-     
+    // Marca o botão como selecionado
+    document.getElementById('cadcon-ordem-' + id_conteudo).classList.add('selecionado');
+    conteudoMovendoId = id_conteudo;
+    
+    // Adiciona uma classe visual para indicar que está em modo de movimento
+    document.querySelectorAll('.cadastro-conteudo-item').forEach(item => {
+        if (item.id !== 'conteudo-item-' + id_conteudo) {
+            item.classList.add('modo-mover');
+        }
+    });
+    
+    // Mostra uma mensagem para o usuário
+    alerta('feed-fixo', 'Clique no item para onde deseja mover o conteúdo');
+}
+
+// Função para completar o movimento do conteúdo
+function conteudo_mover_completar(id_conteudo_destino) {
+    // Verifica se há um conteúdo selecionado para mover
+    if (!conteudoMovendoId) {
+        return;
+    }
+    
+    // Verifica se não está tentando mover para o mesmo item
+    if (conteudoMovendoId === id_conteudo_destino) {
+        conteudo_mover_cancelar();
+        return;
+    }
+    
+    // Chama a procedure do servidor para atualizar as sequências
+    call('conteudo_move', 'prm_id_conteudo_origem=' + conteudoMovendoId + '&prm_id_conteudo_destino=' + id_conteudo_destino)
+        .then(function(resposta) {
+            const resultado = resposta.split('|');
+            
+            if (resultado[0] === 'OK') {
+                // Obtém os elementos DOM
+                const itemOrigem = document.getElementById('conteudo-item-' + conteudoMovendoId);
+                const itemDestino = document.getElementById('conteudo-item-' + id_conteudo_destino);
+                const container = itemOrigem.parentNode;
+                
+                // Remove o item de origem
+                container.removeChild(itemOrigem);
+                
+                // Insere o item de origem após o item de destino
+                //if (itemDestino.nextSibling) {
+                if (itemDestino.previousSibling) {
+                    container.insertBefore(itemOrigem, itemDestino.previousSibling);
+                } else {
+                    container.appendChild(itemOrigem);
+                }
+                
+                // Mostra mensagem de sucesso
+                alerta('feed-fixo', resultado[1]);
+            } else {
+                // Mostra mensagem de erro
+                alerta('feed-fixo', resultado[1]);
+            }
+            
+            // Limpa o modo de movimento
+            conteudo_mover_cancelar();
+        });
+}
+
+// Função para cancelar o movimento
+function conteudo_mover_cancelar() {
+    if (conteudoMovendoId) {
+        document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('selecionado');
+        conteudoMovendoId = null;
+        document.querySelectorAll('.cadastro-conteudo-item.modo-mover').forEach(item => {
+            item.classList.remove('modo-mover');
+        });
+    }
+}
+
+// Função para lidar com o clique no botão de ordem
+function conteudo_ordem_click(event, id_conteudo) {
+    event.stopPropagation(); // Impede que o evento se propague para o item pai
+    
+    if (conteudoMovendoId) {
+        if (id_conteudo == conteudoMovendoId) {
+            conteudo_mover_cancelar();  // Se já estiver em modo de movimento, cancela
+        } else {
+            conteudo_mover_completar(id_conteudo);
+            event.stopPropagation(); // Impede que o evento se propague
+            event.preventDefault(); // Impede a ação padrão
+        } 
+    } else {
+        conteudo_mover_iniciar(id_conteudo); // Inicia o modo de movimento
+    }
+}
+
+// Função para alternar para o modo de edição
+function toggleTextareaEdit(id_conteudo) {
+    // Ocultar a div de visualização
+    const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
+    const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
+    
+    if (viewDiv && textarea) {
+        let altura = viewDiv.clientHeight + 'px';
+        
+console.log('viewDiv.clientHeight', viewDiv.clientHeight)        ;        
+        viewDiv.style.display = 'none';
+        textarea.style.minHeight = altura;
+        textarea.style.display = 'block';
+        textarea.focus();
+       
+        cadcon_toolbar_habilita(id_conteudo, true); // Habilitar a barra de ferramentas
+    }
+}
+
+// Função para finalizar a edição e voltar para o modo de visualização
+function finishTextareaEdit(id_conteudo) {
+    const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
+    const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
+    
+    if (viewDiv && textarea) {
+        // Atualizar o conteúdo da div de visualização com o conteúdo do textarea
+        viewDiv.innerText = textarea.value;
+        
+        // Atualizar o conteúdo no servidor
+        conteudo_atualiza(textarea, id_conteudo, 'DS_TEXTO');
+        
+        // Ocultar o textarea e mostrar a div
+        textarea.style.display = 'none';
+        viewDiv.style.display = 'block';
+        
+        // Desabilitar a barra de ferramentas
+        cadcon_toolbar_habilita(id_conteudo, false);
+    }
 }
