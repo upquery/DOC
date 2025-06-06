@@ -568,6 +568,19 @@ console.log(conteudo_ant);
 
 function conteudo_tela_cadastro(ele, id_conteudo){
     
+
+    if (conteudoMovendoId) {
+        if (id_conteudo == conteudoMovendoId) {
+            conteudo_mover_cancelar();  // Se já estiver em modo de movimento, cancela
+        } else {
+            conteudo_mover_completar(id_conteudo);
+            event.stopPropagation(); // Impede que o evento se propague
+            event.preventDefault(); // Impede a ação padrão
+        } 
+        return; // Não continua com a função se estiver movendo
+    }
+
+
     call('conteudo_tela_cadastro', 'prm_id_conteudo='+id_conteudo).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
@@ -673,15 +686,14 @@ function cadastro_conteudo_inserir(pergunta, id_conteudo) {
         let resultado = resposta.split('|');
         
         if (resultado[0] == 'OK') {
-            // Refresh the content area to show the new item
+            // Recarrega toda a tela com os conteúdos atualizados
             conteudo_tela_conteudos(pergunta);
             alerta('', resultado[1]);
-            
-            // Select the new content for editing
+
+            // Recarrega a tela de cadastro / alteração do conteúdo 
             let id_conteudo = resultado[2];
             setTimeout(function() {
-                //let novoConteudo = document.querySelector('#cadcon-conteudo-' + id_conteudo)?.closest('.cadastro-conteudo-item');
-                let novoConteudo = document.querySelector('#cadcon-conteudo-' + id_conteudo);
+                let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
                 if (novoConteudo) {
                     conteudo_tela_cadastro(novoConteudo, id_conteudo);
                 }
@@ -720,12 +732,16 @@ function cadastro_conteudo_salvar(id_conteudo) {
     ).then(function(resposta) {
         alerta('', resposta.split('|')[1]);
         if (resposta.split('|')[0] == 'OK') {
-            // Refresh a tela de conteudos 
+            // Recarrega a tela de conteudos 
             let cd_pergunta = document.getElementById('cadastro-conteudo-id').getAttribute('data-pergunta');
             if (cd_pergunta) {
                 conteudo_tela_conteudos(cd_pergunta);
                 setTimeout(function() {
-                    document.getElementById('conteudo-item-' + id_conteudo).classList.add('selecionado');
+                    // Recarrega a tela de cadastro / alteração do conteúdo
+                    let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
+                    if (novoConteudo) {
+                        conteudo_tela_cadastro(novoConteudo, id_conteudo);
+                    }  
                 }, 500);
             }
         }
@@ -1077,15 +1093,10 @@ let conteudoMovendoId = null;
 
 // Função para iniciar o modo de movimento de conteúdo
 function conteudo_mover_iniciar(id_conteudo) {
-    // Se já tiver um conteúdo selecionado, cancela a seleção
-    if (conteudoMovendoId) {
-        document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('selecionado');
-        conteudoMovendoId = null;
-        return;
-    }
     
-    // Marca o botão como selecionado
-    document.getElementById('cadcon-ordem-' + id_conteudo).classList.add('selecionado');
+    // Marca o botão como selecionado e o bloco como marcador para mover 
+    document.getElementById('cadcon-ordem-' + id_conteudo).classList.add('marcado-mover');
+    document.getElementById('conteudo-item-' + id_conteudo).classList.add('marcado-mover');
     conteudoMovendoId = id_conteudo;
     
     // Adiciona uma classe visual para indicar que está em modo de movimento
@@ -1149,7 +1160,8 @@ function conteudo_mover_completar(id_conteudo_destino) {
 // Função para cancelar o movimento
 function conteudo_mover_cancelar() {
     if (conteudoMovendoId) {
-        document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('selecionado');
+        document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('marcado-mover');
+        document.getElementById('conteudo-item-' + conteudoMovendoId).classList.remove('marcado-mover');
         conteudoMovendoId = null;
         document.querySelectorAll('.cadastro-conteudo-item.modo-mover').forEach(item => {
             item.classList.remove('modo-mover');
@@ -1159,8 +1171,7 @@ function conteudo_mover_cancelar() {
 
 // Função para lidar com o clique no botão de ordem
 function conteudo_ordem_click(event, id_conteudo) {
-    event.stopPropagation(); // Impede que o evento se propague para o item pai
-    
+    event.stopPropagation(); // Impede que o evento se propague para o item pai   
     if (conteudoMovendoId) {
         if (id_conteudo == conteudoMovendoId) {
             conteudo_mover_cancelar();  // Se já estiver em modo de movimento, cancela
@@ -1176,6 +1187,12 @@ function conteudo_ordem_click(event, id_conteudo) {
 
 // Função para alternar para o modo de edição
 function toggleTextareaEdit(id_conteudo) {
+    
+    // Se está em modo de movimento então não faz nada
+    if (conteudoMovendoId) {
+        return;
+    } 
+
     // Ocultar a div de visualização
     const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
     const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
@@ -1183,7 +1200,6 @@ function toggleTextareaEdit(id_conteudo) {
     if (viewDiv && textarea) {
         let altura = (viewDiv.clientHeight - 42) + 'px';
 
-console.log('viewDiv.clientHeight', viewDiv.clientHeight)        ;        
         viewDiv.style.display = 'none';
         textarea.style.minHeight = altura;
         textarea.style.display = 'block';

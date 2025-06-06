@@ -1949,7 +1949,7 @@ ul#feed-fixo li span.show {
   display: block;
   width: 100%;
   height: 100%;
-  overflow-x: scroll;
+  overflow-x: hidden;
 }
 
 .cadastro-conteudo-item {
@@ -2264,13 +2264,15 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 }
 
 /* Estilo para itens em modo de movimento */
-.cadastro-conteudo-item.modo-mover {
+.cadastro-conteudo-item.marcado-mover {
+  background-color: #f0f8ff;
   border-color: #bbdefb;
   cursor: pointer;
 }
 
 .cadastro-conteudo-item.modo-mover:hover {
-  background-color: #f0f8ff;
+  border-color: #bbdefb;
+  cursor: pointer;
 }
 
 
@@ -2307,7 +2309,7 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   fill: #333;
 }
 
-.cadcon-ordem.selecionado {
+.cadcon-ordem.marcado-mover {
   background-color: #d0d0d0;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
   transform: translateY(1px);
@@ -2319,7 +2321,7 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 }
 
 .cadcon-texto-view {
-  width: 100%;
+  width: calc(100% - 10px);
   white-space: pre-wrap;  
   padding: 5px;
   height: calc(100% - 10px);

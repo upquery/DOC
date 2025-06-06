@@ -1230,6 +1230,8 @@ begin
 
     htp.p('<input type="hidden" id="cadastro-conteudo-id" data-pergunta="'||prm_pergunta||'"/>');
 
+    htp.p('<div id="conteudo-item-0" style="height:37px"></div>'); -- div para criar espaço superior para o primeiro item
+
     for a in (select * from doc_conteudos 
               where cd_pergunta = prm_pergunta 
                 and id_conteudo = nvl(prm_id_conteudo,id_conteudo)
@@ -1247,9 +1249,6 @@ begin
                 htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem" onclick="conteudo_ordem_click(event, '''||a.id_conteudo||''');">');
                     htp.p('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490" xml:space="preserve"><g><g><path d="M487.557,237.789l-64-64c-3.051-3.051-7.659-3.947-11.627-2.304c-3.989,1.643-6.592,5.547-6.592,9.856v32h-128v-128h32 c4.309,0,8.213-2.603,9.856-6.592c1.643-3.989,0.725-8.576-2.304-11.627l-64-64c-4.16-4.16-10.923-4.16-15.083,0l-64,64 c-3.051,3.072-3.968,7.637-2.325,11.627c1.643,3.989,5.547,6.592,9.856,6.592h32v128h-128v-32c0-4.309-2.603-8.213-6.592-9.856 c-3.925-1.664-8.555-0.747-11.627,2.304l-64,64c-4.16,4.16-4.16,10.923,0,15.083l64,64c3.072,3.072,7.68,4.011,11.627,2.304 c3.989-1.621,6.592-5.525,6.592-9.835v-32h128v128h-32c-4.309,0-8.213,2.603-9.856,6.592c-1.643,3.989-0.725,8.576,2.304,11.627 l64,64c2.091,2.069,4.821,3.115,7.552,3.115s5.461-1.045,7.552-3.115l64-64c3.051-3.051,3.968-7.637,2.304-11.627 c-1.664-3.989-5.547-6.592-9.856-6.592h-32v-128h128v32c0,4.309,2.603,8.213,6.592,9.856c3.947,1.685,8.576,0.747,11.627-2.304 l64-64C491.717,248.712,491.717,241.971,487.557,237.789z"></path></g></g></svg>');
                 htp.p('</div>');
-
-                htp.p('<a id="cadcon-inserir-'||a.id_conteudo||'" class="cadcon-conteudo-botao inserir" onclick="cadastro_conteudo_inserir('''||prm_pergunta||''','''||a.id_conteudo||''');" title="Cria um novo conteúdo abaixo." class="cadcon-conteudo-botao">+</a>'); 
-                htp.p('<a id="cadcon-excluir-'||a.id_conteudo||'" class="cadcon-conteudo-botao excluir" onclick="cadastro_conteudo_excluir('''||a.id_conteudo||''');" title="Exclui o conteúdo atual." class="cadcon-conteudo-botao">x</a>'); 
             htp.p('</div>');
 
             htp.p('<div id="cadcon-conteudo-'||a.id_conteudo||'" class="cadcon-conteudo" data-tp_conteudo="'||a.tp_conteudo||'">');
@@ -1399,6 +1398,8 @@ begin
 
     htp.p('<div class="cadastro-conteudo-botoes">');
         htp.p('<a onclick="cadastro_conteudo_salvar('''||prm_id_conteudo||''');" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">SALVAR</a>'); 
+        htp.p('<a onclick="cadastro_conteudo_inserir('''||ws_cont.cd_pergunta||''','''||prm_id_conteudo||''');" title="Cria um novo conteúdo abaixo do conteúdo atual." class="cadastro-conteudo-botao">NOVO</a>');         
+        htp.p('<a onclick="cadastro_conteudo_excluir('''||prm_id_conteudo||''');" title="Excluir o conteúdo atual." class="cadastro-conteudo-botao">EXCLUIR</a>');         
     htp.p('</div>');
 
 exception
