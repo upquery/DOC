@@ -1954,9 +1954,8 @@ ul#feed-fixo li span.show {
 
 .cadastro-conteudo-item {
   display: flex;
-  border: 3px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 5px;
   margin-bottom: 5px;
 }
@@ -1965,6 +1964,7 @@ ul#feed-fixo li span.show {
   display: flex;
   border-style: dashed;
   border-color:#7d95dd;  
+  border-width: 2px;
 }
 
 .cadastro-conteudo-botoes {
@@ -2111,13 +2111,14 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 
 .cadcon-texto {
   position: relative;
-  top: -40px;
+  /* top: -40px; */ 
   width: 100%;
   white-space: pre-wrap;  
   padding: 5px;
-  height: calc(100% - 10px);
+  /* height: calc(100% - 10px); */ 
   font-family: 'Arial';
   font-size: 14px;
+  resize: vertical;
 }
 
 /* Toolbar for text editing */
@@ -2125,7 +2126,7 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   display: flex;
   width: fit-content;  
   height: 30px;
-  top: -45px;
+  /* top: -45px; */ 
   position: absolute;
   background-color: #f0f0f0;
   border-radius: 6px;
@@ -2165,6 +2166,10 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   min-width: 60px;
 }
 
+.cadcon-texto-toolbar-btn.tipo1 {
+  background-color: #7a7a7a;
+  color: white;
+}  
 .cadcon-texto-toolbar-btn:hover {
   background-color: #e0e0e0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -2278,8 +2283,8 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 
 .cadcon-ordem {
   display: flex;
-  width: 40px;
-  height: 40px;
+  width: 25px;
+  height: 25px;
   margin-right: 10px;
   align-items: center;
   justify-content: center;
@@ -2299,8 +2304,8 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
 }
 
 .cadcon-ordem svg {
-  width: 24px;
-  height: 24px;
+  width: 17px;
+  height: 17px;
   fill: #555;
   transition: fill 0.2s ease;
 }
@@ -2324,13 +2329,13 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   width: calc(100% - 10px);
   white-space: pre-wrap;  
   padding: 5px;
-  height: calc(100% - 10px);
+  /* height: calc(100% - 10px); */ 
   font-family: 'Arial';
   font-size: 14px;
   border: 1px solid transparent;
   cursor: text;
   background-color: #fafafa;
-  min-height: 100px;
+  /* min-height: 70px; */ 
 }
 
 .cadcon-texto-view:hover {

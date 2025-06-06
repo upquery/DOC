@@ -160,7 +160,7 @@ document.addEventListener('click', function(e){
         chamar('detalhe_pergunta', cd_pergunta, '', tip_user, 'somente_pergunta', 'N' );
         
 
-    }    
+    }
 
 
 });
@@ -429,14 +429,18 @@ async function uploadArquivos(input_id) {
     var arquivos = arquivosInput.files;
     var acao = 'dwu.doc.upload';
    
-    if (input_id.length == 0) {
-        let ele = document.getElementById('escolherArquivoButton');
-        let id_conteudo = ele.getAttribute('data-id_topico');
-        conteudo_atualiza(ele, id_conteudo, 'DS_TITULO');
-    }
+    // if (input_id.length == 0) {
+    //     let ele = document.getElementById('escolherArquivoButton');
+    //     let id_conteudo = ele.getAttribute('data-id_topico');
+    //     conteudo_atualiza(ele, id_conteudo, 'DS_TITULO');
+    // }
 
-    var arquivo = arquivos[0];
-    await enviarArquivo(arquivo, acao);
+    if (arquivos.length == 0) {
+        alerta('feed-fixo', 'Nenhum arquivo selecionado para upload.');
+    } else {
+        var arquivo = arquivos[0];
+        await enviarArquivo(arquivo, acao);
+    }    
 }
 
 function enviarArquivo(arquivo, acao) {
@@ -449,7 +453,6 @@ function enviarArquivo(arquivo, acao) {
         resolve(xhr.responseText);
       };
       xhr.onerror = function () {
-        console.log(xhr.statusText);
         reject(xhr.statusText);
       };
       var formData = new FormData();
@@ -508,7 +511,6 @@ function topico_atualiza(ele, pergunta, coluna){
 
 function conteudo_atualiza(ele, id_conteudo, coluna){
     
-console.log('conteudo_atualiza 1');     
     if (!coluna) {
         coluna = ele.id.toUpperCase();
     }    
@@ -546,13 +548,8 @@ console.log('conteudo_atualiza 1');
         }
     }
 
-console.log('f1');
-console.log(conteudo);
-console.log(conteudo_ant);
-
     if (conteudo != conteudo_ant) {
 
-        console.log('f2');
         call('conteudo_atualiza', 'prm_id_conteudo='+id_conteudo+'&prm_coluna='+coluna+'&prm_conteudo='+encodeURIComponent(conteudo)).then(function(resposta){ 
             alerta('',resposta.split('|')[1]); 
             if(resposta.split('|')[0] == 'OK'){ 
@@ -561,12 +558,16 @@ console.log(conteudo_ant);
                 } else if (tipo_ant == 'atributo') {
                     ele.setAttribute('data-old') = conteudo;
                 }
+                if (coluna == 'DS_TEXTO') {
+                    document.getElementById('cadcon-texto-view-'+id_conteudo).innerHTML = resposta.split('|')[2];
+
+                }
             } 
         });    
     }
 }    
 
-function conteudo_tela_cadastro(ele, id_conteudo){
+function conteudo_tela_cadastro(ele, cd_pergunta, id_conteudo){
     
 
     if (conteudoMovendoId) {
@@ -581,7 +582,7 @@ function conteudo_tela_cadastro(ele, id_conteudo){
     }
 
 
-    call('conteudo_tela_cadastro', 'prm_id_conteudo='+id_conteudo).then(function(resposta){ 
+    call('conteudo_tela_cadastro', 'prm_pergunta='+cd_pergunta+'&prm_id_conteudo='+id_conteudo).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
         } else {
@@ -656,7 +657,16 @@ function conteudo_topico_seleciona(ele){
 
 function conteudo_tela_conteudos(cd_pergunta){
     
-    document.getElementById('cadastro-conteudo-altera').innerHTML = '';  // limpa tela de cadastro   
+    // Monta tela de alteração somente com o botão NOVO
+    call('conteudo_tela_cadastro', 'prm_pergunta='+cd_pergunta+'&prm_id_conteudo=').then(function(resposta){ 
+        if(resposta.split('|')[0] == 'ERRO|'){ 
+            alerta('',resposta.split('|')[1]); 
+        } else {
+            document.getElementById('cadastro-conteudo-altera').innerHTML = resposta; 
+        }  
+    });    
+
+    // Monta tela de listagem de conteúdos
     call('conteudo_tela_conteudos', 'prm_pergunta='+cd_pergunta).then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
@@ -695,7 +705,7 @@ function cadastro_conteudo_inserir(pergunta, id_conteudo) {
             setTimeout(function() {
                 let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
                 if (novoConteudo) {
-                    conteudo_tela_cadastro(novoConteudo, id_conteudo);
+                    conteudo_tela_cadastro(novoConteudo, pergunta, id_conteudo);
                 }
             }, 500);
         } else {
@@ -720,7 +730,8 @@ function cadastro_conteudo_salvar(id_conteudo) {
                         .filter(val => val)
                         .join('|') || null,
         nr_linhas_antes: form.querySelector('#nr_linhas_antes')?.value || '0',
-        id_ativo: form.querySelector('#id_ativo')?.checked ? 'S' : 'N'
+        id_ativo: form.querySelector('#id_ativo')?.checked ? 'S' : 'N',
+        ds_titulo: form.querySelector('#escolherArquivoButton')?.innerHTML || ''
     };
 
     call('cadastro_conteudo_salvar', 
@@ -728,7 +739,9 @@ function cadastro_conteudo_salvar(id_conteudo) {
             '&prm_tp_conteudo=' + encodeURIComponent(dados.tp_conteudo) +
             '&prm_id_estilo=' + encodeURIComponent(dados.id_estilo || '') +
             '&prm_nr_linhas_antes=' + dados.nr_linhas_antes +
-            '&prm_id_ativo=' + dados.id_ativo
+            '&prm_id_ativo=' + dados.id_ativo + 
+            '&prm_ds_titulo=' + encodeURIComponent(dados.ds_titulo)
+
     ).then(function(resposta) {
         alerta('', resposta.split('|')[1]);
         if (resposta.split('|')[0] == 'OK') {
@@ -740,7 +753,7 @@ function cadastro_conteudo_salvar(id_conteudo) {
                     // Recarrega a tela de cadastro / alteração do conteúdo
                     let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
                     if (novoConteudo) {
-                        conteudo_tela_cadastro(novoConteudo, id_conteudo);
+                        conteudo_tela_cadastro(novoConteudo, cd_pergunta, id_conteudo);
                     }  
                 }, 500);
             }
@@ -773,21 +786,15 @@ function cadcon_toolbar_actions(ele) {
     let texto_sel = texto.substring(pos_sel_i, pos_sel_f);
     let formatado = '';
 
-    console.log('t1');
-        console.log(texto);
-        console.log('start', pos_sel_i); 
-        console.log('end', pos_sel_f);
-        console.log('sel', texto_sel);
-
     if (acao == 'ESTILO' || acao == 'URL') {
         if ((pos_sel_f - pos_sel_i) == 0) {
             alerta('feed-fixo', 'Necess&aacute;rio selecionar um texto.'); 
             return;
         } 
     }    
-
-                
-    if (acao == 'ESTILO') {
+    if (acao == 'SALVAR' || acao == 'CANCELAR') {
+        finishTextareaEdit(id_conteudo, acao);  
+    } else if (acao == 'ESTILO') {
         // Call the server to get the styles popup
         call('estilo_popup', 'prm_id_conteudo='+id_conteudo).then(function(resposta) {
             // Add the popup to the DOM
@@ -1021,11 +1028,8 @@ function cadcon_toolbar_actions(ele) {
                 const nomeArquivo = fileInput.files[0].name;                
 
                 const aplicar = async () => {
-                    console.log('antes');
                     const retorno = await enviarArquivo(arquivo);
-                    console.log('depois');
-                    console.log(retorno);
-                    if (retorno.split('|')[0] == 'OK') {
+                    if (retorno.split('|')[0] == 'OK' || retorno.split('|')[0] == 'ERRO_EXISTE') {
                         formatado = '<DOCF IMG=' + nomeArquivo + '>' + (texto_sel || '') + '</DOCF>';
                         texto = texto.substring(0, pos_sel_i) + formatado + texto.substring(pos_sel_f, texto.length + 1);
                         textarea.value = texto;
@@ -1193,15 +1197,25 @@ function toggleTextareaEdit(id_conteudo) {
         return;
     } 
 
+    // Ocultar todas as barras de ferramentas antes de mostrar a atual
+    for (let a=0;a<document.querySelectorAll('.cadcon-texto-toolbar').length;a++) {
+        let toolbar = document.querySelectorAll('.cadcon-texto-toolbar')[a];
+        if (toolbar.classList.contains('visible')) {
+            id_conteudo_visible = toolbar.getAttribute('data-id_conteudo'); 
+            finishTextareaEdit(id_conteudo_visible, 'CANCELAR');
+        }    
+    } 
+
     // Ocultar a div de visualização
     const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
     const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
     
     if (viewDiv && textarea) {
-        let altura = (viewDiv.clientHeight - 42) + 'px';
+        let altura = (viewDiv.clientHeight + 6) + 'px';
 
         viewDiv.style.display = 'none';
         textarea.style.minHeight = altura;
+        textarea.style.height = altura;
         textarea.style.display = 'block';
         textarea.focus();
        
@@ -1210,22 +1224,26 @@ function toggleTextareaEdit(id_conteudo) {
 }
 
 // Função para finalizar a edição e voltar para o modo de visualização
-function finishTextareaEdit(id_conteudo) {
-    const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
-    const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
+function finishTextareaEdit(id_conteudo, acao) {
+
+    const viewDiv      = document.getElementById('cadcon-texto-view-' + id_conteudo);
+    const textarea     = document.getElementById('cadcon-texto-' + id_conteudo);
+    const textarea_ant = document.getElementById('cadcon-texto-' + id_conteudo+ '-anterior');
     
     if (viewDiv && textarea) {
-        // Atualizar o conteúdo da div de visualização com o conteúdo do textarea
-        viewDiv.innerText = textarea.value;
-        
-        // Atualizar o conteúdo no servidor
-        conteudo_atualiza(textarea, id_conteudo, 'DS_TEXTO');
         
         // Ocultar o textarea e mostrar a div
         textarea.style.display = 'none';
         viewDiv.style.display = 'block';
-        
-        // Desabilitar a barra de ferramentas
-        cadcon_toolbar_habilita(id_conteudo, false);
-    }
+       
+        cadcon_toolbar_habilita(id_conteudo, false);  // Desabilitar a barra de ferramentas
+
+        if (acao == 'SALVAR') {
+            conteudo_atualiza(textarea, id_conteudo, 'DS_TEXTO'); // Atualizar o conteúdo no servidor
+        } else {
+            textarea.value = textarea_ant.value; // Reverter para o valor anterior
+        }    
+
+    }    
+
 }

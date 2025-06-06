@@ -76,9 +76,9 @@ BEGIN
                         if upper(trim(ws_usuario)) <> 'NOUSER' then
                             htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
                         end if;
-                        if upper(trim(ws_usuario)) <> 'NOUSER' then
-                            htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
-                        end if;
+                        -- if upper(trim(ws_usuario)) <> 'NOUSER' then
+                        --     htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
+                        -- end if;
                 htp.p('</div>');
             end if;
 
@@ -1119,7 +1119,7 @@ exception
     when ws_nofile then
         htp.p('ERRO|Nenhum arquivo selecionado!');
     when ws_existe_dwu then
-        htp.p('ERRO|Arquivo já existe no sistema no usuário DWU!');
+        htp.p('ERRO_EXISTE|Arquivo já existe no sistema no usuário DWU!');
     when others then 
         htp.p('ERRO|Erro importando arquivo: '||sqlerrm);
 
@@ -1243,10 +1243,10 @@ begin
             ws_class     := replace(a.id_estilo,'|',' ')||'"';
         end if; 
 
-        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||a.id_conteudo||''');">');
+        htp.p('<div id="conteudo-item-'||a.id_conteudo||'" class="cadastro-conteudo-item" onclick="conteudo_tela_cadastro(this, '''||prm_pergunta||''','''||a.id_conteudo||''');">');
 
             htp.p('<div id="cadcon-botoes-'||a.id_conteudo||'" class="cadcon-botoes">');
-                htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" class="cadcon-ordem" onclick="conteudo_ordem_click(event, '''||a.id_conteudo||''');">');
+                htp.p('<div id="cadcon-ordem-'||a.id_conteudo||'" title="Seleciona o conte&uacute;do para move-lo de posi&ccedil;&atilde;o." class="cadcon-ordem" onclick="conteudo_ordem_click(event, '''||a.id_conteudo||''');">');
                     htp.p('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490" xml:space="preserve"><g><g><path d="M487.557,237.789l-64-64c-3.051-3.051-7.659-3.947-11.627-2.304c-3.989,1.643-6.592,5.547-6.592,9.856v32h-128v-128h32 c4.309,0,8.213-2.603,9.856-6.592c1.643-3.989,0.725-8.576-2.304-11.627l-64-64c-4.16-4.16-10.923-4.16-15.083,0l-64,64 c-3.051,3.072-3.968,7.637-2.325,11.627c1.643,3.989,5.547,6.592,9.856,6.592h32v128h-128v-32c0-4.309-2.603-8.213-6.592-9.856 c-3.925-1.664-8.555-0.747-11.627,2.304l-64,64c-4.16,4.16-4.16,10.923,0,15.083l64,64c3.072,3.072,7.68,4.011,11.627,2.304 c3.989-1.621,6.592-5.525,6.592-9.835v-32h128v128h-32c-4.309,0-8.213,2.603-9.856,6.592c-1.643,3.989-0.725,8.576,2.304,11.627 l64,64c2.091,2.069,4.821,3.115,7.552,3.115s5.461-1.045,7.552-3.115l64-64c3.051-3.051,3.968-7.637,2.304-11.627 c-1.664-3.989-5.547-6.592-9.856-6.592h-32v-128h128v32c0,4.309,2.603,8.213,6.592,9.856c3.947,1.685,8.576,0.747,11.627-2.304 l64-64C491.717,248.712,491.717,241.971,487.557,237.789z"></path></g></g></svg>');
                 htp.p('</div>');
             htp.p('</div>');
@@ -1280,32 +1280,27 @@ begin
                         htp.p('</div>');
                     end if;     
 
-                    htp.p('<div style="width: 100%;" onblur="console.log(''m1''); cadcon_toolbar_habilita('''||a.id_conteudo||''',false);">'); 
-                        htp.p('<div id="cadcon-texto-toolbar-' || a.id_conteudo || '" class="cadcon-texto-toolbar" data-id_conteudo="' || a.id_conteudo || '">');
-                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="ESTILO"  onclick="console.log(''t1'');  cadcon_toolbar_actions(this);" title="Aplica o estilo CSS no texto selecionado">{} Estilos</button>');
-                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="URL"     onclick="console.log(''t1''); cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona para um site.">URL</button>');
-                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="TOPICO"  onclick="cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona a um outro tópico da documentação.">Tópico</button>');
-                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="IMAGEM"  onclick="cadcon_toolbar_actions(this);" title="Adiciona uma imagem no meio do texto.">Imagem</button>');
-                            htp.p('<button class="cadcon-texto-toolbar-btn" data-action="LIMPAR"  onclick="cadcon_toolbar_actions(this);" title="Limpa qualquer formatação/estilo aplicado dentro do texto.">Limpar</button>');
-                        htp.p('</div>');
+                    htp.p('<div id="cadcon-texto-bloco-' || a.id_conteudo || '" style="width: 100%;">'); 
                         --
                         -- Div para visualização (visível inicialmente)
                         
                         ws_texto_formatado := a.ds_texto;
                         doc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
-
                         htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||ws_texto_formatado||'</div>');
-
                         htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" style="display:none;"'||
-                            ' onblur="finishTextareaEdit('''||a.id_conteudo||''');"'||
                             ' onclick="cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
-
-                        --htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" '||
-                        --    ' onblur="conteudo_atualiza(this,'''||a.id_conteudo||''',''DS_TEXTO'');"'||
-                        --    ' onclick="cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
-
                         -- Campo oculto para armazenar o valor anterior
                         htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'-anterior" style="display:none;">'||a.ds_texto||'</textarea>');
+
+                        htp.p('<div id="cadcon-texto-toolbar-' || a.id_conteudo || '" class="cadcon-texto-toolbar" data-id_conteudo="' || a.id_conteudo || '">');
+                            htp.p('<button class="cadcon-texto-toolbar-btn tipo1"  data-action="SALVAR"   onclick="cadcon_toolbar_actions(this);" title="Salva as alterações.">Salvar</button>');                            
+                            htp.p('<button class="cadcon-texto-toolbar-btn tipo1"  data-action="CANCELAR" onclick="cadcon_toolbar_actions(this);" title="Cancela as alterações.">Cancelar</button>');                                                        
+                            htp.p('<button class="cadcon-texto-toolbar-btn"        data-action="ESTILO"   onclick="cadcon_toolbar_actions(this);" title="Aplica o estilo CSS no texto selecionado">{} Estilos</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn"        data-action="URL"      onclick="cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona para um site.">URL</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn"        data-action="TOPICO"   onclick="cadcon_toolbar_actions(this);" title="Transforma o texto selecionado em um link que direciona a um outro tópico da documentação.">Tópico</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn"        data-action="IMAGEM"   onclick="cadcon_toolbar_actions(this);" title="Adiciona uma imagem no meio do texto.">Imagem</button>');
+                            htp.p('<button class="cadcon-texto-toolbar-btn"        data-action="LIMPAR"   onclick="cadcon_toolbar_actions(this);" title="Limpa qualquer formatação/estilo aplicado dentro do texto.">Limpar</button>');
+                        htp.p('</div>');
 
                     htp.p('</div>'); 
                 end if;        
@@ -1322,7 +1317,8 @@ begin
   
 end;
 -----------------------------------------------------------------------------------------------------------------
-procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2)as 
+procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null, 
+                                  prm_id_conteudo  varchar2 default null) as 
     cursor c1 is 
       select * from doc_conteudos 
       where id_conteudo = prm_id_conteudo;
@@ -1330,85 +1326,89 @@ procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2)as
     ws_cont       c1%rowtype;  
     ws_checked    varchar2(20);
     ws_erro       varchar2(300);
-    ws_script_atu varchar2(500);
 
     ws_raise_erro exception;
 begin
-    ws_script_atu := '"conteudo_atualiza(this,'''||prm_id_conteudo||''');"';
-    open  c1;
-    fetch c1 into ws_cont;
-    close c1;
-    if ws_cont.id_conteudo is null then 
-        raise ws_raise_erro;
-        ws_erro := 'Conteúdo não localizado.';
-    end if; 
-    
+
     htp.p('<div class="cadastro-conteudo-titulo">CONTEÚDO</div>');
-    htp.p('<div class="cadcon-cadastro">'); 
+    if prm_id_conteudo is null then 
+        htp.p('<div class="cadastro-conteudo-botoes">');
+            htp.p('<a onclick="cadastro_conteudo_inserir('''||prm_pergunta||''','''||prm_id_conteudo||''');" title="Cria um novo conteúdo abaixo do conteúdo atual." class="cadastro-conteudo-botao">NOVO</a>');         
+        htp.p('</div>');
+    else 
+        open  c1;
+        fetch c1 into ws_cont;
+        close c1;
+        if ws_cont.id_conteudo is null then 
+            raise ws_raise_erro;
+            ws_erro := 'Conteúdo não localizado.';
+        end if; 
 
-        htp.p('<div id="cadastro-tp_conteudo" class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="tp_conteudo">TIPO:</label>'); 
-            htp.p('<select id="tp_conteudo" name="tp_conteudo" onchange="conteudo_tela_cadastro_altera(this);" data-id_conteudo="'||prm_id_conteudo||'">'); 
-            for a in (  select 'PARAGRAFO' cd, 'PARAGRAFO' ds from dual union all 
-                        select 'LINHA'    , 'LINHA'     from dual union all 
-                        select 'IMAGEM'   , 'IMAGEM'    from dual union all 
-                        select 'MARCADOR1', 'MARCADOR1' from dual union all  
-                        select 'MARCADOR2', 'MARCADOR2' from dual union all  
-                        select 'MARCADOR3', 'MARCADOR3' from dual union all  
-                        select 'MARCADOR4', 'MARCADOR4' from dual union all  
-                        select 'PDF'      , 'PDF'       from dual union all 
-                        select 'GIF'      , 'GIF'       from dual
-                    ) loop
-                    if a.cd = ws_cont.tp_conteudo then 
-                        htp.p('<option value="'||a.cd||'" selected >'||a.ds||'</option>');
-                    else
-                        htp.p('<option value="'||a.cd||'" >'||a.ds||'</option>');
-                    end if;    
-            end loop;   
-            htp.p('</select>'); 
+        htp.p('<div class="cadcon-cadastro">'); 
+
+            htp.p('<div id="cadastro-tp_conteudo" class="cadcon-cadastro-linha">'); 
+                htp.p('<label for="tp_conteudo">TIPO:</label>'); 
+                htp.p('<select id="tp_conteudo" name="tp_conteudo" onchange="conteudo_tela_cadastro_altera(this);" data-id_conteudo="'||prm_id_conteudo||'">'); 
+                for a in (  select 'PARAGRAFO' cd, 'PARAGRAFO' ds from dual union all 
+                            select 'LINHA'    , 'LINHA'     from dual union all 
+                            select 'IMAGEM'   , 'IMAGEM'    from dual union all 
+                            select 'MARCADOR1', 'MARCADOR1' from dual union all  
+                            select 'MARCADOR2', 'MARCADOR2' from dual union all  
+                            select 'MARCADOR3', 'MARCADOR3' from dual union all  
+                            select 'MARCADOR4', 'MARCADOR4' from dual union all  
+                            select 'PDF'      , 'PDF'       from dual union all 
+                            select 'GIF'      , 'GIF'       from dual
+                        ) loop
+                        if a.cd = ws_cont.tp_conteudo then 
+                            htp.p('<option value="'||a.cd||'" selected >'||a.ds||'</option>');
+                        else
+                            htp.p('<option value="'||a.cd||'" >'||a.ds||'</option>');
+                        end if;    
+                end loop;   
+                htp.p('</select>'); 
+            htp.p('</div>'); 
+
+            htp.p('<div id="cadastro-nr_linhas_antes" class="cadcon-cadastro-linha">'); 
+                htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
+                htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
+            htp.p('</div>'); 
+
+            
+            htp.p('<div id="cadastro-id_estilo" class="cadcon-cadastro-linha">'); 
+                htp.p('<label for="id_estilo">ESTILOS:</label>'); 
+                htp.p('<select multiple id="id_estilo">'); 
+                    conteudo_tela_id_estilo(prm_id_conteudo);
+                htp.p('</select>'); 
+            htp.p('</div>'); 
+
+            htp.p('<div id="cadastro-ds_titulo" class="cadcon-cadastro-linha">'); 
+                htp.p('<label for="ds_titulo">ARQUIVO:</label>'); 
+
+                htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">'||nvl(ws_cont.ds_titulo,'ESCOLHER ARQUIVO...')||'</a>');
+                htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
+                htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
+            
+            htp.p('</div>'); 
+
+            htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
+                htp.p('<label for="id_ativo">id_ativo:</label>');
+                ws_checked := '';
+                if ws_cont.id_ativo = 'S' then 
+                    ws_checked := 'checked';
+                end if;    
+                htp.p('<input type="checkbox" id="id_ativo" '||ws_checked||' value="'||ws_cont.id_ativo||'"/>');
+            htp.p('</div>'); 
         htp.p('</div>'); 
 
-        htp.p('<div id="cadastro-nr_linhas_antes" class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="nr_linhas_antes">LINHAS ANTES:</label>'); 
-            htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
-        htp.p('</div>'); 
-
-        
-        htp.p('<div id="cadastro-id_estilo" class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="id_estilo">ESTILOS:</label>'); 
-            htp.p('<select multiple id="id_estilo">'); 
-                conteudo_tela_id_estilo(prm_id_conteudo);
-            htp.p('</select>'); 
-        htp.p('</div>'); 
-
-        htp.p('<div id="cadastro-ds_titulo" class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="ds_titulo">ARQUIVO:</label>'); 
-
-        	htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">'||nvl(ws_cont.ds_titulo,'ESCOLHER ARQUIVO...')||'</a>');
-    		htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
-    		htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
-		
-        htp.p('</div>'); 
-
-        htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
-            htp.p('<label for="id_ativo">id_ativo:</label>');
-            ws_checked := '';
-            if ws_cont.id_ativo = 'S' then 
-                ws_checked := 'checked';
-            end if;    
-            htp.p('<input type="checkbox" id="id_ativo" '||ws_checked||' value="'||ws_cont.id_ativo||'"/>');
-        htp.p('</div>'); 
-    htp.p('</div>'); 
-
-    htp.p('<div class="cadastro-conteudo-botoes">');
-        htp.p('<a onclick="cadastro_conteudo_salvar('''||prm_id_conteudo||''');" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">SALVAR</a>'); 
-        htp.p('<a onclick="cadastro_conteudo_inserir('''||ws_cont.cd_pergunta||''','''||prm_id_conteudo||''');" title="Cria um novo conteúdo abaixo do conteúdo atual." class="cadastro-conteudo-botao">NOVO</a>');         
-        htp.p('<a onclick="cadastro_conteudo_excluir('''||prm_id_conteudo||''');" title="Excluir o conteúdo atual." class="cadastro-conteudo-botao">EXCLUIR</a>');         
-    htp.p('</div>');
-
+        htp.p('<div class="cadastro-conteudo-botoes">');
+            htp.p('<a onclick="cadastro_conteudo_salvar('''||prm_id_conteudo||''');" title="Atualiza a tela de conteúdo do tópico." class="cadastro-conteudo-botao">SALVAR</a>'); 
+            htp.p('<a onclick="cadastro_conteudo_excluir('''||prm_id_conteudo||''');" title="Excluir o conteúdo atual." class="cadastro-conteudo-botao">EXCLUIR</a>');         
+            htp.p('<a onclick="cadastro_conteudo_inserir('''||ws_cont.cd_pergunta||''','''||prm_id_conteudo||''');" title="Cria um novo conteúdo abaixo do conteúdo atual." class="cadastro-conteudo-botao">NOVO</a>');         
+        htp.p('</div>');
+    end if; 
 exception
   when ws_raise_erro then
-    htp.p(ws_erro);
+    htp.p('ERRO|'||ws_erro);
 
 
 end conteudo_tela_cadastro; 
@@ -1469,6 +1469,8 @@ end topico_atualiza;
 procedure conteudo_atualiza (prm_id_conteudo    varchar2, 
                              prm_coluna         varchar2,
                              prm_conteudo       varchar2 default null) as
+    ws_texto_formatado clob;
+    ws_cd_pergunta     varchar2(20);
 begin 
     update doc_conteudos
        set  sq_conteudo     = decode(upper(prm_coluna),'SQ_CONTEUDO'    , prm_conteudo, sq_conteudo     ),
@@ -1480,15 +1482,20 @@ begin
             id_ativo        = decode(upper(prm_coluna),'ID_ATIVO'       , prm_conteudo, id_ativo        )
     where id_conteudo = prm_id_conteudo;
     if sql%notfound then 
-        htp.p('ERRO|Conteúdo não localizado para atualização.');
+        htp.p('ERRO|Conteúdo não localizado para atualização.|');
     else 
-        htp.p('OK|Conteúdo atualizado.');
+        if prm_coluna = 'DS_TEXTO' then   -- Retorna também o texto formatado 
+            select max(cd_pergunta) into ws_cd_pergunta from doc_conteudos where id_conteudo = prm_id_conteudo;
+            ws_texto_formatado := prm_conteudo;
+            doc.formatar_texto_html(ws_cd_pergunta, ws_texto_formatado);
+        end if;
+        htp.p('OK|Conteúdo atualizado.|'||ws_texto_formatado);
     end if;             
 exception 
     when others then 
         insert into bi_log_sistema values (sysdate, 'conteudo_atualiza: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
         commit;
-        htp.p('ERRO|Erro atualizando conteúdo.');
+        htp.p('ERRO|Erro atualizando conteúdo.|');
 end conteudo_atualiza;
 
 
@@ -1572,7 +1579,7 @@ end cadastro_conteudo_excluir;
 
 ---------------------------------------------------------------------------------------
 procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
-                                     prm_id_conteudo varchar2) as
+                                     prm_id_conteudo varchar2 default null) as
     ws_id_conteudo number;
     ws_sq_conteudo number;
     ws_sq_atual    number; 
@@ -1585,16 +1592,17 @@ begin
     from doc_conteudos 
     where cd_pergunta = prm_pergunta;
 
-    select nvl(max(sq_conteudo), 0) into ws_sq_atual 
-    from doc_conteudos 
-    where id_conteudo = prm_id_conteudo;
-
-    if (ws_sq_atual+1) < ws_sq_conteudo Then
-        ws_sq_conteudo := ws_sq_atual+1;
-        update doc_conteudos set sq_conteudo = sq_conteudo + 1
-         where cd_pergunta = prm_pergunta
-           and sq_conteudo > ws_sq_atual;
-    end if;
+    if prm_id_conteudo is not null then 
+        select nvl(max(sq_conteudo), 0) into ws_sq_atual 
+        from doc_conteudos 
+        where id_conteudo = prm_id_conteudo;
+        if (ws_sq_atual+1) < ws_sq_conteudo Then
+            ws_sq_conteudo := ws_sq_atual+1;
+            update doc_conteudos set sq_conteudo = sq_conteudo + 1
+            where cd_pergunta = prm_pergunta
+            and sq_conteudo > ws_sq_atual;
+        end if;
+    end if; 
 
     -- Insert the new record
     insert into doc_conteudos (
@@ -1635,13 +1643,15 @@ procedure cadastro_conteudo_salvar (prm_id_conteudo     varchar2,
                                     prm_tp_conteudo     varchar2,
                                     prm_id_estilo       varchar2,
                                     prm_nr_linhas_antes varchar2,
-                                    prm_id_ativo        varchar2) as
+                                    prm_id_ativo        varchar2,
+                                    prm_ds_titulo       varchar2) as
 begin
     update doc_conteudos
        set tp_conteudo     = prm_tp_conteudo,
            id_estilo       = prm_id_estilo,
            nr_linhas_antes = prm_nr_linhas_antes,
-           id_ativo        = prm_id_ativo
+           id_ativo        = prm_id_ativo,
+           ds_titulo       = prm_ds_titulo
      where id_conteudo = prm_id_conteudo;
      
     if sql%notfound then 

@@ -93,7 +93,9 @@ procedure conteudo_atualiza (prm_id_conteudo    varchar2,
 procedure conteudo_move (prm_id_conteudo_origem varchar2,
                          prm_id_conteudo_destino varchar2);
 
-procedure conteudo_tela_cadastro (prm_id_conteudo    varchar2);
+procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null, 
+                                  prm_id_conteudo  varchar2 default null) ;
+
 
 procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2); 
 
@@ -105,13 +107,14 @@ procedure conteudo_tela_conteudos (prm_pergunta    varchar2,
 procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2);
 
 procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
-								     prm_id_conteudo varchar2);
+								     prm_id_conteudo varchar2 default null);
 
 procedure cadastro_conteudo_salvar (prm_id_conteudo     varchar2,
                                     prm_tp_conteudo     varchar2,
                                     prm_id_estilo       varchar2,
                                     prm_nr_linhas_antes varchar2,
-                                    prm_id_ativo        varchar2);
+                                    prm_id_ativo        varchar2,
+									prm_ds_titulo       varchar2);
 procedure estilo_popup (prm_id_conteudo    varchar2);
 
 procedure url_popup;
