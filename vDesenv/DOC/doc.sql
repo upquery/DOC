@@ -1133,7 +1133,6 @@ procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
 
 begin
     ws_cd_pergunta := prm_valor; 
-    ws_cd_pergunta := 236; 
 
     if nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then 
         htp.p('<div class="cadastro-main">');
@@ -1221,9 +1220,10 @@ end conteudo_tela_topicos;
 -----------------------------------------------------------------------------------------------------------------
 procedure conteudo_tela_conteudos (prm_pergunta    varchar2,
                                    prm_id_conteudo varchar2 default null) as 
-    ws_class        varchar2(4000); 
-    ws_class2       varchar2(4000); 
-    ws_url_doc      varchar2(300);
+    ws_class            varchar2(4000); 
+    ws_class2           varchar2(4000); 
+    ws_url_doc          varchar2(300);
+    ws_texto_formatado  clob;
 begin
 
     select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
@@ -1290,7 +1290,11 @@ begin
                         htp.p('</div>');
                         --
                         -- Div para visualização (visível inicialmente)
-                        htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||a.ds_texto||'</div>');
+                        
+                        ws_texto_formatado := a.ds_texto;
+                        doc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
+
+                        htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||ws_texto_formatado||'</div>');
 
                         htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" style="display:none;"'||
                             ' onblur="finishTextareaEdit('''||a.id_conteudo||''');"'||
