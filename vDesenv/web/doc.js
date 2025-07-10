@@ -634,7 +634,7 @@ function conteudo_tela_cadastro_altera(ele){
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
         } else {
-            document.getElementById('id_estilo').innerHTML = resposta; 
+            document.getElementById('id_estilo_selecao').innerHTML = resposta; 
         }    
     });    
    
@@ -725,14 +725,14 @@ function cadastro_conteudo_salvar(id_conteudo) {
 
     let dados = {
         tp_conteudo: form.querySelector('#tp_conteudo')?.value || '',
-        id_estilo: Array.from(form.querySelector('#id_estilo')?.selectedOptions || [])
+        id_estilo: Array.from(form.querySelector('#id_estilo_selecao')?.selectedOptions || [])
                         .map(opt => opt.value)
                         .filter(val => val)
                         .join('|') || null,
         nr_linhas_antes: form.querySelector('#nr_linhas_antes')?.value || '0',
         id_ativo: form.querySelector('#id_ativo')?.checked ? 'S' : 'N',
         ds_titulo: form.querySelector('#escolherArquivoButton')?.innerHTML || ''
-    };
+    };   
 
     call('cadastro_conteudo_salvar', 
             'prm_id_conteudo=' + id_conteudo + 

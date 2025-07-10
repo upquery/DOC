@@ -736,8 +736,7 @@ END DOC_PRIVATE;
                 ws_tag_i := '<hr>';
                 ws_tag_f := '';
             elsif a.tp_conteudo like 'MARCADOR%' then  
-                ws_marcador_atual
-                 := replace(a.tp_conteudo,'MARCADOR','');
+                ws_marcador_atual := replace(a.tp_conteudo,'MARCADOR','');
                 if ws_marcador_atual > ws_marcador_ante then
                     ws_tag_i            := '<ul class="'||a.tp_conteudo||'">';
                 elsif ws_marcador_atual < ws_marcador_ante then                    
@@ -829,13 +828,13 @@ END DOC_PRIVATE;
     begin
 
         ws_qt_formatar := regexp_count(prm_texto, '<DOCF');
-        ws_retorno     := prm_texto;
-        select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
+        ws_retorno     := replace(prm_texto,chr(10),'<br>');
 
         if ws_qt_formatar = 0 then 
             raise ws_raise_fim;
         end if;     
 
+        select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
         ws_idx := 0; 
         while ws_idx < ws_qt_formatar loop
             ws_idx := ws_idx + 1;
@@ -904,7 +903,7 @@ END DOC_PRIVATE;
 
     exception 
         when ws_raise_fim then 
-            null;        
+            prm_texto := ws_retorno;
         when others then
             insert into bi_log_sistema values (sysdate, 'formatar_texto_html: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
             commit;
@@ -1099,7 +1098,9 @@ procedure upload (arquivo  IN  varchar2) AS
         where  trim(lower(name)) = l_nome_real 
         and  usuario           = 'DWU';
     if ws_count > 0 then 
-        raise ws_existe_dwu; 
+        if lower(l_nome_real) not like 'doc%.png' then 
+            raise ws_existe_dwu; 
+        end if;     
     end if;    
 
     delete from tab_documentos   -- retirado o dwu
@@ -1373,10 +1374,9 @@ begin
                 htp.p('<input type="number" id="nr_linhas_antes" value="'||ws_cont.nr_linhas_antes||'">'); 
             htp.p('</div>'); 
 
-            
             htp.p('<div id="cadastro-id_estilo" class="cadcon-cadastro-linha">'); 
                 htp.p('<label for="id_estilo">ESTILOS:</label>'); 
-                htp.p('<select multiple id="id_estilo">'); 
+                htp.p('<select multiple id="id_estilo_selecao" title="Mantenha o CTRL pressionado para selecionar mais de um estilo.">'); 
                     conteudo_tela_id_estilo(prm_id_conteudo);
                 htp.p('</select>'); 
             htp.p('</div>'); 
@@ -1429,7 +1429,7 @@ begin
     for a in (  select 2 ordem, id_estilo as cd from doc_estilos where instr(tp_conteudo||'|', ws_tp_conteudo||'|') > 0 or tp_conteudo = 'TODOS' union all 
                 select 1 ordem, null      as cd from dual 
                 order by ordem, cd ) loop
-            if instr(ws_id_estilo||'|', a.cd||'|') > 0 or (ws_id_estilo is null and a.cd is null ) then 
+            if instr(ws_id_estilo||'|', a.cd||'|') > 0 and a.cd is not null then 
                 htp.p('<option value="'||a.cd||'" selected>'||a.cd||'</option>');
             else
                 htp.p('<option value="'||a.cd||'" >'||a.cd||'</option>');
