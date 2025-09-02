@@ -1,5 +1,5 @@
 SET DEFINE OFF
-CREATE OR REPLACE PACKAGE BODY DOC  IS
+CREATE OR REPLACE PACKAGE BODY UPDOC  IS
 
 PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
@@ -34,8 +34,8 @@ BEGIN
 
             htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
             htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
-            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=doc.css"/>' );
-            htp.p('<script src="dwu.fcl.download?arquivo=doc.js"></script>');
+            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=updoc.css"/>' );
+            htp.p('<script src="dwu.fcl.download?arquivo=updoc.js"></script>');
             --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
             htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
             htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
@@ -103,7 +103,7 @@ BEGIN
                                             
             htp.p('<div class="main'||ws_class_cad||'">');
 
-                doc.principal;
+                updoc.principal;
 
             htp.p('</div>');
 
@@ -203,7 +203,7 @@ END PRINCIPAL;
                 htp.p('</div>');
 
                         htp.p('<ul class="flex-container">');
-                            doc.consulta(PRM_VALOR,'F',WS_TIPUSER);
+                            updoc.consulta(PRM_VALOR,'F',WS_TIPUSER);
                         htp.p('</ul>');
 
             htp.p('</div>');
@@ -264,7 +264,7 @@ BEGIN
             htp.p('</div>');
                     
                     htp.p('<ul class="flex-container">');
-                        doc.consulta(PRM_VALOR,'D',WS_TIPUSER);
+                        updoc.consulta(PRM_VALOR,'D',WS_TIPUSER);
                     htp.p('</ul>');
 
         htp.p('</div>');
@@ -333,7 +333,7 @@ BEGIN
             htp.p('</div>');
             
                     htp.p('<ul class="flex-container">');
-                        doc.consulta(PRM_VALOR,'P',WS_TIPUSER);
+                        updoc.consulta(PRM_VALOR,'P',WS_TIPUSER);
                     htp.p('</ul>');
 
         htp.p('</div>');
@@ -369,13 +369,13 @@ END DOC_PRIVATE;
 
     BEGIN
 
-        WS_VALOR:= DOC.TRADUZIR(LOWER(NVL(PRM_VALOR,'')));            
+        WS_VALOR:= upDOC.TRADUZIR(LOWER(NVL(PRM_VALOR,'')));            
         ws_where := replace(trim(WS_VALOR), ' ', '%'' or DOC.TRADUZIR(lower(pergunta)) like ''%');
 
         if length(ws_valor) > 3 then
-            ws_where := 'DOC.TRADUZIR(lower(pergunta)) like ''%'||ws_where||'%''';
+            ws_where := 'upDOC.TRADUZIR(lower(pergunta)) like ''%'||ws_where||'%''';
         else
-            ws_where := 'DOC.TRADUZIR(lower(pergunta)) like '||chr(39)||ws_where||'%''';
+            ws_where := 'upDOC.TRADUZIR(lower(pergunta)) like '||chr(39)||ws_where||'%''';
         end if;
 
 
@@ -475,7 +475,7 @@ END DOC_PRIVATE;
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
                     if ws_classe = 'D' then  -- menu somente para documentação do BI
-                        doc.MONTA_MENU_LATERAL(0, 1, 2);
+                        updoc.MONTA_MENU_LATERAL(0, 1, 2);
                     end if;    
                 htp.p('</div>');    
             htp.p('</div>');
@@ -524,14 +524,14 @@ END DOC_PRIVATE;
 
                     if ws_tp_conteudo = 'ARQUIVOS' then 
                         ws_conteudo := null;
-                        doc.monta_conteudo_arquivos(ws_cd_pergunta, ws_conteudo);
+                        updoc.monta_conteudo_arquivos(ws_cd_pergunta, ws_conteudo);
 
                         if ws_conteudo is not null then 
                             ws_detalhes := ws_conteudo;
                         end if;     
                     else 
                         ws_conteudo := null;
-                        doc.monta_conteudo_html(ws_cd_pergunta, ws_conteudo);
+                        updoc.monta_conteudo_html(ws_cd_pergunta, ws_conteudo);
                         if ws_conteudo is not null then 
                             ws_detalhes := ws_conteudo;
                         end if;     
@@ -639,7 +639,7 @@ END DOC_PRIVATE;
             HTP.P('<span class="menu-lateral-item" data-pergunta="'||a.CD_PERGUNTA||'">'||WS_IMG||A.PERGUNTA||'</span>');
             HTP.P('</li>');                        
             IF A.QT_FILHO > 0 THEN 
-                DOC.MONTA_MENU_LATERAL  (A.CD_PERGUNTA, PRM_NIVEL + 1, PRM_NIVEL_ABERTO);
+                upDOC.MONTA_MENU_LATERAL  (A.CD_PERGUNTA, PRM_NIVEL + 1, PRM_NIVEL_ABERTO);
             END IF; 
         END LOOP;
 
@@ -769,7 +769,7 @@ END DOC_PRIVATE;
                 ws_tag_i            := '<a class="'||ws_class||'" href="'||a.ds_titulo||'" target="_blank">';
                 ws_tag_f            := '</a>';
             elsif a.tp_conteudo like 'PERGUNTA' then  
-                ws_tag_i            := '<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'" target="_blank">';
+                ws_tag_i            := '<a class="'||ws_class||'" href="'||ws_url_doc||'.updoc.main?prm_externo='||a.ds_titulo||'" target="_blank">';
                 ws_tag_f            := '</a>';
             end if; 
 
@@ -778,7 +778,7 @@ END DOC_PRIVATE;
             end if; 
 
             if ws_texto is not null then 
-                doc.formatar_texto_html(a.cd_pergunta, ws_texto);
+                updoc.formatar_texto_html(a.cd_pergunta, ws_texto);
             end if;    
 
             ws_conteudo := ws_conteudo||ws_tag_i||ws_texto||ws_tag_f;
@@ -890,7 +890,7 @@ END DOC_PRIVATE;
             end if;     
 
             if ws_perg is not null then 
-                ws_perg := ws_url_doc||'.doc.main?prm_externo='||ws_perg; 
+                ws_perg := ws_url_doc||'.updoc.main?prm_externo='||ws_perg; 
                 ws_html := '<a class="'||ws_class||'" href="'||ws_perg||'" target="_blank">'||ws_html||'</a>';
             elsif ws_link is not null then 
                 ws_html := '<a class="'||ws_class||'" href="'||ws_link||'" target="_blank">'||ws_html||'</a>';
@@ -939,7 +939,7 @@ END DOC_PRIVATE;
             end if; 
             ws_ds_conteudo := replace(ws_ds_conteudo,'"',''); 
             
-            --doc.formatar_texto_html(a.cd_pergunta, ws_ds_conteudo);
+            --updoc.formatar_texto_html(a.cd_pergunta, ws_ds_conteudo);
             --ws_ds_conteudo := replace(ws_ds_conteudo,'"', '''');
             --ws_ds_conteudo := replace(ws_ds_conteudo,'dwu.fcl.download?arquivo=','https://cloud.upquery.com/conhecimento/dwu.fcl.download?arquivo=');
 
@@ -1150,10 +1150,10 @@ begin
     end if; 
 
     htp.p('<div class="cadastro-main">');
-        doc.conteudo_tela_topicos;
+        updoc.conteudo_tela_topicos;
         htp.p('<div id="cadastro-conteudo" class="cadastro-conteudo">');
             htp.p('<div id="cadastro-conteudo-detalhe" class="cadastro-conteudo-detalhe">');
-                doc.conteudo_tela_conteudos(ws_cd_pergunta);
+                updoc.conteudo_tela_conteudos(ws_cd_pergunta);
             htp.p('</div>'); 
         htp.p('</div>');        
         --htp.p('<div id="cadastro-menu-direito" class="cadastro-menu-direito"></div>');
@@ -1280,7 +1280,7 @@ begin
                 elsif a.tp_conteudo like 'LINK' then  
                     htp.p('<a class="'||ws_class||'" href="'||a.ds_titulo||'" target="_blank">');
                 elsif a.tp_conteudo like 'PERGUNTA' then  
-                    htp.p('<a class="'||ws_class||'" href="'||ws_url_doc||'.doc.main?prm_externo='||a.ds_titulo||'" target="_blank">');
+                    htp.p('<a class="'||ws_class||'" href="'||ws_url_doc||'.updoc.main?prm_externo='||a.ds_titulo||'" target="_blank">');
                 else     
                     if a.tp_conteudo like 'MARCADOR%' then 
                         htp.p('<div class="cadcon-titulo '||a.tp_conteudo||'"><li></li>');
@@ -1294,7 +1294,7 @@ begin
                         -- Div para visualização (visível inicialmente)
                         
                         ws_texto_formatado := a.ds_texto;
-                        doc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
+                        updoc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
                         htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||ws_texto_formatado||'</div>');
                         htp.p('<textarea id="cadcon-texto-' ||a.id_conteudo||'" class="cadcon-texto '||ws_class||'" style="display:none;"'||
                             ' onclick="cadcon_toolbar_habilita('''||a.id_conteudo||''', true);">'||a.ds_texto||'</textarea>');
@@ -1497,7 +1497,7 @@ begin
         if prm_coluna = 'DS_TEXTO' then   -- Retorna também o texto formatado 
             select max(cd_pergunta) into ws_cd_pergunta from doc_conteudos where id_conteudo = prm_id_conteudo;
             ws_texto_formatado := prm_conteudo;
-            doc.formatar_texto_html(ws_cd_pergunta, ws_texto_formatado);
+            updoc.formatar_texto_html(ws_cd_pergunta, ws_texto_formatado);
         end if;
         htp.p('OK|Conteúdo atualizado.|'||ws_texto_formatado);
     end if;             
@@ -1854,6 +1854,6 @@ exception
         htp.p('ERRO|Erro montando tela.');
 end imagem_popup;
 
-END DOC;
+END UPDOC;
 /
 SHOW ERROR;

@@ -65,7 +65,7 @@ document.addEventListener('click', function(e){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
+        window.open(url_doc + '.updoc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
        
         if(document.querySelector('.escolhido')){
 
@@ -102,7 +102,7 @@ document.addEventListener('click', function(e){
 
     if(e.target.className == "go-doc-cadastro"){
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.open(url_doc + '.doc.main?prm_externo=CADASTRO','_blank');
+        window.open(url_doc + '.updoc.main?prm_externo=CADASTRO','_blank');
         if(document.querySelector('.escolhido')){
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
@@ -127,7 +127,6 @@ document.addEventListener('click', function(e){
         
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
         chamar('detalhe_pergunta', e.target.title, '', tip_user, 'somente_pergunta','S' );
-        //window.location.replace(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user);
         document.body.scrollTop = 0
 
     }
@@ -195,27 +194,26 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
     loading = document.querySelector('.spinner');  
     loading.classList.add('ativado');
     var request = new XMLHttpRequest(); //aqui inicializa a requisição
-    request.open('POST', 'dwu.doc.' + proc, true); //esse ponto define a procedure de comunicação
+    request.open('POST', 'dwu.updoc.' + proc, true); //esse ponto define a procedure de comunicação
 
     if(proc == 'principal'){
         request.send('prm_valor=');
     } else if(proc == 'detalhe_pergunta'){
         request.send('prm_valor='+search+'&prm_tipuser='+tipousuario);
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        //window.history.pushState('','',url_doc + '.doc.main?prm_externo='+search);     // desativado por erro de segurança gerado pelo navegador 
 
     } else if(proc == 'rank_perguntas'){
         request.send(search); 
     } else if (proc == 'main'){
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.location.replace(url_doc + '.doc.main');
+        window.location.replace(url_doc + '.updoc.main');
     } else if (proc.toLowerCase() == 'doc_cad_conteudo'){
         request.send('prm_valor='+search); 
     }else{
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
         try {
-            window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
+            window.history.pushState("", "", url_doc + ".updoc.main");//remove os parametros da url , caso esteja acessando de um link externo
         } catch {
         }
     }
@@ -372,7 +370,7 @@ function call(req, par, tipo){
 
     var tipo  = tipo || 'POST',
         par   = par || '',
-        pkg   = 'doc',
+        pkg   = 'updoc',
         owner = 'dwu';
     
     return new Promise(function(resolve, reject){
@@ -427,7 +425,7 @@ function alerta(tipo, msg){
 async function uploadArquivos(input_id) {
     var arquivosInput = document.getElementById(input_id||'arquivos');
     var arquivos = arquivosInput.files;
-    var acao = 'dwu.doc.upload';
+    var acao = 'dwu.updoc.upload';
    
     // if (input_id.length == 0) {
     //     let ele = document.getElementById('escolherArquivoButton');
@@ -444,7 +442,7 @@ async function uploadArquivos(input_id) {
 }
 
 function enviarArquivo(arquivo, acao) {
-    var acao = acao || 'dwu.doc.upload';
+    var acao = acao || 'dwu.updoc.upload';
     return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', acao, true);

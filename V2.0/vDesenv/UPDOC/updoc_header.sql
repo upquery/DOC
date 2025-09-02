@@ -12,7 +12,7 @@ set scan off
 -- >>>>>>> COORDENADO POR:	JOÃO HENRIQUE DA ROCHA MACHADO 	 --
 -- >>>>>>>-----------------------------------------------------
 
-create or replace package DOC  is
+create or replace package UPDOC  is
 	/*PROCEDURE MAIN_EXT			( PRM_USUARIO     VARCHAR2 DEFAULT NULL,
 								 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
 								 utm_source      VARCHAR2 DEFAULT NULL,
@@ -124,5 +124,5 @@ procedure topico_popup;
 
 procedure imagem_popup;
 
-END DOC;
+END UPDOC;
 /
