@@ -92,8 +92,13 @@ BEGIN
                     htp.p('<script>chamar(''doc_cad_conteudo'','''','''','''','''',''N'');</script>');
                 else 
                     ws_tipouser:=prm_usuario;
-                    ws_externo:=prm_externo;
-                    htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
+                    if prm_externo = 'VERSIONAMENTO' THEN    
+                        select max(cd_pergunta) into ws_externo from doc_perguntas
+                         where id_notas_versao = 'S'
+                           and id_liberado     = 'S';
+                    else 
+                        ws_externo:=prm_externo;
+                    end if;                    htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
                     htp.p('<script>gopage=document.getElementById(''prm_externo'');chamar(''detalhe_pergunta'',gopage.getAttribute(''data-search''),'''',gopage.getAttribute(''data-usuario''),'''',''S'');</script>');
                     ws_tipouser:='';
                     ws_externo:='';
