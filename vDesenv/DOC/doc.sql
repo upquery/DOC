@@ -95,7 +95,7 @@ BEGIN
                     if prm_externo = 'VERSIONAMENTO' THEN    
                         select max(cd_pergunta) into ws_externo from doc_perguntas
                          where id_notas_versao = 'S'
-                           and id_liberado     = 'S';
+                           and nvl(id_liberado,'N') = 'S';
                     else 
                         ws_externo:=prm_externo;
                     end if;
@@ -463,7 +463,8 @@ END DOC_PRIVATE;
         if PRM_VALOR = 'VERSIONAMENTO' then 
             select max(cd_pergunta) into ws_cd_pergunta 
               from doc_perguntas 
-             where nvl(id_notas_versao,'N') = 'S' 
+             where nvl(id_notas_versao,'N') = 'S'
+              and nvl(id_liberado,'N') = 'S' 
               and ordem_categoria = (select max(ordem_categoria) from doc_perguntas where nvl(id_notas_versao,'N') = 'S') ;
         else 
             ws_cd_pergunta := PRM_VALOR;
