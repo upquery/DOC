@@ -206,6 +206,7 @@ section, summary, time, mark {
   ul.flex-container, .main{
     margin-top: 50px;
     padding-top: 1px;
+    padding-bottom: 10px;
   }
   
   .main{
