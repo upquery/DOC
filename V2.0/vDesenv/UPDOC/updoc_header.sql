@@ -1,26 +1,4 @@
-set scan off
-
--- >>>>>>>-----------------------------------------------------
--- >>>>>>> POR:				UPQUERY							 --
--- >>>>>>> DATA:			15/10/2021						 --
--- >>>>>>> PACOTE:			DOC								 --
--- >>>>>>> PACOTE:			VER. 1.0					 	 --
--- >>>>>>>													 --
--- >>>>>>> DESENVOLVIDO POR:-----------------------------------
--- >>>>>>> BACKEND:			ANTONI MEDEIROS MATTEI			 --
--- >>>>>>> FRONTEND: 		AUGUSTO ZANETTE BRESSAN			 --
--- >>>>>>> COORDENADO POR:	JOÃO HENRIQUE DA ROCHA MACHADO 	 --
--- >>>>>>>-----------------------------------------------------
-
 create or replace package UPDOC  is
-	/*PROCEDURE MAIN_EXT			( PRM_USUARIO     VARCHAR2 DEFAULT NULL,
-								 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
-								 utm_source      VARCHAR2 DEFAULT NULL,
-								 utm_medium      VARCHAR2 DEFAULT NULL,
-								 utm_campaign    VARCHAR2 DEFAULT NULL,
-								 utm_content     VARCHAR2 DEFAULT NULL,
-								 utm_term        VARCHAR2 DEFAULT NULL,
-								 fbclid          VARCHAR2 DEFAULT NULL);*/
 
 PROCEDURE MAIN 			(PRM_USUARIO     VARCHAR2 DEFAULT NULL,
 							PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
@@ -29,7 +7,8 @@ PROCEDURE MAIN 			(PRM_USUARIO     VARCHAR2 DEFAULT NULL,
 							utm_campaign    VARCHAR2 DEFAULT NULL,
 							utm_content     VARCHAR2 DEFAULT NULL,
 							utm_term        VARCHAR2 DEFAULT NULL,
-							fbclid          VARCHAR2 DEFAULT NULL);
+							fbclid          VARCHAR2 DEFAULT NULL,
+							PRM_VALOR 	VARCHAR2 DEFAULT NULL);
 
 PROCEDURE FAQ 				(PRM_VALOR 				VARCHAR2 DEFAULT NULL,
 							PRM_CLASSE  			VARCHAR2 DEFAULT NULL,
@@ -54,11 +33,35 @@ PROCEDURE DETALHE_PERGUNTA 	(PRM_VALOR 				VARCHAR2 DEFAULT NULL,
 							PRM_VERSAO 				VARCHAR2 DEFAULT NULL,
 							PRM_TIPUSER				VARCHAR2 DEFAULT NULL);
 
+PROCEDURE LOGIN  (PRM_VALOR 	VARCHAR2 DEFAULT NULL,
+                PRM_CLASSE  VARCHAR2 DEFAULT NULL,
+                PRM_USUARIO VARCHAR2 DEFAULT NULL,
+                PRM_TIPUSER VARCHAR2 DEFAULT NULL);
+
+PROCEDURE VALIDAR_USER (prm_user VARCHAR2);
+
+Procedure VALIDAR_SENHA (prm_user VARCHAR2,
+prm_password VARCHAR2,
+prm_session varchar2 default null,
+prm_prazo    number   default 1 );
+
+FUNCTION TESTAR_SENHA_DIGERIDA (prm_usuario varchar2, prm_password varchar2 ) return varchar2;
+
+procedure SET_USUARIO ( prm_usuario varchar2 default null,
+prm_mimic   varchar2 default null );
+
+procedure SET_SESSAO ( prm_cod   varchar2 default null,
+                      prm_valor varchar2 default null,
+                      prm_data  date     default null );
+
+PROCEDURE LOGOUT (prm_sessao varchar2 default null);
+
+
 PROCEDURE MONTA_MENU_LATERAL  ( PRM_PERGUNTA_PAI VARCHAR2,
 								PRM_NIVEL        NUMBER,
 								PRM_NIVEL_ABERTO NUMBER );
 
-PROCEDURE PRINCIPAL 		(PRM_VALOR 				VARCHAR2 DEFAULT NULL);
+--PROCEDURE PRINCIPAL 		(PRM_VALOR 				VARCHAR2 DEFAULT NULL);
 
 PROCEDURE RANK_PERGUNTAS (  PRM_VALOR               VARCHAR2 DEFAULT NULL, 
 							PRM_PERGUNTA            VARCHAR2 DEFAULT NULL); 
@@ -125,4 +128,3 @@ procedure topico_popup;
 procedure imagem_popup;
 
 END UPDOC;
-/

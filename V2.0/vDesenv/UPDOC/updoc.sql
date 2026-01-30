@@ -1,5 +1,4 @@
-SET DEFINE OFF
-CREATE OR REPLACE PACKAGE BODY UPDOC  IS
+create or replace PACKAGE BODY UPDOC  IS
 
 PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
@@ -8,7 +7,8 @@ PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                 utm_campaign    VARCHAR2 DEFAULT NULL,
                 utm_content     VARCHAR2 DEFAULT NULL,
                 utm_term        VARCHAR2 DEFAULT NULL,
-                fbclid          VARCHAR2 DEFAULT NULL) AS
+                fbclid          VARCHAR2 DEFAULT NULL,
+                PRM_VALOR 	VARCHAR2 DEFAULT NULL) AS
 
 WS_CSS          VARCHAR2(80);
 ws_class_cad    varchar2(20);
@@ -71,14 +71,81 @@ BEGIN
                 htp.p('<div class="header-doc">');  
                     ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
                     htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
-                        htp.p('<a class="go-faq">Central de Ajuda</a>');
-                        htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
-                        if upper(trim(ws_usuario)) <> 'NOUSER' then
-                            htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
-                        end if;
-                        -- if upper(trim(ws_usuario)) <> 'NOUSER' then
-                        --     htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
-                        -- end if;
+                    htp.p('<div class="header-util-section">');
+                      if ws_usuario = 'N/A' or ws_usuario = 'NOUSER' then --renderização condicional de usuário logado ou não
+                        htp.p('<span  class="go-login" id="go-logar">');
+                            htp.p('<svg style="height: 1.7em; top: 1.7em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" > <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/></g></g></svg>');
+                            htp.p('<span> Entrar </span>');
+                        htp.p('</span>');                
+                      else
+                
+                          htp.p('<span  class="go-login" id="login" >');
+        	                htp.p('<svg style="height: 1.4em; top: 1.4em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
+                               htp.p('<span> '|| ws_usuario ||' </span>');
+                          htp.p('</span>');
+                          
+                          htp.p('<div id="logout" class="invisivel">');
+        	                 htp.p('<svg style="height:1.4em; top: 1.4em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
+                             htp.p('<span> '|| ws_usuario ||'</span>');
+                           --  htp.p('<span> '|| ws_usu_nome ||'</span>');
+                             htp.p('<div class="go-logout-desconectar">');
+                               htp.p('<svg width="2em" height="2em" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M13.033 2v-2l10 3v18l-10 3v-2h-9v-7h1v6h8v-18h-8v7h-1v-8h9zm1 20.656l8-2.4v-16.512l-8-2.4v21.312zm-3.947-10.656l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"/></svg>');
+                               htp.p('<button class="logout-botao" onclick=desconectar()>Desconectar</button>');
+                              htp.p('</div>');
+                          htp.p('</div>');
+
+                      end if;
+
+                        htp.p('<div class="go-idioma">');
+                           htp.p('<select id="idioma">');
+                             htp.p('<option value="0">Português</option>');
+                             htp.p('<option value="1">English</option>');
+                           htp.p('</select>');
+                       htp.p('</div>');
+                        
+                        htp.p('<div class="mensagem">');
+                          --  htp.p('<span class="label-tipUser">');
+                               -- htp.p('<a>Tipo de usuario:</a>');
+                               --htp.p('<select id ="change-tipUser" onchange="tip_user=this.value; chamar(''MAIN'', '''||PRM_VALOR||''','''',this.value);" >');
+                               --    
+                               --    if WS_TIPUSER = 'T' THEN
+                               --        htp.p('<option value="T" selected>Todos</option>');
+                               --    ELSE
+                               --        htp.p('<option value="T" >Todos</option>');
+                               --    END IF;
+
+                               --    if WS_TIPUSER  = 'A' THEN
+                               --        htp.p('<option value="A" selected>Admin</option>');
+                               --    ELSE
+                               --        htp.p('<option value="A" >Admin</option>');
+                               --    END IF;
+
+                               --    if WS_TIPUSER = 'N' THEN
+                               --        htp.p('<option value="N" selected>Normal</option>');
+                               --    ELSE
+                               --        htp.p('<option value="N" >Normal</option>');
+                               --    END IF;
+
+                             --   htp.p('</select>');
+                        --    htp.p('</span>');
+                        
+                        htp.p('<svg id="lupa" width="0.6em" height="0.6em" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32.001" style="enable-background:new 0 0 32 32.001;" xml:space="preserve"><g><g><path d="M11.695,17.555C8.37,16.952,7.536,13.74,7.5,13.592c-0.164-0.686-0.846-1.105-1.538-0.949 c-0.688,0.161-1.116,0.851-0.956,1.539c0.048,0.203,1.223,4.986,6.232,5.895c0.079,0.014,0.155,0.02,0.23,0.02 c0.608,0,1.148-0.434,1.26-1.053C12.854,18.35,12.392,17.684,11.695,17.555z"/><path d="M26.509,21.075c-0.36-0.36-0.849-0.562-1.358-0.562c-0.508,0-0.998,0.202-1.355,0.563l-1.33-1.33 c3.547-4.856,3.129-11.724-1.254-16.106C18.864,1.292,15.745,0,12.426,0C9.107,0,5.987,1.292,3.642,3.64 C1.292,5.986,0,9.106,0,12.425C0,15.743,1.292,18.863,3.64,21.21c2.346,2.349,5.466,3.642,8.785,3.642 c2.67,0,5.209-0.839,7.322-2.387l1.329,1.328c-0.361,0.359-0.563,0.85-0.563,1.357c0,0.51,0.202,0.998,0.563,1.358l4.89,4.892 c0.801,0.801,2.098,0.801,2.898,0l2.537-2.537c0.8-0.801,0.8-2.098,0-2.897L26.509,21.075z M12.424,21.006 c-2.291,0-4.448-0.895-6.067-2.514c-1.62-1.62-2.513-3.775-2.513-6.067s0.893-4.448,2.513-6.069 c1.619-1.619,3.776-2.513,6.067-2.513s4.447,0.894,6.067,2.513c3.345,3.347,3.345,8.79,0,12.136 C16.872,20.111,14.716,21.006,12.424,21.006z"/><circle cx="6.52" cy="10.051" r="1.255"/></g></g></svg>');                            
+                        htp.p('<input id="busca" placeholder="Pesquisar" value="'||lower(prm_valor)||'" />');
+                    
+                        htp.p('</div>');
+                    htp.p('</div>');
+
+                    htp.p('<div class="header-botao-section">');
+                         htp.p('<a class="go-faq">Central de Ajuda</a>');
+                         htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
+                         if upper(trim(ws_usuario)) <> 'NOUSER' and ws_usuario is not null then
+                             htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
+                         end if;
+                         -- if upper(trim(ws_usuario)) <> 'NOUSER' then
+                         --     htp.p('<a class="go-doc-cadastro" id="cad_'||ws_usuario||'">Cadastro</a>');
+                         -- end if;
+                     htp.p('</div>');
+                    htp.p('</div>');
                 htp.p('</div>');
             end if;
 
@@ -92,13 +159,8 @@ BEGIN
                     htp.p('<script>chamar(''doc_cad_conteudo'','''','''','''','''',''N'');</script>');
                 else 
                     ws_tipouser:=prm_usuario;
-                    if prm_externo = 'VERSIONAMENTO' THEN    
-                        select max(cd_pergunta) into ws_externo from doc_perguntas
-                         where id_notas_versao = 'S'
-                           and id_liberado     = 'S';
-                    else 
-                        ws_externo:=prm_externo;
-                    end if;                    htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
+                    ws_externo:=prm_externo;
+                    htp.p('<a id="prm_externo" data-usuario="'||ws_tipouser||'" data-search="'||ws_externo||'"></a>');
                     htp.p('<script>gopage=document.getElementById(''prm_externo'');chamar(''detalhe_pergunta'',gopage.getAttribute(''data-search''),'''',gopage.getAttribute(''data-usuario''),'''',''S'');</script>');
                     ws_tipouser:='';
                     ws_externo:='';
@@ -108,7 +170,8 @@ BEGIN
                                             
             htp.p('<div class="main'||ws_class_cad||'">');
 
-                updoc.principal;
+                updoc.DOC_PUBLIC;
+              --  updoc.principal;
 
             htp.p('</div>');
 
@@ -138,16 +201,468 @@ BEGIN
 END MAIN;
 
 ------------------------------------------------------------------------------------------------------------------------------
-PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
+--PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
+--BEGIN
+--    htp.p('<div class="apresentation">');
+--        if instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'iPhone') = 0 and instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'Android') = 0 then
+--            htp.p('<img src="dwu.fcl.download?arquivo=doc_apresentation_main.png" class="bgmenur" />');
+--        else
+--            htp.p('<div class="bgmenur" ></div>');
+--        end if;
+--    htp.p('</div>');
+--END PRINCIPAL;
+------------------------------------------------------------------------------------------------------------------------------------------
+
+PROCEDURE LOGIN (PRM_VALOR 	VARCHAR2 DEFAULT NULL,
+                PRM_CLASSE  VARCHAR2 DEFAULT NULL,
+                PRM_USUARIO VARCHAR2 DEFAULT NULL,
+                PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
+
+    WS_USUARIO	    VARCHAR2(80);
+    WS_CSS		    VARCHAR2(80);
+    WS_TIPUSER      VARCHAR2(2);
+
 BEGIN
-    htp.p('<div class="apresentation">');
-        if instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'iPhone') = 0 and instr(owa_util.get_cgi_env('HTTP_USER_AGENT'), 'Android') = 0 then
-            htp.p('<img src="dwu.fcl.download?arquivo=doc_apresentation_main.png" class="bgmenur" />');
+   WS_TIPUSER:=PRM_TIPUSER;
+
+
+   htp.p('<script>');
+      htp.prn('const ');
+      for i in(select cd_constante, vl_constante from bi_constantes) loop
+        htp.prn(i.cd_constante||' = "'||fun.lang(i.vl_constante)||'", ');
+       end loop;
+       htp.prn('TR_END = "";');
+       htp.p('const USUARIO = "'||gbl.getusuario||'";');
+       htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
+   htp.p('</script>');
+
+   htp.p('<!DOCTYPE html>');
+   htp.p('<html lang="pt-br">');         
+     htp.p('<head>');
+        htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
+        htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
+        htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=updoc.css"/>' );
+        htp.p('<script src="dwu.fcl.download?arquivo=updoc.js"></script>');
+        --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
+        htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
+        htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
+        htp.p('<link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css">');
+        htp.p('<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css">');
+        htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
+        htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=MADETOMMY.otf">');
+        htp.p('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">');
+        htp.p('<meta http-equiv="Content-Language" content="pt-br">');
+        htp.p('<title>Login - UPQUERY</title>');
+     htp.p('</head>');
+
+
+    htp.p('<body style="position: absolute; width: 100%; margin: 0; background: #f9f9f9; display: block; /*display: flex; flex-flow: column nowrap;*/">');      
+
+        htp.p('<ul id="feed-fixo"></ul>');
+        htp.p('<ul style="display: none;" id="alerta-template">');
+         htp.p('<li>');
+            htp.p('<span></span>');
+            htp.p('<a onclick="var template = this.parentNode; template.classList.add(''clicked''); setTimeout(function(){ template.parentNode.removeChild(template); }, 300);">'||fun.lang('FECHAR')||'</a>');
+            htp.p('<span style="display: none;" onclick="this.nextElementSibling.classList.toggle(''show'');">mais detalhes</span>');
+            htp.p('<span></span>');
+         htp.p('</li>');
+        htp.p('</ul>');
+
+        htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
+            for a in (select variavel, conteudo from doc_variaveis) loop
+                htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
+            end loop;
+        htp.p('></div>'); 
+  
+
+     htp.p('<div class="spinner"></div>');
+
+      htp.p('<div class="login-conteudo">');
+    
+       htp.p('<div class="login-conteudo-box">');
+
+          htp.p('<div class="login-conteudo-box-titulo">');
+              htp.p('<span class="retorna-princ">');
+                 htp.p('<a class="login-conteudo-box-sair">X</a>');
+              htp.p('</span>');
+          htp.p('</div>'); 
+ 
+          htp.p('<section class="login-formulario">');
+ 
+           htp.p('<div id="login-menu" class="login-formulario" >');
+ 
+             htp.p('<span class="login-input-container">');
+ 	           htp.p('<svg style="height: 20px; top: 20px;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');
+ 		       htp.p('<input name="prm_usuario" class="login-session" type="email" required autocomplete="on" value="" placeholder="USU&Aacute;RIO" onkeypress="if(event.which == ''13''){ this.nextElementSibling.focus(); }">');
+             htp.p('</span>');		
+ 
+             htp.p('<span class="login-input-container">');
+ 			    htp.p('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="height: 20px; top: 20px;" xml:space="preserve"> <g> <g> <path d="M256,0c-66.422,0-120.461,54.039-120.461,120.461c0,48.703,28.906,91.914,72.977,110.739v242.149L256,512l47.484-38.651 v-50.152l-11.264-11.996l11.264-11.996v-28.838l-14.604-17.082l14.604-17.082v-36.086l-7.438-7.206l7.438-7.206v-54.504 c44.071-18.826,72.977-62.036,72.977-110.739C376.461,54.039,322.422,0,256,0z M256,102.765 c-15.345,0-27.791-12.446-27.791-27.791S240.655,47.184,256,47.184s27.791,12.446,27.791,27.791 C283.791,90.319,271.345,102.765,256,102.765z"/> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg>');
+ 			    htp.p('<input name="prm_password" class="login-session" type="password" required autocomplete="current-password" value="" placeholder="SENHA" onkeypress="if(event.which == ''13''){ testLogin(this.nextElementSibling); }">');
+				htp.p('<svg onclick="if(this.previousElementSibling.type === ''password''){ this.previousElementSibling.type = ''text''; } else { this.previousElementSibling.type = ''password''; }" class="reveal" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 469.333 469.333" style="enable-background:new 0 0 469.333 469.333;" xml:space="preserve"> <g> <g> <g> <path d="M234.667,170.667c-35.307,0-64,28.693-64,64s28.693,64,64,64s64-28.693,64-64S269.973,170.667,234.667,170.667z"/> <path d="M234.667,74.667C128,74.667,36.907,141.013,0,234.667c36.907,93.653,128,160,234.667,160 c106.773,0,197.76-66.347,234.667-160C432.427,141.013,341.44,74.667,234.667,74.667z M234.667,341.333 c-58.88,0-106.667-47.787-106.667-106.667S175.787,128,234.667,128s106.667,47.787,106.667,106.667 S293.547,341.333,234.667,341.333z"/> </g> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg>');
+			    /*htp.p('<a  class="link" href="dwu03.login.refazer_senha"> Esqueceu a senha? </a>');*/
+      	     htp.p('</span>');
+
+             htp.p('<button class="login-botao" type="button" onclick="login_validacao(event)">LOGIN</button>');
+ 
+           htp.p('</div>');
+ 
+        /*    htp.p('<div>');
+              htp.p('<h2> Esqueceu a senha? </h2>');
+              htp.p('<a href="dwu03.login.refazer_senha"> Criar nova senha </a>');
+            htp.p('</div>');
+  
+            htp.p('<section>');
+              htp.p('<h2> Novo aqui? </h2>');
+              htp.p('<a href="dwu03.login.criar_login">Criar conta agora</a>');
+            htp.p('</section>'); */
+ 
+          htp.p('</div>');
+ 
+        htp.p('</div>');
+      htp.p('</div>');
+    htp.p('</body');
+
+  
+END LOGIN;
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+PROCEDURE LOGOUT (prm_sessao varchar2 default null ) as
+
+		job_id         number;
+		ws_id_session  Varchar2(80);
+		ws_cookie      owa_cookie.cookie;
+
+	begin
+
+		if nvl(prm_sessao, 'N/A') = 'N/A' then
+			ws_cookie := owa_cookie.get('SESSION');
+			ws_id_session := ws_cookie.vals(1);
+		else
+			ws_id_session := prm_sessao;
+		end if;
+
+		owa_util.mime_header('text/html', FALSE, NULL);
+      owa_cookie.send(
+      name  => 'SESSION',
+      value => 'deleted',
+      expires => sysdate - 1,
+      path => '/'
+      );
+
+		owa_util.http_header_close;
+
+		delete from bi_sessao where cod = ws_id_session;
+		commit;
+
+      htp.p('setTimeout(function() { window.location.href = "dwu.updoc.main"; }, 500);');
+
+end LOGOUT;
+---------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE VALIDAR_USER (prm_user VARCHAR2) as
+
+ws_email_flag   boolean := false;
+ws_erro  		exception;
+ws_user  		varchar2(40) := 'N/A';
+
+
+BEGIN  
+
+   begin  --valida o usuario pelo nome 
+     select usu_nome into ws_user from usuarios 
+     where upper(usu_nome) = upper(prm_user) and rownum = 1;
+
+   exception when no_data_found then
+		begin  --valida o usuario pelo email
+		   select usu_email into ws_user from usuarios
+           where upper(usu_email) = upper(prm_user) and rownum =1;
+
+           ws_email_flag := true; 
+
+		exception
+			when others then
+          --  htp.p('erro 0');
+            htp.p('{"status":"erro 0"}');
+			raise ws_erro;  
+		end;
+   end;
+
+   if ws_email_flag then
+        select usu_nome into ws_user from usuarios
+        where upper(usu_email) = upper(prm_user) and rownum =1; 
+    else
+    	ws_user := upper(ws_user);
+    end if;
+
+	if nvl(ws_user, 'N/A') = 'N/A' then
+	--	htp.p('erro 1');
+        htp.p('{"status":"erro 1"}');
+    
+		raise ws_erro;
+
+    else 
+       htp.p('{"status":"Ok","ws_user":"'|| ws_user ||'"}');
+	end if;
+
+exception 
+	when ws_erro then                                                                                                                             --RETURNUSER
+		insert into bi_log_sistema values (sysdate,' -- ERROR MSG --'||DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE,USER||'--'||USER,'ERRO' );
+		commit;
+		--htp.p('erro');
+	when others then
+		htp.p(DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE);
+
+END VALIDAR_USER;
+
+ 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--PROCEDURE VALIDAR_LOGIN (prm_user VARCHAR2,  --procedure testLogin 
+--prm_password VARCHAR2,
+--prm_session  varchar2 default null,
+--prm_prazo    number   default 1 ) AS
+--
+--
+--	ws_test  		varchar2(10);
+--	ws_hash  		varchar2(20);
+--	ws_user  		varchar2(40) := 'N/A';
+--	ws_count_bi 	number;
+--	ws_erro  		exception;
+--  ws_email_flag   boolean := false;
+--
+--
+--BEGIN
+--
+--   begin  --valida o usuario pelo nome 
+--     select usu_nome into ws_user from usuarios 
+--     where upper(usu_nome) = upper(prm_user) and rownum = 1;
+--
+--     -- verifica o acerto da senha
+--     ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
+--
+--   exception when no_data_found then
+--		begin  --valida o usuario pelo email
+--		   select usu_email into ws_user from usuarios
+ --          where upper(usu_email) = upper(prm_user) and rownum =1;
+--
+ --          ws_email_flag := true; 
+--		   ws_test := TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
+--
+--		exception
+--			when others then
+ --         --  htp.p('erro 0');
+ --           htp.p('{"status":"erro 0"}');
+--			raise ws_erro;  
+--		end;
+ --  end;
+--
+ --  if ws_email_flag then
+ --       select usu_nome into ws_user from usuarios
+ --       where upper(usu_email) = upper(prm_user) and rownum =1; 
+ --   else
+ --   	ws_user := upper(ws_user);
+ --   end if;
+--
+--
+--if nvl(ws_user, 'N/A') = 'N/A' then
+----	htp.p('erro 1');
+--     htp.p('{"status":"erro 1"}');
+-- 
+--	raise ws_erro;
+--end if;
+--
+--
+--if ws_test = 'Y' then
+----	htp.p('login correto');
+--     htp.p('{"status":"login correto","ws_user":"'|| ws_user ||'"}');
+--
+--	delete bi_sessao where valor = ws_user and dt_acesso <= sysdate; --Remove registros antigos expirados
+--	COMMIT;
+--
+--	SET_USUARIO(prm_session, ws_user); --Define o usuário logado
+--
+--	begin
+--		 --SE USUARIO O USUARIO FOR DO BANCO(CLIENTE) ALTERA NA BI_SESSAO O TIPO = CHAMADO
+--	 SELECT COUNT(*) INTO WS_COUNT_BI FROM USUARIOS WHERE USU_NOME = WS_USER ;
+--		IF WS_COUNT_BI = 0 THEN				
+--			UPDATE BI_SESSAO SET TIPO = 'CHAMADO' WHERE COD = PRM_SESSION;
+--			COMMIT;
+--			END IF;
+--         
+--	   exception
+--			when no_data_found then
+--		   ROLLBACK;
+--		end;
+--
+--   else
+--    --   htp.p('erro 2');
+--        htp.p('{"status":"erro 2"}');
+--		raise ws_erro;
+--	end if;
+--
+-- exception 
+--	when ws_erro then                                                                                                                             --RETURNUSER
+--		insert into bi_log_sistema values (sysdate,' -- ERROR MSG --'||DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE,USER||'--'||USER,'ERRO' );
+--		commit;
+--		--htp.p('erro');
+--	when others then
+--		htp.p(DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE);
+--
+--END VALIDAR_LOGIN;
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Procedure VALIDAR_SENHA (prm_user VARCHAR2,
+prm_password VARCHAR2,
+prm_session varchar2 default null,
+prm_prazo    number   default 1 ) as
+
+
+ws_test  varchar2(10);
+ws_erro  exception;
+WS_COUNT_BI number;
+
+
+BEGIN
+ 
+   ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
+
+
+	if ws_test = 'Y' then
+		htp.p('login correto');
+      --  htp.p('{"status":"login correto","ws_user":"'|| ws_user ||'"}');
+
+		delete bi_sessao where valor = prm_user and dt_acesso <= sysdate; --Remove registros antigos expirados
+		COMMIT;
+
+		SET_USUARIO(prm_session, prm_user); --Define o usuário logado
+
+		begin
+			 --SE USUARIO O USUARIO FOR DO BANCO(CLIENTE) ALTERA NA BI_SESSAO O TIPO = CHAMADO
+		 SELECT COUNT(*) INTO WS_COUNT_BI FROM USUARIOS WHERE USU_NOME = prm_user ;
+			IF WS_COUNT_BI = 0 THEN				
+				UPDATE BI_SESSAO SET TIPO = 'CHAMADO' WHERE COD = PRM_SESSION;
+			COMMIT;
+			END IF;
+         
+	   exception
+			when no_data_found then
+		   ROLLBACK;
+		end;
+
+   else
+       htp.p('erro 2');
+  --      htp.p('{"status":"erro 2"}');
+		raise ws_erro;
+	end if;
+
+ exception 
+	when ws_erro then                                                                                                                             --RETURNUSER
+		insert into bi_log_sistema values (sysdate,' -- ERROR MSG --'||DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE,USER||'--'||USER,'ERRO' );
+		commit;
+		--htp.p('erro');
+	when others then
+		htp.p(DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE);
+        
+END VALIDAR_SENHA;
+----------------------------------------------------------------------------------------------------------------------------------------
+FUNCTION TESTAR_SENHA_DIGERIDA (prm_usuario varchar2, prm_password varchar2 ) return varchar2 as
+
+   ws_count number := 0;
+   ws_vrf varchar2(10) := 'N';
+   ws_hash VARCHAR2(100);
+
+
+begin 
+
+   SELECT TO_CHAR(
+         dbms_utility.get_hash_value(
+           UPPER(TRIM(prm_usuario)) || '/' || UPPER(TRIM(prm_password)),
+           1000000000,
+           POWER(2,30)
+         )
+       ) INTO ws_hash
+   FROM dual;
+
+
+      -- Valida a senha sem o código do cliente, 
+    select count(*) into ws_count 
+    from usuarios
+    where nvl(password, 'N/A') = ltrim(to_char(dbms_utility.get_hash_value(upper(trim(prm_usuario))||'/'||upper(trim(prm_password)), 1000000000, power(2,30) ), rpad( 'X',29,'X')||'X'))
+    and upper(trim(usu_nome)) = upper(trim(prm_usuario));  
+         
+    -- Valida a senha sem o código do cliente (email)
+   if ws_count = 0 then
+        BEGIN
+         with cte_nome as (
+         select distinct upper(trim(usu_nome)) as usu_nome
+         from usuarios
+         where upper(trim(usu_email)) = upper(trim(prm_usuario))
+         )
+
+         select count(*) into ws_count   
+         from usuarios
+         where nvl(password, 'N/A') = ltrim(to_char(dbms_utility.get_hash_value((SELECT * FROM cte_nome)||'/'||upper(trim(prm_password)), 1000000000, power(2,30) ), rpad( 'X',29,'X')||'X'))
+         and upper(trim(usu_email)) = upper(trim(prm_usuario));
+        EXCEPTION WHEN NO_DATA_FOUND THEN
+            ws_count := 0;
+        END;
+
+   end if; 
+
+   if ws_count <> 0 then
+      return 'Y';
+   else
+       return 'N';
+
+
+   end if;
+
+exception when others then
+   return 'N';
+
+end TESTAR_SENHA_DIGERIDA;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+procedure SET_USUARIO ( prm_usuario varchar2 default null,
+prm_mimic   varchar2 default null ) as
+
+begin
+   
+   SET_SESSAO(prm_usuario, prm_mimic);
+
+end SET_USUARIO;
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+procedure SET_SESSAO ( prm_cod   varchar2 default null,
+                      prm_valor varchar2 default null,
+                      prm_data  date     default null ) as
+
+    ws_tipo varchar2(80);
+
+begin
+
+    --se não tiver valor, a instrução é para excluir sessões.
+    if nvl(prm_valor, 'N/A') = 'N/A' then
+        --se tiver data é pra limpar todas as sessões. daquela data para baixo
+        if nvl(prm_data, sysdate-10) = sysdate-10 then
+            delete from bi_sessao where cod = prm_cod;
         else
-            htp.p('<div class="bgmenur" ></div>');
+            delete from bi_sessao where dt_acesso <= prm_data;
         end if;
-    htp.p('</div>');
-END PRINCIPAL;
+    else
+
+        --select owa_util.get_cgi_env('HTTP_USER_AGENT') into ws_tipo from dual;
+
+        merge into bi_sessao using dual on (cod = prm_cod) --MERGE faz upsert: ele atualiza se já existir, ou insere se não existir.
+        when not matched then
+            insert values (prm_cod, 'USUARIO', nvl(prm_data, sysdate+0.5), prm_valor)
+        when matched then
+            update set valor = prm_valor;
+    end if;
+
+	commit;
+
+end SET_SESSAO;
 
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -169,42 +684,42 @@ END PRINCIPAL;
 
             
                 htp.p('<div class="fundo-busca">');
-                        
-                        
- 
-                        htp.p('<h1 class="titulo-faq"> COMO PODEMOS AJUDAR?</h1>');
-
-                        htp.p('<div class="mensagem">');
-                            htp.p('<span class="label-tipUser">');
-                                htp.p('<a>Tipo de usuario:</a>');
-                                 htp.p('<select id ="change-tipUser" onchange="tip_user=this.value; chamar(''FAQ'', '''||PRM_VALOR||''','''',this.value);" >');
-                                    
-                                    if WS_TIPUSER = 'T' THEN
-                                        htp.p('<option value="T" selected>Todos</option>');
-                                    ELSE
-                                        htp.p('<option value="T" >Todos</option>');
-                                    END IF;
-
-                                    if WS_TIPUSER  = 'A' THEN
-                                        htp.p('<option value="A" selected>Admin</option>');
-                                    ELSE
-                                        htp.p('<option value="A" >Admin</option>');
-                                    END IF;
-
-                                    if WS_TIPUSER = 'N' THEN
-                                        htp.p('<option value="N" selected>Normal</option>');
-                                    ELSE
-                                        htp.p('<option value="N" >Normal</option>');
-                                    END IF;
-
-                                htp.p('</select>');
-                            htp.p('</span>');                            
-                            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
-                            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
-                        htp.p('</div>');
-
-                        htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
-
+                --        
+                --        
+ --
+                       htp.p('<h1 class="titulo-faq"> COMO PODEMOS AJUDAR?</h1>');
+--
+                --        htp.p('<div class="mensagem">');
+                --            htp.p('<span class="label-tipUser">');
+                --                htp.p('<a>Tipo de usuario:</a>');
+                --                 htp.p('<select id ="change-tipUser" onchange="tip_user=this.value; chamar(''FAQ'', '''||PRM_VALOR||''','''',this.value);" >');
+                --                    
+                --                    if WS_TIPUSER = 'T' THEN
+                --                        htp.p('<option value="T" selected>Todos</option>');
+                --                    ELSE
+                --                        htp.p('<option value="T" >Todos</option>');
+                --                    END IF;
+--
+                --                    if WS_TIPUSER  = 'A' THEN
+                --                        htp.p('<option value="A" selected>Admin</option>');
+                --                    ELSE
+                --                        htp.p('<option value="A" >Admin</option>');
+                --                    END IF;
+--
+                --                    if WS_TIPUSER = 'N' THEN
+                --                        htp.p('<option value="N" selected>Normal</option>');
+                --                    ELSE
+                --                        htp.p('<option value="N" >Normal</option>');
+                --                    END IF;
+--
+                --                htp.p('</select>');
+                --            htp.p('</span>');                            
+                --            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
+                --            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
+                --        htp.p('</div>');
+--
+                       htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
+--
                 htp.p('</div>');
 
                         htp.p('<ul class="flex-container">');
@@ -232,40 +747,40 @@ BEGIN
         htp.p('<div class="conteudo-faq">');
 
             htp.p('<div class="fundo-busca">');
-                    
+            --        
                     htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O</h1>');
-
-                    htp.p('<div class="mensagem">');
-                        htp.p('<span class="label-tipUser">');
-                            htp.p('<a>Tipo de usuario:</a>');
-                            htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
-                                
-                                if WS_TIPUSER = 'T' THEN
-                                    htp.p('<option value="T" selected>Todos</option>');
-                                ELSE
-                                    htp.p('<option value="T" >Todos</option>');
-                                END IF;
-
-                                if WS_TIPUSER = 'A' THEN
-                                    htp.p('<option value="A" selected>Admin</option>');
-                                ELSE
-                                    htp.p('<option value="A" >Admin</option>');
-                                END IF;
-
-                                if WS_TIPUSER = 'N' THEN
-                                    htp.p('<option value="N" selected>Normal</option>');
-                                ELSE
-                                    htp.p('<option value="N" >Normal</option>');
-                                END IF;
-
-                            htp.p('</select>');
-                        htp.p('</span>');                            
-                        htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
-                        htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
-                    htp.p('</div>');
-
+--
+            --        htp.p('<div class="mensagem">');
+            --            htp.p('<span class="label-tipUser">');
+            --                htp.p('<a>Tipo de usuario:</a>');
+            --                htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
+            --                    
+            --                    if WS_TIPUSER = 'T' THEN
+            --                        htp.p('<option value="T" selected>Todos</option>');
+            --                    ELSE
+            --                        htp.p('<option value="T" >Todos</option>');
+            --                    END IF;
+--
+            --                    if WS_TIPUSER = 'A' THEN
+            --                        htp.p('<option value="A" selected>Admin</option>');
+            --                    ELSE
+            --                        htp.p('<option value="A" >Admin</option>');
+            --                    END IF;
+--
+            --                    if WS_TIPUSER = 'N' THEN
+            --                        htp.p('<option value="N" selected>Normal</option>');
+            --                    ELSE
+            --                        htp.p('<option value="N" >Normal</option>');
+            --                    END IF;
+--
+            --                htp.p('</select>');
+            --            htp.p('</span>');                            
+            --            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
+            --            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
+            --        htp.p('</div>');
+--
                     htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
-
+--
             htp.p('</div>');
                     
                     htp.p('<ul class="flex-container">');
@@ -300,42 +815,42 @@ BEGIN
 
         htp.p('<div class="conteudo-faq">');
 
-            htp.p('<div class="fundo-busca">');
-                    
-                    htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
+           htp.p('<div class="fundo-busca">');
+           --        
+                   htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
 
-                    htp.p('<div class="mensagem">');
-                        htp.p('<span class="label-tipUser">');
-                            htp.p('<a>Tipo de usuario:</a>');
-                            htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
-                                
-                                if WS_TIPUSER = 'T' THEN
-                                    htp.p('<option value="T" selected>Todos</option>');
-                                ELSE
-                                    htp.p('<option value="T" >Todos</option>');
-                                END IF;
+           --        htp.p('<div class="mensagem">');
+           --            htp.p('<span class="label-tipUser">');
+           --                htp.p('<a>Tipo de usuario:</a>');
+           --                htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
+           --                    
+           --                    if WS_TIPUSER = 'T' THEN
+           --                        htp.p('<option value="T" selected>Todos</option>');
+           --                    ELSE
+           --                        htp.p('<option value="T" >Todos</option>');
+           --                    END IF;
 
-                                if WS_TIPUSER = 'A' THEN
-                                    htp.p('<option value="A" selected>Admin</option>');
-                                ELSE
-                                    htp.p('<option value="A" >Admin</option>');
-                                END IF;
+           --                    if WS_TIPUSER = 'A' THEN
+           --                        htp.p('<option value="A" selected>Admin</option>');
+           --                    ELSE
+           --                        htp.p('<option value="A" >Admin</option>');
+           --                    END IF;
 
-                                if WS_TIPUSER = 'N' THEN
-                                    htp.p('<option value="N" selected>Normal</option>');
-                                ELSE
-                                    htp.p('<option value="N" >Normal</option>');
-                                END IF;
+           --                    if WS_TIPUSER = 'N' THEN
+           --                        htp.p('<option value="N" selected>Normal</option>');
+           --                    ELSE
+           --                        htp.p('<option value="N" >Normal</option>');
+           --                    END IF;
 
-                            htp.p('</select>');
-                        htp.p('</span>');                            
-                        htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
-                        htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
-                    htp.p('</div>');
+           --                htp.p('</select>');
+           --            htp.p('</span>');                            
+           --            htp.p('<input id="busca" placeholder="Utilize palavras-chaves na busca..." value="'||lower(prm_valor)||'" />');
+           --            htp.p('<img src="dwu.fcl.download?arquivo=lupabusca.png" id="lupa" />');
+           --        htp.p('</div>');
 
-                    htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
+                   htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
-            htp.p('</div>');
+           htp.p('</div>');
             
                     htp.p('<ul class="flex-container">');
                         updoc.consulta(PRM_VALOR,'P',WS_TIPUSER);
@@ -412,14 +927,21 @@ END DOC_PRIVATE;
                             WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
                 END IF;
 
-                    htp.p('<li>');
-                        htp.p('<span class="flex-perguntas"><img src="dwu.fcl.download?arquivo=mais.png" class="mais" />'||ws_linha(i).pergunta||'</span>');
+                  --  htp.p('<li>'); -- Antes esava sem classe class="selected"
+                      -- htp.p('<span class="flex-perguntas">'||ws_linha(i).pergunta||'</span>');
 
                         if prm_classe <> 'F' then
-                            htp.p('<span class="flex-resposta">'||ws_linha(i).resposta||'<a class ="ler-mais" title="'||ws_linha(i).cd_pergunta||'">Ler mais</a></span>');                        
+                          htp.p('<li>');
+                       /*     htp.p('<span class="flex-resposta">'||ws_linha(i).resposta||'<a class ="ler-mais" title="'||ws_linha(i).cd_pergunta||'">Ler mais</a></span>');  */
+                            htp.p('<span class="flex-perguntas ler-mais" title="'||ws_linha(i).cd_pergunta||'"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path d="M12 4.706c-2.938-1.83-7.416-2.566-12-2.706v17.714c3.937.12 7.795.681 10.667 1.995.846.388 1.817.388 2.667 0 2.872-1.314 6.729-1.875 10.666-1.995v-17.714c-4.584.14-9.062.876-12 2.706zm-10 13.104v-13.704c5.157.389 7.527 1.463 9 2.334v13.168c-1.525-.546-4.716-1.504-9-1.798zm20 0c-4.283.293-7.475 1.252-9 1.799v-13.171c1.453-.861 3.83-1.942 9-2.332v13.704zm-2-10.214c-2.086.312-4.451 1.023-6 1.672v-1.064c1.668-.622 3.881-1.315 6-1.626v1.018zm0 3.055c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0 6.093c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm-16-6.104c2.119.311 4.332 1.004 6 1.626v1.064c-1.549-.649-3.914-1.361-6-1.672v-1.018zm0 5.09c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.316-6-1.626v1.017zm0 6.093c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017z"/></svg>   '||ws_linha(i).pergunta||'</span>');  /* perguntar se ele quer que apareça as perguntas ou as respostas */                     
+                      
                         else
-                            htp.p('<span class="flex-resposta-faq">'||ws_linha(i).resposta||'</span>');
-                        end if;
+                          htp.p('<li id="lista-flex-perguntas-faq">');
+                           htp.p('<div class="flex-perguntas-faq">');
+                             htp.p('<span id="faq-pergunta" class="ler-mais" title="'||ws_linha(i).cd_pergunta||'"> <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm0-18.8c-4.853 0-8.8 3.947-8.8 8.8s3.947 8.8 8.8 8.8 8.8-3.947 8.8-8.8-3.947-8.8-8.8-8.8zm0 15.05c-.689 0-1.25-.56-1.25-1.25s.561-1.25 1.25-1.25c.691 0 1.25.56 1.25 1.25s-.559 1.25-1.25 1.25zm1.961-5.928c-.904.975-.947 1.514-.935 2.178h-2.005c-.007-1.475.02-2.125 1.432-3.468.572-.544 1.024-.975.962-1.821-.058-.805-.73-1.226-1.364-1.226-.709 0-1.538.527-1.538 2.013h-2.011c0-2.4 1.41-3.95 3.59-3.95 1.036 0 1.942.339 2.551.955.57.578.865 1.372.854 2.298-.018 1.383-.859 2.291-1.536 3.021z"/></svg>'||ws_linha(i).pergunta||'</span>');
+                              htp.p('<span id="faq-resposta" class="invisivel"  title="'||ws_linha(i).cd_pergunta||'" >'||ws_linha(i).resposta||'</span');/* estava com flex-resposta-faq */
+                           htp.p('<div>');
+                       end if;
 
                     htp.p('</li>');
             
@@ -434,7 +956,7 @@ END DOC_PRIVATE;
             COMMIT;
 
     END CONSULTA;
-
+-- ======================================================================================================================================
     PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL, 
                                     PRM_VERSAO VARCHAR2 DEFAULT NULL,
                                     PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
@@ -550,17 +1072,12 @@ END DOC_PRIVATE;
 
                     htp.p('</div>');
 
+                end if;
+            htp.p('</div>');        -- fundo-conteudo 
+
+            if ws_tp_conteudo <> 'ARQUIVOS' then 
+                htp.p('<div class="bloco-direito-conteudo">');
                     htp.p('<div class="detalhe-conteudo2">');
-                                                                
-                        htp.p('<div class= "voto">');
-
-                            htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                            htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
-
-                            htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-                            
-                        htp.p('</div>');
-                        htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
                         htp.p('<span class="relacionados">Artigos relacionados</span>');
                         htp.p('<ul id="perg-rel">');
@@ -592,13 +1109,21 @@ END DOC_PRIVATE;
                             END IF;
 
                         htp.p('</ul>');
+                        htp.p('<div class="voto-linha"></div>');
+                        htp.p('<div class= "voto">');
+
+                            htp.p('<span  id=  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                            htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
+
+                            htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
+                            
+                        htp.p('</div>');
+                        htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
+
                         
                     htp.p('</div>');    -- detalhe-conteudo2
-                end if;
-            htp.p('</div>');        -- fundo-conteudo 
 
-            if ws_tp_conteudo <> 'ARQUIVOS' then 
-                htp.p('<div class="bloco-direito-conteudo"></div>');
+                htp.p('</div>');
             end if;     
 
         htp.p('</div>');            -- principal-conteudo 
@@ -607,7 +1132,7 @@ END DOC_PRIVATE;
         null;
     END DETALHE_PERGUNTA;
 
-
+--==================================================================================================================================
     PROCEDURE MONTA_MENU_LATERAL  ( PRM_PERGUNTA_PAI VARCHAR2,
                                     PRM_NIVEL        NUMBER,
                                     PRM_NIVEL_ABERTO NUMBER ) AS
@@ -1860,5 +2385,3 @@ exception
 end imagem_popup;
 
 END UPDOC;
-/
-SHOW ERROR;
