@@ -27,6 +27,10 @@ BEGIN
         htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
     htp.p('</script>');
 
+    htp.p('<script>');
+        htp.p('alert(''Mensagem do lucas'');');
+    htp.p('</script>');
+
     htp.p('<!DOCTYPE html>');
     htp.p('<html lang="pt-br">');
             
