@@ -12,10 +12,10 @@ const dirWeb = path.join(dirDoc, 'web');
 // Configuração de conexão
 const dbDocs = {
     user: 'DWU',
-    host: 'conexoes.upquery.com',
-    password: '2iGh952aSUL1',
-    port: '1522',
-    service: 'documentacao',
+    host: '172.1.1.198',
+    password: '4wdyPel2SX49',
+    port: '1521',
+    service: 'DESENV',
 };
 
 async function conexao(user, senha, service, host, port = '1521') {
@@ -79,7 +79,7 @@ async function inserirBlob(conn, fileName, logger = console.log) {
     // Inserir o BLOB
     logger(`O arquivo ${fileName} não existe no banco de dados\n\nFazendo inserção...` + '\n');
     await conn.execute(
-        `INSERT INTO TAB_DOCUMENTOS (name, blob_content) VALUES (:fileName, :blob)`,
+        `INSERT INTO TAB_DOCUMENTOS (name, blob_content,last_updated) VALUES (:fileName, :blob, sysdate)`,
         {
             fileName: fileName,
             blob: fileData
