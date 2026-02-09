@@ -2,9 +2,9 @@ var classe_doc;
 /*
 ====================================
 ==    CLASSE_DOC = CLASSE         ==
-==    F = FAQ-DÚVIDAS FREQUENTES  ==
-==    D = DOCUMENTAÇÃO PÚBLICA    ==
-==    P = DOCUMENTAÇÃO INTERNA    ==
+==    F = FAQ-DÃšVIDAS FREQUENTES  ==
+==    D = DOCUMENTAÃ‡ÃƒO PÃšBLICA    ==
+==    P = DOCUMENTAÃ‡ÃƒO INTERNA    ==
 ====================================
  */  
 var tip_user = 'T' ;
@@ -33,29 +33,8 @@ var loading;
 
 document.addEventListener('click', function(e){
 
-    if(e.target.classList.contains('flex-perguntas')){ 
-        e.target.parentNode.classList.toggle('selected');
-
-        if (e.target.parentNode.classList.contains('selected')){
-            e.target.parentNode.querySelector('.mais').src = URL_DOWNLOAD + "menos.png";
-        } else {
-            e.target.parentNode.querySelector('.mais').src = URL_DOWNLOAD + "mais.png";
-        }
-    }
-
-    if(e.target.classList.contains('mais')){ 
-        e.target.parentNode.parentNode.classList.toggle('selected');
-
-        if (e.target.parentNode.parentNode.classList.contains('selected')){
-            e.target.src = URL_DOWNLOAD + "menos.png";
-        } else {
-            e.target.src = URL_DOWNLOAD + "mais.png";
-        }
-    }
-
-    if(e.target.classList.contains('cxmsg')){
-        document.querySelector('.cxmsg').classList.remove('mostrar');
-    }
+    console.log('mateus');
+    
     
     if(e.target.id == "lupa"){
         chamar('consulta', e.target.previousElementSibling.value, '.flex-container',tip_user);   
@@ -193,8 +172,8 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
 
     loading = document.querySelector('.spinner');  
     loading.classList.add('ativado');
-    var request = new XMLHttpRequest(); //aqui inicializa a requisição
-    request.open('POST', 'dwu.updoc.' + proc, true); //esse ponto define a procedure de comunicação
+    var request = new XMLHttpRequest(); //aqui inicializa a requisiÃ§Ã£o
+    request.open('POST', 'dwu.updoc.' + proc, true); //esse ponto define a procedure de comunicaÃ§Ã£o
 
     if(proc == 'principal'){
         request.send('prm_valor=');
@@ -233,7 +212,7 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
                     for(let a=0;a<itens.length;a++){
                         if ( itens[a].getAttribute('data-pergunta') == search ) {
                             
-                            // Abre os níveis superiores ao item selecionado 
+                            // Abre os nÃ­veis superiores ao item selecionado 
                             let ul = itens[a].parentNode.parentNode;
                             let fim = 'N';
                             while (fim == 'N') {
@@ -261,7 +240,7 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
                     document.querySelector('.cxmsg').classList.remove('mostrar');
                 }, 3000)
             }
-            loading.classList.remove('ativado');// esse ponto testa se o endereço alcançou 200, e traz a resposta do backend               
+            loading.classList.remove('ativado');// esse ponto testa se o endereÃ§o alcanÃ§ou 200, e traz a resposta do backend               
         }
     }; 
     if (proc == 'detalhe_pergunta') {
@@ -319,7 +298,7 @@ function changeBody(alvo, x, y, z){
         }
         if (z == 'limpo'){
 
-            alerta('feed-fixo', "Limpeza Concluída!");
+            alerta('feed-fixo', "Limpeza ConcluÃ­da!");
         }               
     }).then(function(){ 
 
@@ -328,7 +307,7 @@ function changeBody(alvo, x, y, z){
     });
 };
     
-    //Função descontinuada 11/11/2022 não sera mais necessário o usuário digitar mais que 3 carancteres.
+    //FunÃ§Ã£o descontinuada 11/11/2022 nÃ£o sera mais necessÃ¡rio o usuÃ¡rio digitar mais que 3 carancteres.
 function keyword(texto){  
     return texto.split(' ').filter(palavra => palavra.length > 3).join(' ');
 };
@@ -570,13 +549,13 @@ function conteudo_tela_cadastro(ele, cd_pergunta, id_conteudo){
 
     if (conteudoMovendoId) {
         if (id_conteudo == conteudoMovendoId) {
-            conteudo_mover_cancelar();  // Se já estiver em modo de movimento, cancela
+            conteudo_mover_cancelar();  // Se jÃ¡ estiver em modo de movimento, cancela
         } else {
             conteudo_mover_completar(id_conteudo);
             event.stopPropagation(); // Impede que o evento se propague
-            event.preventDefault(); // Impede a ação padrão
+            event.preventDefault(); // Impede a aÃ§Ã£o padrÃ£o
         } 
-        return; // Não continua com a função se estiver movendo
+        return; // NÃ£o continua com a funÃ§Ã£o se estiver movendo
     }
 
 
@@ -655,7 +634,7 @@ function conteudo_topico_seleciona(ele){
 
 function conteudo_tela_conteudos(cd_pergunta){
     
-    // Monta tela de alteração somente com o botão NOVO
+    // Monta tela de alteraÃ§Ã£o somente com o botÃ£o NOVO
     call('conteudo_tela_cadastro', 'prm_pergunta='+cd_pergunta+'&prm_id_conteudo=').then(function(resposta){ 
         if(resposta.split('|')[0] == 'ERRO|'){ 
             alerta('',resposta.split('|')[1]); 
@@ -664,7 +643,7 @@ function conteudo_tela_conteudos(cd_pergunta){
         }  
     });    
 
-    // Monta tela de listagem de conteúdos
+    // Monta tela de listagem de conteÃºdos
     let scroll_top = document.getElementById('cadastro-conteudo-detalhe').scrollTop;
     console.log('a1', scroll_top);
     
@@ -680,7 +659,7 @@ function conteudo_tela_conteudos(cd_pergunta){
 
 function cadastro_conteudo_excluir(id_conteudo) {
 
-    if (confirm('Confirma a exclusão do conteúdo selecionando?')) {
+    if (confirm('Confirma a exclusÃ£o do conteÃºdo selecionando?')) {
         call('cadastro_conteudo_excluir', 'prm_id_conteudo=' + id_conteudo).then(function(resposta) { 
             alerta('', resposta.split('|')[1]); 
             if(resposta.split('|')[0] == 'OK') { 
@@ -698,11 +677,11 @@ function cadastro_conteudo_inserir(pergunta, id_conteudo) {
         let resultado = resposta.split('|');
         
         if (resultado[0] == 'OK') {
-            // Recarrega toda a tela com os conteúdos atualizados
+            // Recarrega toda a tela com os conteÃºdos atualizados
             conteudo_tela_conteudos(pergunta);
             alerta('', resultado[1]);
 
-            // Recarrega a tela de cadastro / alteração do conteúdo 
+            // Recarrega a tela de cadastro / alteraÃ§Ã£o do conteÃºdo 
             let id_conteudo = resultado[2];
             setTimeout(function() {
                 let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
@@ -721,7 +700,7 @@ function cadastro_conteudo_salvar(id_conteudo) {
     // Get the form container
     let form = document.querySelector('.cadcon-cadastro');
     if (!form) {
-        alerta('', 'Formulário não encontrado.');
+        alerta('', 'FormulÃ¡rio nÃ£o encontrado.');
         return;
     }
 
@@ -752,7 +731,7 @@ function cadastro_conteudo_salvar(id_conteudo) {
             if (cd_pergunta) {
                 conteudo_tela_conteudos(cd_pergunta);
                 setTimeout(function() {
-                    // Recarrega a tela de cadastro / alteração do conteúdo
+                    // Recarrega a tela de cadastro / alteraÃ§Ã£o do conteÃºdo
                     let novoConteudo = document.getElementById('conteudo-item-' + id_conteudo);
                     if (novoConteudo) {
                         conteudo_tela_cadastro(novoConteudo, cd_pergunta, id_conteudo);
@@ -1004,7 +983,7 @@ function cadcon_toolbar_actions(ele) {
             popup.style.display = 'block';
             overlay.style.display = 'block';
             
-            // Configurar o botão de seleção de arquivo
+            // Configurar o botÃ£o de seleÃ§Ã£o de arquivo
             document.getElementById('btn-selecionar-arquivo').addEventListener('click', function() {
                 document.getElementById('imagem-arquivos').click();
             });
@@ -1016,7 +995,7 @@ function cadcon_toolbar_actions(ele) {
                 }
             });
             
-            // Configurar manipuladores de eventos para os botões
+            // Configurar manipuladores de eventos para os botÃµes
             document.getElementById('imagem-aplicar').addEventListener('click', function() {
                 const fileInput = document.getElementById('imagem-arquivos');
 
@@ -1051,7 +1030,7 @@ function cadcon_toolbar_actions(ele) {
             });
         });
         
-        // Função para fechar o popup de imagem
+        // FunÃ§Ã£o para fechar o popup de imagem
         function closeImagemPopup() {
             const popup = document.getElementById('imagem-popup');
             const overlay = document.getElementById('imagem-overlay');
@@ -1094,48 +1073,48 @@ function cadcon_toolbar_actions(ele) {
     }    
 }
 
-// Variável global para armazenar o ID do conteúdo selecionado para movimento
+// VariÃ¡vel global para armazenar o ID do conteÃºdo selecionado para movimento
 let conteudoMovendoId = null;
 
-// Função para iniciar o modo de movimento de conteúdo
+// FunÃ§Ã£o para iniciar o modo de movimento de conteÃºdo
 function conteudo_mover_iniciar(id_conteudo) {
     
-    // Marca o botão como selecionado e o bloco como marcador para mover 
+    // Marca o botÃ£o como selecionado e o bloco como marcador para mover 
     document.getElementById('cadcon-ordem-' + id_conteudo).classList.add('marcado-mover');
     document.getElementById('conteudo-item-' + id_conteudo).classList.add('marcado-mover');
     conteudoMovendoId = id_conteudo;
     
-    // Adiciona uma classe visual para indicar que está em modo de movimento
+    // Adiciona uma classe visual para indicar que estÃ¡ em modo de movimento
     document.querySelectorAll('.cadastro-conteudo-item').forEach(item => {
         if (item.id !== 'conteudo-item-' + id_conteudo) {
             item.classList.add('modo-mover');
         }
     });
     
-    // Mostra uma mensagem para o usuário
-    alerta('feed-fixo', 'Clique no item para onde deseja mover o conteúdo');
+    // Mostra uma mensagem para o usuÃ¡rio
+    alerta('feed-fixo', 'Clique no item para onde deseja mover o conteÃºdo');
 }
 
-// Função para completar o movimento do conteúdo
+// FunÃ§Ã£o para completar o movimento do conteÃºdo
 function conteudo_mover_completar(id_conteudo_destino) {
-    // Verifica se há um conteúdo selecionado para mover
+    // Verifica se hÃ¡ um conteÃºdo selecionado para mover
     if (!conteudoMovendoId) {
         return;
     }
     
-    // Verifica se não está tentando mover para o mesmo item
+    // Verifica se nÃ£o estÃ¡ tentando mover para o mesmo item
     if (conteudoMovendoId === id_conteudo_destino) {
         conteudo_mover_cancelar();
         return;
     }
     
-    // Chama a procedure do servidor para atualizar as sequências
+    // Chama a procedure do servidor para atualizar as sequÃªncias
     call('conteudo_move', 'prm_id_conteudo_origem=' + conteudoMovendoId + '&prm_id_conteudo_destino=' + id_conteudo_destino)
         .then(function(resposta) {
             const resultado = resposta.split('|');
             
             if (resultado[0] === 'OK') {
-                // Obtém os elementos DOM
+                // ObtÃ©m os elementos DOM
                 const itemOrigem = document.getElementById('conteudo-item-' + conteudoMovendoId);
                 const itemDestino = document.getElementById('conteudo-item-' + id_conteudo_destino);
                 const container = itemOrigem.parentNode;
@@ -1143,7 +1122,7 @@ function conteudo_mover_completar(id_conteudo_destino) {
                 // Remove o item de origem
                 container.removeChild(itemOrigem);
                 
-                // Insere o item de origem após o item de destino
+                // Insere o item de origem apÃ³s o item de destino
                 //if (itemDestino.nextSibling) {
                 if (itemDestino.previousSibling) {
                     container.insertBefore(itemOrigem, itemDestino.previousSibling);
@@ -1163,7 +1142,7 @@ function conteudo_mover_completar(id_conteudo_destino) {
         });
 }
 
-// Função para cancelar o movimento
+// FunÃ§Ã£o para cancelar o movimento
 function conteudo_mover_cancelar() {
     if (conteudoMovendoId) {
         document.getElementById('cadcon-ordem-' + conteudoMovendoId).classList.remove('marcado-mover');
@@ -1175,26 +1154,26 @@ function conteudo_mover_cancelar() {
     }
 }
 
-// Função para lidar com o clique no botão de ordem
+// FunÃ§Ã£o para lidar com o clique no botÃ£o de ordem
 function conteudo_ordem_click(event, id_conteudo) {
     event.stopPropagation(); // Impede que o evento se propague para o item pai   
     if (conteudoMovendoId) {
         if (id_conteudo == conteudoMovendoId) {
-            conteudo_mover_cancelar();  // Se já estiver em modo de movimento, cancela
+            conteudo_mover_cancelar();  // Se jÃ¡ estiver em modo de movimento, cancela
         } else {
             conteudo_mover_completar(id_conteudo);
             event.stopPropagation(); // Impede que o evento se propague
-            event.preventDefault(); // Impede a ação padrão
+            event.preventDefault(); // Impede a aÃ§Ã£o padrÃ£o
         } 
     } else {
         conteudo_mover_iniciar(id_conteudo); // Inicia o modo de movimento
     }
 }
 
-// Função para alternar para o modo de edição
+// FunÃ§Ã£o para alternar para o modo de ediÃ§Ã£o
 function toggleTextareaEdit(id_conteudo) {
     
-    // Se está em modo de movimento então não faz nada
+    // Se estÃ¡ em modo de movimento entÃ£o nÃ£o faz nada
     if (conteudoMovendoId) {
         return;
     } 
@@ -1208,7 +1187,7 @@ function toggleTextareaEdit(id_conteudo) {
         }    
     } 
 
-    // Ocultar a div de visualização
+    // Ocultar a div de visualizaÃ§Ã£o
     const viewDiv = document.getElementById('cadcon-texto-view-' + id_conteudo);
     const textarea = document.getElementById('cadcon-texto-' + id_conteudo);
     
@@ -1225,7 +1204,7 @@ function toggleTextareaEdit(id_conteudo) {
     }
 }
 
-// Função para finalizar a edição e voltar para o modo de visualização
+// FunÃ§Ã£o para finalizar a ediÃ§Ã£o e voltar para o modo de visualizaÃ§Ã£o
 function finishTextareaEdit(id_conteudo, acao) {
 
     const viewDiv      = document.getElementById('cadcon-texto-view-' + id_conteudo);
@@ -1241,7 +1220,7 @@ function finishTextareaEdit(id_conteudo, acao) {
         cadcon_toolbar_habilita(id_conteudo, false);  // Desabilitar a barra de ferramentas
 
         if (acao == 'SALVAR') {
-            conteudo_atualiza(textarea, id_conteudo, 'DS_TEXTO'); // Atualizar o conteúdo no servidor
+            conteudo_atualiza(textarea, id_conteudo, 'DS_TEXTO'); // Atualizar o conteÃºdo no servidor
         } else {
             textarea.value = textarea_ant.value; // Reverter para o valor anterior
         }    
