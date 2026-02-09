@@ -137,7 +137,7 @@ BEGIN
 
                     htp.p('<div class="header-botao-section">');
                          htp.p('<a class="go-faq">Central de Ajuda</a>');
-                         htp.p('<a class="go-doc-public">Documenta&ccedil;&atilde;o</a>');
+                         htp.p('<a class="go-doc-public">Documentação</a>');
                          if upper(trim(ws_usuario)) <> 'NOUSER' and ws_usuario is not null then
                              htp.p('<a class="go-doc-private" id="'||ws_usuario||'">Doc. Interna</a>');
                          end if;

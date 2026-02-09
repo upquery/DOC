@@ -32,8 +32,6 @@ document.addEventListener('keypress', function(e){
 var loading;  
 
 document.addEventListener('click', function(e){
-
-    console.log('mateus');
     
     
     if(e.target.id == "lupa"){
