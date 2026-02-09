@@ -1,0 +1,19 @@
+{
+  "name": "compila_base_doc",
+  "version": "1.0.0",
+  "description": "Compila base docs",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "desenv": "./index.js"
+  },
+  "scripts": {
+    "test": "test.js"
+  },
+  "author": "lucaslessaanacleto",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "oracledb": "^6.9.0"
+  }
+}
