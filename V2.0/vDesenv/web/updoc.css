@@ -191,12 +191,12 @@ section, summary, time, mark {
 
 
 input#busca {
-  width: 60%;
-  height: 30%;
+  width: 150px;
+  height: 35px;
   border-radius: 5px;
   padding: 0px 2rem 0rem 2rem;
   box-shadow: 0 0 3px 0 #777 inset;
-  font-size: 0.9vw;
+  font-size: 15px;
   float: left;
   margin: 0.2rem 0.5rem 0rem;
 }
@@ -676,7 +676,7 @@ span.detalhe-pesquisa {
 span.go-login {
   cursor: pointer;
   flex-shrink: 0;
-  font-size: 0.75vw;
+  font-size: 13px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -803,7 +803,9 @@ a.login-conteudo-box-sair {
   padding: 20px;
   border-radius: 2px 2px 0 0;
   background-color: var(--login-faixa);
-
+  background-image: url(dwu.updoc.download?arquivo=conhecimento_login.png);
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .login-formulario {
@@ -845,8 +847,15 @@ a.login-conteudo-box-sair {
   flex-shrink: 0; 
 }
 
-.login-input-container svg:first-child, .login-input-container svg.reveal {
+.login-input-container svg:first-child, .login-input-container  {
   margin-right: 8px; /* Ã­cone chave Ã  esquerda */
+  cursor: pointer;
+  fill: var(--login-icone);
+
+}
+
+svg.reveal {
+  margin-left: 50px; 
   cursor: pointer;
   fill: var(--login-icone);
 }
@@ -864,7 +873,7 @@ a.login-conteudo-box-sair {
   outline: none;
   padding: 5px;
   padding-right: 36px;
-  font-size: 14px;
+  font-size: 18px;
   background: transparent; 
   
 }
@@ -1077,8 +1086,8 @@ svg#lupa {
     top: 55%;
     transform: translateY(-50%);
     z-index: 2;
-    width: 0.9vw;
-    height: 0.9vw;
+    width: 15px;
+    height: 15px;
     cursor: pointer;
     pointer-events: auto;
 }
@@ -1507,7 +1516,6 @@ h1.titulo-faq {
 
 
   .logout svg, .go-idioma svg, .go-login svg {
-
     height: 0.7rem;
   }
 

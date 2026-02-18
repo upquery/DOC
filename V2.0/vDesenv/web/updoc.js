@@ -46,7 +46,7 @@ document.addEventListener('click', function(e){
 }
 
 
-    if(e.target.className == "ler-mais"){
+    if(e.target.classList.contains("ler-mais")){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
@@ -58,10 +58,10 @@ document.addEventListener('click', function(e){
         }
     }
 
-    if(e.target.className == "retorna-princ"){
-        chamar('main');
-        if(document.querySelector('.escolhido')){
-            document.querySelector('.escolhido').classList.remove('escolhido');
+    if(e.target.closest(".retorna-princ"))
+        { chamar('main');
+    if(document.querySelector('.escolhido')){
+        document.querySelector('.escolhido').classList.remove('escolhido');
         }
     }
 
@@ -198,6 +198,14 @@ function login_validacao(event) {
         if (loading) loading.classList.remove('ativado');
         alert('Erro de conexão');
     };
+    
+    document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        // Previne o comportamento padrão (evita recarregar a página)
+        event.preventDefault();                
+        login_validacao(event);
+    }
+    });
     
     request.send('prm_user=' + encodeURIComponent(usuario) + 
                  '&prm_password=' + encodeURIComponent(senha) + 
