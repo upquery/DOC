@@ -2509,5 +2509,26 @@ exception
         return 'N';
 end getNivelUpdoc;
 
+procedure download (  arquivo     varchar2 default null ) as
+    L_Blob_Content  Tab_Documentos.Blob_Content%Type;
+    l_mime_type     TAB_DOCUMENTOS.mime_type%TYPE;
+    n_name          varchar2(4000);
+BEGIN
+
+    SELECT blob_content,mime_type,name INTO l_blob_content,L_Mime_Type,n_name
+    From   Tab_Documentos
+    WHERE  name = arquivo;
+
+    OWA_UTIL.mime_header(l_mime_type, FALSE);
+    HTP.p('Content-Length: ' || DBMS_LOB.getlength(l_blob_content));
+    HTP.p('Content-Disposition: attachment; filename="'||n_name||'"');
+    OWA_UTIL.http_header_close;
+
+    WPG_DOCLOAD.download_file(l_blob_content);
+
+EXCEPTION WHEN OTHERS THEN
+    htp.p(SQLERRM);
+End download;
+
 
 END UPDOC;
