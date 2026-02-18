@@ -985,6 +985,7 @@ h1.titulo-faq {
 
 .main-conteudo {
   display: -webkit-flex;
+  background-color: white;
 }
 
 .menu-lateral-conteudo {
