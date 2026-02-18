@@ -1306,7 +1306,19 @@ function toggleLogout() {
     }
 }
 
-// Função de logout
+// Função que exibe o confirm nativo do browser antes de deslogar
+function confirmarLogout() {
+    // Fecha o dropdown
+    const logoutDiv = document.getElementById('logout');
+    if (logoutDiv) {
+        logoutDiv.classList.add('invisivel');
+    }
+    if (confirm('Deseja encerrar a sessão?')) {
+        realizarLogout();
+    }
+}
+
+// Função de logout (chamada após confirmação)
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
     
@@ -1322,15 +1334,3 @@ function realizarLogout() {
             window.location.href = url_doc + '.updoc.main';
         });
 }
-
-// Vincular o evento ao botão de logout quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', function() {
-    const botaoLogout = document.querySelector('.logout-botao');
-    
-    if (botaoLogout) {
-        botaoLogout.addEventListener('click', function(e) {
-            e.preventDefault();
-            realizarLogout();
-        });
-    }
-});

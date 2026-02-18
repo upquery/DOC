@@ -95,7 +95,7 @@ BEGIN
         	                --  htp.p('<span> '|| ws_usu_nome ||'</span>');
                              htp.p('<div class="go-logout-desconectar">');
                                htp.p('<svg width="2em" height="2em" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M13.033 2v-2l10 3v18l-10 3v-2h-9v-7h1v6h8v-18h-8v7h-1v-8h9zm1 20.656l8-2.4v-16.512l-8-2.4v21.312zm-3.947-10.656l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"/></svg>');
-                               htp.p('<button class="logout-botao" onclick="realizarLogout()">Desconectar</button>');
+                               htp.p('<button class="logout-botao" onclick="confirmarLogout()">Desconectar</button>');
                               htp.p('</div>');
                           htp.p('</div>');
 
@@ -202,6 +202,7 @@ BEGIN
             end if;            
             htp.p('<div id="loadingscreens">');					
             htp.p('</div>');
+
 
         htp.p('</body>');
 

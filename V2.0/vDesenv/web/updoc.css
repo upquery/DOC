@@ -633,16 +633,16 @@ span.detalhe-pesquisa {
   flex-shrink: 3;           /* permite encolher */
   flex-grow: 0;             /* evita crescer demais se houver espaÃ§o */
   flex-wrap: nowrap;
-  font-size: 0.7vw;
+  font-size: 11px;
   border-radius: 2px;
-  width:  75%;
+  width:  79px;
   height: 3rem;
   background-color: #091F2C;
   font-family: var(--fonte_1);
   font-weight: 400;
   outline: none;
   border: none;
-
+  z-index: 4;
 }
 
 
