@@ -1,5 +1,6 @@
 create or replace PACKAGE BODY UPDOC  IS
 
+
 PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
                 utm_source      VARCHAR2 DEFAULT NULL,
@@ -15,6 +16,11 @@ ws_class_cad    varchar2(20);
 ws_usuario      VARCHAR2(200);
 ws_tipouser     VARCHAR2(200);
 ws_externo      VARCHAR2(200);
+ws_user         VARCHAR2(200);
+
+
+
+
 
 BEGIN
     htp.p('<script>');
@@ -23,13 +29,14 @@ BEGIN
             htp.prn(i.cd_constante||' = "'||fun.lang(i.vl_constante)||'", ');
         end loop;
         htp.prn('TR_END = "";');
-        htp.p('const USUARIO = "'||gbl.getusuario||'";');
+        htp.p('const USUARIO = "'||updoc.getusuario||'";');
         htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
     htp.p('</script>');
 
+
     htp.p('<!DOCTYPE html>');
     htp.p('<html lang="pt-br">');
-            
+
         htp.p('<head>');
 
             htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
@@ -66,10 +73,10 @@ BEGIN
                     htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
                 end loop;
             htp.p('></div>'); 
-            
+
             if nvl(prm_externo,'.') <> 'CADASTRO' THEN
                 htp.p('<div class="header-doc">');  
-                    ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
+                    ws_usuario := nvl(UPPER(updoc.getusuario),'N/A');
                     htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
                     htp.p('<div class="header-util-section">');
                       if ws_usuario = 'N/A' or ws_usuario = 'NOUSER' then --renderização condicional de usuário logado ou não
@@ -78,31 +85,31 @@ BEGIN
                             htp.p('<span> Entrar </span>');
                         htp.p('</span>');                
                       else
-                
-                          htp.p('<span  class="go-login" id="login" >');
+
+                          htp.p('<span class="go-login" id="login" onclick="toggleLogout()">');
         	                htp.p('<svg style="height: 1.4em; top: 1.4em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
                                htp.p('<span> '|| ws_usuario ||' </span>');
                           htp.p('</span>');
-                          
+
                           htp.p('<div id="logout" class="invisivel">');
-        	                 htp.p('<svg style="height:1.4em; top: 1.4em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
-                             htp.p('<span> '|| ws_usuario ||'</span>');
-                           --  htp.p('<span> '|| ws_usu_nome ||'</span>');
+        	                --  htp.p('<span> '|| ws_usu_nome ||'</span>');
                              htp.p('<div class="go-logout-desconectar">');
                                htp.p('<svg width="2em" height="2em" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M13.033 2v-2l10 3v18l-10 3v-2h-9v-7h1v6h8v-18h-8v7h-1v-8h9zm1 20.656l8-2.4v-16.512l-8-2.4v21.312zm-3.947-10.656l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"/></svg>');
-                               htp.p('<button class="logout-botao" onclick=desconectar()>Desconectar</button>');
+                               htp.p('<button class="logout-botao" onclick="realizarLogout()">Desconectar</button>');
                               htp.p('</div>');
                           htp.p('</div>');
 
                       end if;
 
-                        htp.p('<div class="go-idioma">');
+                        /*-----IDIOMA------*/
+
+                        /*htp.p('<div class="go-idioma">');
                            htp.p('<select id="idioma">');
                              htp.p('<option value="0">Português</option>');
                              htp.p('<option value="1">English</option>');
                            htp.p('</select>');
-                       htp.p('</div>');
-                        
+                       htp.p('</div>');*/
+
                         htp.p('<div class="mensagem">');
                           --  htp.p('<span class="label-tipUser">');
                                -- htp.p('<a>Tipo de usuario:</a>');
@@ -128,10 +135,10 @@ BEGIN
 
                              --   htp.p('</select>');
                         --    htp.p('</span>');
-                        
+
                         htp.p('<svg id="lupa" width="0.6em" height="0.6em" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32.001" style="enable-background:new 0 0 32 32.001;" xml:space="preserve"><g><g><path d="M11.695,17.555C8.37,16.952,7.536,13.74,7.5,13.592c-0.164-0.686-0.846-1.105-1.538-0.949 c-0.688,0.161-1.116,0.851-0.956,1.539c0.048,0.203,1.223,4.986,6.232,5.895c0.079,0.014,0.155,0.02,0.23,0.02 c0.608,0,1.148-0.434,1.26-1.053C12.854,18.35,12.392,17.684,11.695,17.555z"/><path d="M26.509,21.075c-0.36-0.36-0.849-0.562-1.358-0.562c-0.508,0-0.998,0.202-1.355,0.563l-1.33-1.33 c3.547-4.856,3.129-11.724-1.254-16.106C18.864,1.292,15.745,0,12.426,0C9.107,0,5.987,1.292,3.642,3.64 C1.292,5.986,0,9.106,0,12.425C0,15.743,1.292,18.863,3.64,21.21c2.346,2.349,5.466,3.642,8.785,3.642 c2.67,0,5.209-0.839,7.322-2.387l1.329,1.328c-0.361,0.359-0.563,0.85-0.563,1.357c0,0.51,0.202,0.998,0.563,1.358l4.89,4.892 c0.801,0.801,2.098,0.801,2.898,0l2.537-2.537c0.8-0.801,0.8-2.098,0-2.897L26.509,21.075z M12.424,21.006 c-2.291,0-4.448-0.895-6.067-2.514c-1.62-1.62-2.513-3.775-2.513-6.067s0.893-4.448,2.513-6.069 c1.619-1.619,3.776-2.513,6.067-2.513s4.447,0.894,6.067,2.513c3.345,3.347,3.345,8.79,0,12.136 C16.872,20.111,14.716,21.006,12.424,21.006z"/><circle cx="6.52" cy="10.051" r="1.255"/></g></g></svg>');                            
                         htp.p('<input id="busca" placeholder="Pesquisar" value="'||lower(prm_valor)||'" />');
-                    
+
                         htp.p('</div>');
                     htp.p('</div>');
 
@@ -166,8 +173,8 @@ BEGIN
                     ws_externo:='';
                 end if; 
             END IF;
-            
-                                            
+
+
             htp.p('<div class="main'||ws_class_cad||'">');
 
                 updoc.DOC_PUBLIC;
@@ -200,6 +207,8 @@ BEGIN
 
 END MAIN;
 
+
+
 ------------------------------------------------------------------------------------------------------------------------------
 --PROCEDURE PRINCIPAL (PRM_VALOR VARCHAR2 DEFAULT NULL) AS
 --BEGIN
@@ -225,6 +234,19 @@ PROCEDURE LOGIN (PRM_VALOR 	VARCHAR2 DEFAULT NULL,
 BEGIN
    WS_TIPUSER:=PRM_TIPUSER;
 
+    /*-- header HTTP (EXEMPLO - CÓDIGO INATIVO)
+owa_util.mime_header('text/plain', false);
+
+-- cria sessão
+owa_cookie.send(
+    name    => 'UPDOC_SESSION',
+    value   => prm_session, -- o mesmo valor que vc grava na bi_sessao.cod
+    path    => '/desenv/dwu.updoc.main',
+    expires => sysdate + 1
+);
+
+owa_util.http_header_close;*/
+
 
    htp.p('<script>');
       htp.prn('const ');
@@ -232,7 +254,7 @@ BEGIN
         htp.prn(i.cd_constante||' = "'||fun.lang(i.vl_constante)||'", ');
        end loop;
        htp.prn('TR_END = "";');
-       htp.p('const USUARIO = "'||gbl.getusuario||'";');
+       htp.p('const USUARIO = "'||updoc.getusuario||'";');
        htp.p('const URL_DOWNLOAD = "dwu.fcl.download?arquivo=";');
    htp.p('</script>');
 
@@ -273,12 +295,12 @@ BEGIN
                 htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
             end loop;
         htp.p('></div>'); 
-  
+
 
      htp.p('<div class="spinner"></div>');
 
       htp.p('<div class="login-conteudo">');
-    
+
        htp.p('<div class="login-conteudo-box">');
 
           htp.p('<div class="login-conteudo-box-titulo">');
@@ -286,16 +308,16 @@ BEGIN
                  htp.p('<a class="login-conteudo-box-sair">X</a>');
               htp.p('</span>');
           htp.p('</div>'); 
- 
+
           htp.p('<section class="login-formulario">');
- 
+
            htp.p('<div id="login-menu" class="login-formulario" >');
- 
+
              htp.p('<span class="login-input-container">');
  	           htp.p('<svg style="height: 20px; top: 20px;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');
  		       htp.p('<input name="prm_usuario" class="login-session" type="email" required autocomplete="on" value="" placeholder="USU&Aacute;RIO" onkeypress="if(event.which == ''13''){ this.nextElementSibling.focus(); }">');
              htp.p('</span>');		
- 
+
              htp.p('<span class="login-input-container">');
  			    htp.p('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="height: 20px; top: 20px;" xml:space="preserve"> <g> <g> <path d="M256,0c-66.422,0-120.461,54.039-120.461,120.461c0,48.703,28.906,91.914,72.977,110.739v242.149L256,512l47.484-38.651 v-50.152l-11.264-11.996l11.264-11.996v-28.838l-14.604-17.082l14.604-17.082v-36.086l-7.438-7.206l7.438-7.206v-54.504 c44.071-18.826,72.977-62.036,72.977-110.739C376.461,54.039,322.422,0,256,0z M256,102.765 c-15.345,0-27.791-12.446-27.791-27.791S240.655,47.184,256,47.184s27.791,12.446,27.791,27.791 C283.791,90.319,271.345,102.765,256,102.765z"/> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg>');
  			    htp.p('<input name="prm_password" class="login-session" type="password" required autocomplete="current-password" value="" placeholder="SENHA" onkeypress="if(event.which == ''13''){ testLogin(this.nextElementSibling); }">');
@@ -304,60 +326,62 @@ BEGIN
       	     htp.p('</span>');
 
              htp.p('<button class="login-botao" type="button" onclick="login_validacao(event)">LOGIN</button>');
- 
+
            htp.p('</div>');
- 
+
         /*    htp.p('<div>');
               htp.p('<h2> Esqueceu a senha? </h2>');
               htp.p('<a href="dwu03.login.refazer_senha"> Criar nova senha </a>');
             htp.p('</div>');
-  
+
             htp.p('<section>');
               htp.p('<h2> Novo aqui? </h2>');
               htp.p('<a href="dwu03.login.criar_login">Criar conta agora</a>');
             htp.p('</section>'); */
- 
+
           htp.p('</div>');
- 
+
         htp.p('</div>');
       htp.p('</div>');
     htp.p('</body');
 
-  
+
 END LOGIN;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PROCEDURE LOGOUT (prm_sessao varchar2 default null ) as
+PROCEDURE LOGOUT (prm_sessao varchar2 default null ) AS
+    ws_id_session  varchar2(80);
+    ws_cookie      owa_cookie.cookie;
+BEGIN
+    if nvl(prm_sessao, 'N/A') = 'N/A' then
+        ws_cookie := owa_cookie.get('UPDOC_SESSION');
 
-		job_id         number;
-		ws_id_session  Varchar2(80);
-		ws_cookie      owa_cookie.cookie;
+        if ws_cookie.num_vals > 0 then
+            ws_id_session := ws_cookie.vals(1);
+        end if;
+    else
+        ws_id_session := prm_sessao;
+    end if;
 
-	begin
+    owa_util.mime_header('text/html', FALSE);
 
-		if nvl(prm_sessao, 'N/A') = 'N/A' then
-			ws_cookie := owa_cookie.get('SESSION');
-			ws_id_session := ws_cookie.vals(1);
-		else
-			ws_id_session := prm_sessao;
-		end if;
+    owa_cookie.send(
+        name    => 'UPDOC_SESSION',
+        value   => 'deleted',
+        expires => sysdate - 1,
+        path    => '/desenv/'
+    );
 
-		owa_util.mime_header('text/html', FALSE, NULL);
-      owa_cookie.send(
-      name  => 'SESSION',
-      value => 'deleted',
-      expires => sysdate - 1,
-      path => '/'
-      );
+    owa_util.http_header_close;
 
-		owa_util.http_header_close;
+    if ws_id_session is not null then
+        delete from bi_sessao where cod = ws_id_session;
+        commit;
+    end if;
 
-		delete from bi_sessao where cod = ws_id_session;
-		commit;
+    owa_util.redirect_url('/desenv/dwu.updoc.main');
+END;
 
-      htp.p('setTimeout(function() { window.location.href = "dwu.updoc.main"; }, 500);');
-
-end LOGOUT;
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 PROCEDURE VALIDAR_USER (prm_user VARCHAR2) as
 
@@ -397,7 +421,7 @@ BEGIN
 	if nvl(ws_user, 'N/A') = 'N/A' then
 	--	htp.p('erro 1');
         htp.p('{"status":"erro 1"}');
-    
+
 		raise ws_erro;
 
     else 
@@ -414,7 +438,7 @@ exception
 
 END VALIDAR_USER;
 
- 
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -525,46 +549,40 @@ WS_COUNT_BI number;
 
 
 BEGIN
- 
+    
+  
    ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
-
-
+    
 	if ws_test = 'Y' then
-		htp.p('login correto');
-      --  htp.p('{"status":"login correto","ws_user":"'|| ws_user ||'"}');
+        owa_util.mime_header('text/html', FALSE, NULL);
+        owa_cookie.send(
+        name    => 'UPDOC_SESSION',
+        value   => prm_session,
+        expires => sysdate + 0.5,  -- expira em 12 horas
+        path    => '/desenv/');
 
-		delete bi_sessao where valor = prm_user and dt_acesso <= sysdate; --Remove registros antigos expirados
+        owa_util.http_header_close;
+
+		delete bi_sessao where valor = upper(prm_user) and dt_acesso <= sysdate; --Remove registros antigos expirados
 		COMMIT;
 
-		SET_USUARIO(prm_session, prm_user); --Define o usuário logado
+		SET_USUARIO(prm_session, upper(prm_user)); --Define o usuário logado
 
-		begin
-			 --SE USUARIO O USUARIO FOR DO BANCO(CLIENTE) ALTERA NA BI_SESSAO O TIPO = CHAMADO
-		 SELECT COUNT(*) INTO WS_COUNT_BI FROM USUARIOS WHERE USU_NOME = prm_user ;
-			IF WS_COUNT_BI = 0 THEN				
-				UPDATE BI_SESSAO SET TIPO = 'CHAMADO' WHERE COD = PRM_SESSION;
-			COMMIT;
-			END IF;
-         
-	   exception
-			when no_data_found then
-		   ROLLBACK;
-		end;
+        htp.p('OK|Login realizado com sucesso.');
 
-   else
-       htp.p('erro 2');
-  --      htp.p('{"status":"erro 2"}');
-		raise ws_erro;
-	end if;
+    else
+        htp.p('ERRO|Senha incorreta.');
+    end if;
 
  exception 
 	when ws_erro then                                                                                                                             --RETURNUSER
+        null;
+	when others then
+        htp.p('ERRO|Erro validando a senha, tente novamente.');       
 		insert into bi_log_sistema values (sysdate,' -- ERROR MSG --'||DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE,USER||'--'||USER,'ERRO' );
 		commit;
-		--htp.p('erro');
-	when others then
-		htp.p(DBMS_UTILITY.FORMAT_ERROR_STACK||' - '||DBMS_UTILITY.FORMAT_ERROR_BACKTRACE);
-        
+
+
 END VALIDAR_SENHA;
 ----------------------------------------------------------------------------------------------------------------------------------------
 FUNCTION TESTAR_SENHA_DIGERIDA (prm_usuario varchar2, prm_password varchar2 ) return varchar2 as
@@ -591,7 +609,7 @@ begin
     from usuarios
     where nvl(password, 'N/A') = ltrim(to_char(dbms_utility.get_hash_value(upper(trim(prm_usuario))||'/'||upper(trim(prm_password)), 1000000000, power(2,30) ), rpad( 'X',29,'X')||'X'))
     and upper(trim(usu_nome)) = upper(trim(prm_usuario));  
-         
+
     -- Valida a senha sem o código do cliente (email)
    if ws_count = 0 then
         BEGIN
@@ -628,7 +646,7 @@ procedure SET_USUARIO ( prm_usuario varchar2 default null,
 prm_mimic   varchar2 default null ) as
 
 begin
-   
+
    SET_SESSAO(prm_usuario, prm_mimic);
 
 end SET_USUARIO;
@@ -670,19 +688,19 @@ end SET_SESSAO;
                     PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                     PRM_USUARIO VARCHAR2 DEFAULT NULL,
                     PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
+
         WS_USUARIO	    VARCHAR2(80);
         WS_CSS		    VARCHAR2(80);
         WS_TIPUSER      VARCHAR2(2);
 
     BEGIN
         WS_TIPUSER:=PRM_TIPUSER;
-      
+
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
             htp.p('<div class="conteudo-faq">');
 
-            
+
                 htp.p('<div class="fundo-busca">');
                 --        
                 --        
@@ -735,7 +753,7 @@ PROCEDURE DOC_PUBLIC (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_USUARIO VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-    
+
     WS_USUARIO	    VARCHAR2(80);
     WS_CSS		    VARCHAR2(80);
     WS_TIPUSER      VARCHAR2(2);
@@ -782,7 +800,7 @@ BEGIN
                     htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 --
             htp.p('</div>');
-                    
+
                     htp.p('<ul class="flex-container">');
                         updoc.consulta(PRM_VALOR,'D',WS_TIPUSER);
                     htp.p('</ul>');
@@ -796,13 +814,13 @@ EXCEPTION
         COMMIT;
 
 END DOC_PUBLIC;
-    
+
 ------------------------------------------------------------------------------------------------------------------------
 PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_USUARIO VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-    
+
     WS_USUARIO	    VARCHAR2(80);
     WS_CSS		    VARCHAR2(80);
     WS_TIPUSER      VARCHAR2(2);
@@ -810,7 +828,7 @@ PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
 BEGIN
 
     WS_TIPUSER:=PRM_TIPUSER;
-    
+
     htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="conteudo-faq">');
@@ -851,17 +869,17 @@ BEGIN
                    htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
            htp.p('</div>');
-            
+
                     htp.p('<ul class="flex-container">');
                         updoc.consulta(PRM_VALOR,'P',WS_TIPUSER);
                     htp.p('</ul>');
 
         htp.p('</div>');
-    
+
 END DOC_PRIVATE;
 
 ------------------------------------------------------------------------------------------------------------------------
-    PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
+PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
 
@@ -869,7 +887,7 @@ END DOC_PRIVATE;
         WS_CATEGORIA VARCHAR2(80) := 'N/A';
         WS_VALOR     VARCHAR2(1000);
         WS_CLASSE    VARCHAR2(2);
-        
+
         WS_COUNT NUMBER := 0;
         TYPE WS_LINHAS IS TABLE OF DOC_PERGUNTAS%ROWTYPE;
         WS_LINHA WS_LINHAS;
@@ -899,7 +917,7 @@ END DOC_PRIVATE;
         end if;
 
 
-        if gbl.getNivel = 'A' then 
+        if updoc.getNivel = 'A' then
             ws_liberado := ' ';
         else    
             ws_liberado := ' id_liberado = ''S'' and ';
@@ -912,17 +930,17 @@ END DOC_PRIVATE;
         ELSE
             execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
         END IF;
-        
+
         FOR i in 1..ws_linha.COUNT LOOP			
 
                 IF (WS_CATEGORIA<>WS_LINHA(I).CATEGORIA) THEN			   
-                    
+
                     IF WS_CATEGORIA<>'N/A' THEN
                         HTP.P('</UL>');
                             HTP.P('</LI>');
                     END IF;
                     HTP.P('<LI CLASS="flex-categorias" TITLE="'||WS_LINHA(I).CATEGORIA||'">');
-                        
+
                         HTP.P('<UL CLASS ="">');
                             WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
                 END IF;
@@ -934,7 +952,7 @@ END DOC_PRIVATE;
                           htp.p('<li>');
                        /*     htp.p('<span class="flex-resposta">'||ws_linha(i).resposta||'<a class ="ler-mais" title="'||ws_linha(i).cd_pergunta||'">Ler mais</a></span>');  */
                             htp.p('<span class="flex-perguntas ler-mais" title="'||ws_linha(i).cd_pergunta||'"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path d="M12 4.706c-2.938-1.83-7.416-2.566-12-2.706v17.714c3.937.12 7.795.681 10.667 1.995.846.388 1.817.388 2.667 0 2.872-1.314 6.729-1.875 10.666-1.995v-17.714c-4.584.14-9.062.876-12 2.706zm-10 13.104v-13.704c5.157.389 7.527 1.463 9 2.334v13.168c-1.525-.546-4.716-1.504-9-1.798zm20 0c-4.283.293-7.475 1.252-9 1.799v-13.171c1.453-.861 3.83-1.942 9-2.332v13.704zm-2-10.214c-2.086.312-4.451 1.023-6 1.672v-1.064c1.668-.622 3.881-1.315 6-1.626v1.018zm0 3.055c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0 6.093c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm-16-6.104c2.119.311 4.332 1.004 6 1.626v1.064c-1.549-.649-3.914-1.361-6-1.672v-1.018zm0 5.09c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.316-6-1.626v1.017zm0 6.093c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017z"/></svg>   '||ws_linha(i).pergunta||'</span>');  /* perguntar se ele quer que apareça as perguntas ou as respostas */                     
-                      
+
                         else
                           htp.p('<li id="lista-flex-perguntas-faq">');
                            htp.p('<div class="flex-perguntas-faq">');
@@ -944,7 +962,7 @@ END DOC_PRIVATE;
                        end if;
 
                     htp.p('</li>');
-            
+
         END LOOP;
 
     EXCEPTION
@@ -957,7 +975,7 @@ END DOC_PRIVATE;
 
     END CONSULTA;
 -- ======================================================================================================================================
-    PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL, 
+PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL, 
                                     PRM_VERSAO VARCHAR2 DEFAULT NULL,
                                     PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
 
@@ -996,9 +1014,9 @@ END DOC_PRIVATE;
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="spinner"></div>');
-        
+
         htp.p('<div class="main-conteudo" data-pergunta="'||ws_cd_pergunta||'">');
-            
+
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
                     if ws_classe = 'D' then  -- menu somente para documentação do BI
@@ -1006,10 +1024,10 @@ END DOC_PRIVATE;
                     end if;    
                 htp.p('</div>');    
             htp.p('</div>');
-            
+
             htp.p('<div id="fundo-conteudo" class="fundo-conteudo '||lower(ws_tp_conteudo)||'">');
 
-                if ws_classe = 'P' and nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then   -- se for documentação Privada é necessário logon no sistema 
+                if ws_classe = 'P' and nvl(updoc.getusuario,'NOUSER') = 'NOUSER' then   -- se for documentação Privada é necessário logon no sistema 
 
                     htp.p('<div class="detalhe-conteudo">');
 
@@ -1064,9 +1082,9 @@ END DOC_PRIVATE;
                         end if;     
                     end if;     
 
-                                    
+
                     htp.p('<div class="detalhe-conteudo">');
-                        
+
                         htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
                         htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
 
@@ -1085,7 +1103,7 @@ END DOC_PRIVATE;
                             IF NVL(PRM_TIPUSER,'T') = 'T' THEN
 
                                 FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
-                                            WHERE (ID_LIBERADO = 'S' or gbl.getNivel = 'A')
+                                            WHERE (ID_LIBERADO = 'S' or updoc.getNivel = 'A')
                                             AND CATEGORIA   = WS_CATEGORIA 
                                             AND CLASSE      = WS_CLASSE 
                                             AND CD_PERGUNTA <> ws_cd_pergunta 
@@ -1096,7 +1114,7 @@ END DOC_PRIVATE;
                                     END LOOP;
                             ELSE 
                                 FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
-                                            WHERE ( ID_LIBERADO = 'S' or gbl.getNivel = 'A' )
+                                            WHERE ( ID_LIBERADO = 'S' or updoc.getNivel = 'A' )
                                             AND CATEGORIA   = WS_CATEGORIA 
                                             AND CLASSE      = WS_CLASSE 
                                             AND CD_PERGUNTA <> ws_cd_pergunta
@@ -1116,11 +1134,11 @@ END DOC_PRIVATE;
                             htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
 
                             htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-                            
+
                         htp.p('</div>');
                         htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
-                        
+
                     htp.p('</div>');    -- detalhe-conteudo2
 
                 htp.p('</div>');
@@ -1139,7 +1157,7 @@ END DOC_PRIVATE;
         WS_MOSTRAR VARCHAR2(300);
         WS_IMG     VARCHAR2(300);
     BEGIN
-        
+
         IF PRM_NIVEL <= PRM_NIVEL_ABERTO THEN 
             WS_MOSTRAR := ' class="menu-lateral-aberto"';
         ELSE     
@@ -1148,11 +1166,11 @@ END DOC_PRIVATE;
 
         HTP.P('<ul '||WS_MOSTRAR||'>');
 
-        
+
         FOR A IN (SELECT A.NR_ORDEM, A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
                     FROM DOC_ESTRUTURA A, DOC_PERGUNTAS B 
                    WHERE B.CD_PERGUNTA     = A.CD_PERGUNTA
-                     AND (B.ID_LIBERADO = 'S' or gbl.getNivel = 'A') 
+                     AND (B.ID_LIBERADO = 'S' or updoc.getNivel = 'A') 
                      AND A.CD_PERGUNTA_PAI = PRM_PERGUNTA_PAI 
                     ORDER BY A.NR_ORDEM, B.PERGUNTA ) loop
             IF A.QT_FILHO = 0 THEN 
@@ -1181,24 +1199,24 @@ END DOC_PRIVATE;
 
     PROCEDURE RANK_PERGUNTAS (  PRM_VALOR                VARCHAR2 DEFAULT NULL, 
                                 PRM_PERGUNTA             VARCHAR2 DEFAULT NULL) AS
-    
+
     BEGIN
-        
+
         UPDATE DOC_PERGUNTAS 
            SET 
             RANK_PERGUNTAS  = DECODE(upper(PRM_VALOR), 'SIM', RANK_PERGUNTAS+1, 'NAO', RANK_PERGUNTAS-1)
          WHERE 
             CD_PERGUNTA     = PRM_PERGUNTA;
         COMMIT;
-    
+
         htp.p('!!!');
-      
+
     END RANK_PERGUNTAS;
 
     FUNCTION TRADUZIR (PRM_TEXTO VARCHAR2) RETURN VARCHAR2 AS
-       
+
         WS_TRANSLATE VARCHAR2(1000);
-        
+
     BEGIN
 
         WS_TRANSLATE:= TRANSLATE( PRM_TEXTO,'ÁÇÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÜáçéíóúàèìòùâêîôûãõëü',
@@ -1219,7 +1237,7 @@ END DOC_PRIVATE;
         ws_styles      varchar2(32000);
         ws_texto       clob; 
         ws_url_doc     varchar2(200); 
-        
+
         ws_marcador_nivel   integer;
         ws_marcador_ante    integer;
         ws_marcador_atual   integer;
@@ -1314,7 +1332,7 @@ END DOC_PRIVATE;
             ws_conteudo := ws_conteudo||ws_tag_i||ws_texto||ws_tag_f;
 
         end loop;
-        
+
         -- Fecha marcadores abertos 
         if ws_marcador_ante > 0 then 
             ws_conteudo :=  ws_conteudo||RPAD('</ul>', (5*ws_marcador_ante), '</ul>');
@@ -1326,7 +1344,7 @@ END DOC_PRIVATE;
                 ws_styles := ws_styles||' .'||a.id_estilo||' {'||a.css_estilo||'} ';
             end loop;
             ws_styles := ws_styles ||'</style>';
-            
+
             prm_conteudo := ws_styles||' '||ws_conteudo; 
         else 
             prm_conteudo := null;
@@ -1376,7 +1394,7 @@ END DOC_PRIVATE;
             ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '</DOCF>', 1, 1) + 6);  
 
             ws_retorno := replace(ws_retorno, ws_formatar, '[#DOCF99#]');
-            
+
             ws_texto    := ws_formatar;  
             ws_texto    := substr(ws_texto, instr(ws_texto, '>', 1, 1)+1,1000000);  
             ws_texto    := substr(ws_texto, 1, instr(ws_texto, '</DOCF>', 1, 1)-1);  
@@ -1443,7 +1461,7 @@ END DOC_PRIVATE;
 
     end formatar_texto_html; 
 
-    
+
     procedure monta_conteudo_json ( prm_classe    varchar2) as
         cursor c_conteudo is 
             select c.cd_pergunta, p.pergunta ds_sessao, c.ds_titulo, c.ds_texto, c.tp_conteudo 
@@ -1468,7 +1486,7 @@ END DOC_PRIVATE;
                 ws_ds_conteudo := trim(a.ds_texto);
             end if; 
             ws_ds_conteudo := replace(ws_ds_conteudo,'"',''); 
-            
+
             --updoc.formatar_texto_html(a.cd_pergunta, ws_ds_conteudo);
             --ws_ds_conteudo := replace(ws_ds_conteudo,'"', '''');
             --ws_ds_conteudo := replace(ws_ds_conteudo,'dwu.fcl.download?arquivo=','https://cloud.upquery.com/conhecimento/dwu.fcl.download?arquivo=');
@@ -1492,7 +1510,7 @@ END DOC_PRIVATE;
             ws_json_total    := ws_json_total||ws_json_pergunta;
         end if; 
         ws_json_total := '{"documentação": ['||ws_json_total||']}';
-        
+
         ws_json_total := replace(replace(replace(ws_json_total,chr(10),' '),chr(9),' '),chr(11), ' ');
 
         update doc_json set json = ws_json_total where classe = prm_classe;
@@ -1532,7 +1550,7 @@ END DOC_PRIVATE;
             end if;    
             ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="carrega_conteudo_arquivo('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');" title="'||a.ds_texto||'">'||a.ds_texto||'</a>';
         end loop;
-        
+
         -- Monta lista de arquivos 
         ws_conteudo := '<div class="conteudo-arquivos-lista">'||ws_html||'</div>';
 
@@ -1587,7 +1605,7 @@ END DOC_PRIVATE;
             ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '>', 1, 1));  
             ws_retorno := replace(ws_retorno, ws_formatar, '');
         end loop;
-        
+
         ws_retorno := replace(ws_retorno,'</DOCF>','');
 
         prm_texto := ws_retorno;
@@ -1604,7 +1622,7 @@ END DOC_PRIVATE;
 
 ------------------------------------------------------------------------------------------------------------------------
 procedure upload (arquivo  IN  varchar2) AS
-        
+
     l_nome_real       varchar2(1000);
     ws_usuario        varchar2(80);
     ws_doc_limit      varchar2(100);
@@ -1661,14 +1679,14 @@ end upload;
 
 ------------------------------------------------------------------------------------------------------------------------
 procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
-   
+
     ws_cd_pergunta  varchar2(20);
     ws_raise_fim    exception;
 
 begin
     ws_cd_pergunta := prm_valor; 
 
-    if nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then 
+    if nvl(updoc.getusuario,'NOUSER') = 'NOUSER' then 
         htp.p('<div class="cadastro-main">');
             htp.p('<span class="cadastro-main-erro">'); 
                 htp.p('<p style="color: #f00;">Acesso bloqueado !</p>');
@@ -1703,7 +1721,7 @@ procedure conteudo_tela_topicos as
 begin
     -- Obter URL do documento da tabela de variáveis
     select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
-    
+
     -- Criar a tabela na parte esquerda da tela com as perguntas
     htp.p('<div id="cadastro-menu-esquerdo" class="cadastro-menu-esquerdo">');
         htp.p('<div class="cadastro-lista-topico">');
@@ -1715,7 +1733,7 @@ begin
                     htp.p('</tr>');
                 htp.p('</thead>');
                 htp.p('<tbody>');
-                
+
                 -- Loop através das perguntas na tabela doc_perguntas
                 for a in (select cd_pergunta, pergunta, categoria, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
                     htp.p('<tr data-pergunta="'||a.cd_pergunta||'" class="lista-topico-item">');
@@ -1741,7 +1759,7 @@ begin
                         htp.p('</td>');                        
                     htp.p('</tr>');
                 end loop;
-                
+
                 htp.p('</tbody>');
             htp.p('</table>');
         htp.p('</div>');    
@@ -1822,7 +1840,7 @@ begin
                     htp.p('<div id="cadcon-texto-bloco-' || a.id_conteudo || '" style="width: 100%;">'); 
                         --
                         -- Div para visualização (visível inicialmente)
-                        
+
                         ws_texto_formatado := a.ds_texto;
                         updoc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
                         htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||ws_texto_formatado||'</div>');
@@ -1853,7 +1871,7 @@ begin
     end loop;
     htp.p('</style>');
 
-  
+
 end;
 -----------------------------------------------------------------------------------------------------------------
 procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null, 
@@ -1861,7 +1879,7 @@ procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null,
     cursor c1 is 
       select * from doc_conteudos 
       where id_conteudo = prm_id_conteudo;
-    
+
     ws_cont       c1%rowtype;  
     ws_checked    varchar2(20);
     ws_erro       varchar2(300);
@@ -1925,7 +1943,7 @@ begin
                 htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">'||nvl(ws_cont.ds_titulo,'ESCOLHER ARQUIVO...')||'</a>');
                 htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
                 htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
-            
+
             htp.p('</div>'); 
 
             htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
@@ -1955,7 +1973,7 @@ end conteudo_tela_cadastro;
 ------------------------------------------------------------------------------------------------------------------------------
 procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2,
                                    prm_tp_conteudo    varchar2 default null ) as  
-    
+
     ws_tp_conteudo varchar2(100);
     ws_id_estilo   varchar2(100);
     ws_erro        varchar2(300);
@@ -2051,16 +2069,16 @@ begin
     select cd_pergunta, sq_conteudo into ws_cd_pergunta, ws_sq_origem
     from doc_conteudos
     where id_conteudo = prm_id_conteudo_origem;
-    
+
     select sq_conteudo into ws_sq_destino
     from doc_conteudos
     where id_conteudo = prm_id_conteudo_destino;
-    
+
     -- Primeiro, mover o item de origem para uma sequência temporária alta
     update doc_conteudos
     set sq_conteudo = ws_sq_temp
     where id_conteudo = prm_id_conteudo_origem;
-    
+
     -- Ajustar as sequências dos itens entre origem e destino
     if ws_sq_origem < ws_sq_destino then
         -- Movendo para baixo: diminuir a sequência dos itens entre origem e destino
@@ -2069,7 +2087,7 @@ begin
         where cd_pergunta = ws_cd_pergunta
         and sq_conteudo > ws_sq_origem
         and sq_conteudo <= ws_sq_destino;
-        
+
         -- Colocar o item de origem logo após o destino
         update doc_conteudos
         set sq_conteudo = ws_sq_destino
@@ -2081,13 +2099,13 @@ begin
         where cd_pergunta = ws_cd_pergunta
         and sq_conteudo >= ws_sq_destino
         and sq_conteudo < ws_sq_origem;
-        
+
         -- Colocar o item de origem logo no lugar do destino
         update doc_conteudos
         set sq_conteudo = ws_sq_destino
         where id_conteudo = prm_id_conteudo_origem;
     end if;
-    
+
     commit;
     htp.p('OK|Conteúdo movido com sucesso.');
 exception
@@ -2104,7 +2122,7 @@ procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2) as
 begin 
     delete from doc_conteudos
     where id_conteudo = prm_id_conteudo;
-    
+
     if sql%notfound then 
         htp.p('ERRO|Conteúdo não localizado para exclusão.');
     else 
@@ -2124,9 +2142,9 @@ procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
     ws_sq_conteudo number;
     ws_sq_atual    number; 
 begin
-    
+
     select nvl(max(id_conteudo), 0) + 1 into ws_id_conteudo from doc_conteudos;
-    
+
     -- Get the next sequence number for this topic
     select nvl(max(sq_conteudo), 0) + 1 into ws_sq_conteudo 
     from doc_conteudos 
@@ -2168,7 +2186,7 @@ begin
     );
 
     commit;
-    
+
     htp.p('OK|Conteúdo criado com sucesso.|' || ws_id_conteudo);
 exception
     when others then
@@ -2194,7 +2212,7 @@ begin
            ds_titulo       = decode(prm_tp_conteudo,'LINHA',null,prm_ds_titulo),
            ds_texto        = decode(prm_tp_conteudo,'LINHA',null,ds_texto)
      where id_conteudo = prm_id_conteudo;
-     
+
     if sql%notfound then 
         htp.p('ERRO|Conteúdo não localizado para atualização.');
     else 
@@ -2216,34 +2234,34 @@ begin
     select max(tp_conteudo) into ws_tp_conteudo from doc_conteudos where id_conteudo = prm_id_conteudo;
     -- Create the popup container
     htp.p('<div id="estilos-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Selecione os Estilos</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with multi-select list
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<select id="estilos-select" multiple size="10">');
-        
+
         -- Loop through all styles from DOC_ESTILOS table
         for estilo in (select id_estilo, css_estilo from doc_estilos 
                        where instr(tp_conteudo||'|', ws_tp_conteudo||'|') > 0 or tp_conteudo = 'TODOS'
                         order by id_estilo) loop
             htp.p('<option value="' || estilo.id_estilo || '">' || estilo.id_estilo || ' - ' || substr(estilo.css_estilo, 1, 50) || '</option>');
         end loop;
-        
+
         htp.p('</select>');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="estilos-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="estilos-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="estilos-overlay" class="cadastro-tela-overlay"></div>');
 
@@ -2260,26 +2278,26 @@ procedure url_popup as
 begin
     -- Create the popup container
     htp.p('<div id="url-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Inserir URL</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with URL input field
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<label for="url-input">URL:</label>');
         htp.p('<input type="text" id="url-input" placeholder="https://" style="width:100%; padding:8px; margin-top:5px;">');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="url-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="url-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="url-overlay" class="cadastro-tela-overlay"></div>');
 exception 
@@ -2294,37 +2312,37 @@ procedure topico_popup as
 begin
     -- Create the popup container
     htp.p('<div id="topico-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Selecionar Tópico</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with search field and select
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<div style="margin-bottom:10px;">');
         htp.p('<label for="topico-search">Pesquisar:</label>');
         htp.p('<input type="text" id="topico-search" placeholder="Digite para filtrar..." style="width:100%; padding:8px; margin-top:5px;">');
         htp.p('</div>');
-        
+
         htp.p('<select id="topico-select" size="10" style="width:100%;">');
-        
+
         -- Loop through all topics from DOC_PERGUNTAS table
         for topico in (select cd_pergunta, pergunta from doc_perguntas order by cd_pergunta desc) loop
             htp.p('<option value="' || topico.cd_pergunta || '">' || topico.cd_pergunta || ' - ' || topico.pergunta || '</option>');
         end loop;
-        
+
         htp.p('</select>');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="topico-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="topico-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-        
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="topico-overlay" class="cadastro-tela-overlay"></div>');
 
@@ -2341,18 +2359,18 @@ procedure imagem_popup as
 begin
     -- Criar o container do popup
     htp.p('<div id="imagem-popup" class="cadastro-tela-popup">');
-    
+
         -- Cabeçalho do popup
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Inserir Imagem</h3>');
         htp.p('</div>');
-        
+
         -- Conteúdo do popup com campo para upload de arquivo
         htp.p('<div class="cadastro-tela-popup-content">');
-        
+
             -- Formulário para upload
             htp.p('<form id="form-upload-imagem" enctype="multipart/form-data">');
-            
+
                 -- Campo para selecionar arquivo
                 htp.p('<div style="margin-bottom:10px;">');
                     htp.p('<label for="arquivo-imagem">Selecione uma imagem:</label>');
@@ -2364,16 +2382,16 @@ begin
                 htp.p('</div>');
             htp.p('</form>');
         htp.p('</div>');
-        
-   
+
+
         -- Rodapé do popup com botões
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="imagem-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="imagem-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay de fundo
     htp.p('<div id="imagem-overlay" class="estilos-overlay"></div>');
 exception 
@@ -2383,5 +2401,113 @@ exception
         commit;
         htp.p('ERRO|Erro montando tela.');
 end imagem_popup;
+
+----------------------------------------teste
+procedure debug_cookie is
+  c owa_cookie.cookie;
+begin
+  c := owa_cookie.get('UPDOC_SESSION');
+
+  htp.p('<pre>');
+
+  if c.num_vals = 0 then
+    htp.p('RESULTADO: ORACLE NAO VE O COOKIE UPDOC_SESSION');
+  else
+    htp.p('RESULTADO: ORACLE VE O COOKIE UPDOC_SESSION');
+    htp.p('VALOR: ' || c.vals(1));
+  end if;
+
+  htp.p('</pre>');
+end debug_cookie;
+
+--------------------------------------------------
+function getUsuario return varchar2 as
+    ws_cookie owa_cookie.cookie;
+    ws_id      varchar2(20);
+    ws_sessao  varchar2(100);
+    ws_user    varchar2(80) := 'NOUSER';
+begin
+    ws_sessao := null;
+    --
+   ws_cookie := owa_cookie.get('UPDOC_SESSION');
+
+    if ws_cookie.num_vals > 0 then
+        ws_sessao := ws_cookie.vals(1);
+    end if;
+    --
+    if ws_sessao is not null then
+        begin
+            select valor into ws_user from bi_sessao
+            where cod = ws_sessao
+            and valor in (select usu_nome from usuarios);
+        exception when others then
+            ws_user := 'NOUSER';
+        end;
+    end if;
+    return nvl(ws_user, 'NOUSER');
+exception when others then
+    return nvl(ws_user, 'NOUSER');
+end getUsuario;
+
+-----------------------------------------------------------------------------
+
+PROCEDURE setUsuario (
+    prm_usuario VARCHAR2 DEFAULT NULL,
+    prm_mimic   VARCHAR2 DEFAULT NULL
+) IS
+BEGIN
+    -- cria sessão do UPDOC (ajuste se já tiver lógica própria)
+    fun.setSessao(prm_usuario, prm_mimic);
+END setUsuario;
+
+
+---------------------------------------------------------------------------------
+
+function getNivel (prm_usuario varchar2 default null)
+return varchar2 as
+    ws_usuario usuarios.usu_nome%type;
+    ws_nivel   varchar2(1);
+begin
+    if prm_usuario is null then
+        ws_usuario := getUsuario;
+    else
+        ws_usuario := prm_usuario;
+    end if;
+
+    if ws_usuario = 'NOUSER' then
+        return 'N';
+    end if;
+
+    select nvl(show_only, 'N')
+      into ws_nivel
+      from usuarios
+     where usu_nome = ws_usuario;
+
+    return ws_nivel;
+exception
+    when others then
+        return 'N';
+end getNivel;
+---------------------------------------------------------------------------------
+function getNivelUpdoc (prm_usuario varchar2 default null)
+return varchar2 as
+    ws_usuario varchar2(80);
+begin
+    if prm_usuario is null then
+        ws_usuario := getUsuario;
+    else
+        ws_usuario := prm_usuario;
+    end if;
+
+    if ws_usuario in ('UPDOC.ADMIN', 'UPDOC.GERENTE') then
+        return 'A';
+    else
+        return 'N';
+    end if;
+exception
+    when others then
+        return 'N';
+end getNivelUpdoc;
+
 
 END UPDOC;

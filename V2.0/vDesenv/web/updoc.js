@@ -38,6 +38,14 @@ document.addEventListener('click', function(e){
         chamar('consulta', e.target.previousElementSibling.value, '.flex-container',tip_user);   
     }
 
+    //botao login//
+    // No código do botão "go-logar", ao invés de ir para updoc.login:
+    if(e.target.id == "go-logar" || e.target.closest('#go-logar')){
+    let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+    window.location.href = url_doc + '.updoc.login';
+}
+
+
     if(e.target.className == "ler-mais"){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
@@ -140,6 +148,61 @@ document.addEventListener('click', function(e){
 
 
 });
+
+function login_validacao(event) {
+    event.preventDefault();
+    
+    var usuario = document.querySelector('input[name="prm_usuario"]').value;
+    var senha = document.querySelector('input[name="prm_password"]').value;
+    
+    if (!usuario || !senha) {
+        alert('Por favor, preencha usuário e senha');
+        return;
+    }
+    
+    var loading = document.querySelector('.spinner');
+    if (loading) {
+        loading.classList.add('ativado');
+    }
+    
+    // Gera um ID de sessão único
+    var sessionId = 'UPDOC_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    
+    var request = new XMLHttpRequest();
+    request.open('POST', 'dwu.updoc.validar_senha', true);
+    
+    request.onload = function() {
+        if (loading) {
+            loading.classList.remove('ativado');
+        }
+        
+        if (request.status == 200) {
+            console.log('Resposta do servidor:', request.responseText);
+            
+            if (request.responseText.split('|')[0] == 'OK' ) {
+                                
+                console.log('Cookie criado:', document.cookie);
+                
+                // Redireciona
+                let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+                window.location.href = url_doc + '.updoc.main';
+            } else {
+                alert(request.responseText.split('|')[1]);
+            }
+        } else {
+            alert('Erro ao tentar fazer login.');
+        }
+    };
+    
+    request.onerror = function() {
+        if (loading) loading.classList.remove('ativado');
+        alert('Erro de conexão');
+    };
+    
+    request.send('prm_user=' + encodeURIComponent(usuario) + 
+                 '&prm_password=' + encodeURIComponent(senha) + 
+                 '&prm_session=' + encodeURIComponent(sessionId));
+}
 
 function menu_seleciona_item(item, posicionar) {
     var posicionar = posicionar || 'S';
@@ -1226,3 +1289,40 @@ function finishTextareaEdit(id_conteudo, acao) {
     }    
 
 }
+
+// Função para mostrar/esconder o menu de logout
+function toggleLogout() {
+    const logoutDiv = document.getElementById('logout');
+    if (logoutDiv) {
+        logoutDiv.classList.toggle('invisivel');
+    }
+}
+
+// Função de logout
+function realizarLogout() {
+    let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+    
+    // Chama a procedure LOGOUT que remove o cookie e limpa a sessão do banco
+    fetch(url_doc + '.updoc.logout')
+        .then(() => {
+            // Após limpar a sessão, redireciona para a página principal
+            window.location.href = url_doc + '.updoc.main';
+        })
+        .catch(error => {
+            // Se der erro, força o redirecionamento mesmo assim
+            console.error('Erro ao deslogar:', error);
+            window.location.href = url_doc + '.updoc.main';
+        });
+}
+
+// Vincular o evento ao botão de logout quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', function() {
+    const botaoLogout = document.querySelector('.logout-botao');
+    
+    if (botaoLogout) {
+        botaoLogout.addEventListener('click', function(e) {
+            e.preventDefault();
+            realizarLogout();
+        });
+    }
+});

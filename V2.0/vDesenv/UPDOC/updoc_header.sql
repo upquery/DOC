@@ -127,4 +127,22 @@ procedure topico_popup;
 
 procedure imagem_popup;
 
-END UPDOC;
+---teste
+procedure debug_cookie;
+
+FUNCTION getUsuario RETURN VARCHAR2;
+
+PROCEDURE setUsuario (
+        prm_usuario VARCHAR2 DEFAULT NULL,
+        prm_mimic   VARCHAR2 DEFAULT NULL
+    );
+
+FUNCTION getNivel (
+        prm_usuario VARCHAR2 DEFAULT NULL
+    ) RETURN VARCHAR2;
+
+FUNCTION getNivelUpdoc (
+        prm_usuario VARCHAR2 DEFAULT NULL
+    ) RETURN VARCHAR2;
+
+END updoc;

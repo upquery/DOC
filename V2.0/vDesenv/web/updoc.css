@@ -245,16 +245,15 @@ input#busca {
     transition: all 0.2s linear 0s;
     overflow: hidden;
     height: 3.5rem;
-    line-height: 4.6rem;
+    line-height: 2.6rem;
     white-space: nowrap;
     display: block;
     text-indent: 1.4%;
     color: #75B6E7;
-    font-size: 0.77vw;
+    font-size: 16px;
   }
   
   span.flex-resposta{
-
     font-size: 0.8rem;
     margin-bottom: 1px;
     padding-left: 10px;
@@ -303,14 +302,14 @@ input#busca {
     text-align: justify;
     padding: 0.4rem;
     color: #75B6E7;
-    font-size: 0.86vw;
+    font-size: 17px;
   }
 
 
   span.flex-resposta-faq{
     margin: 1rem 0.5rem;  
     text-align: start;
-    font-size: 1vw;
+    font-size: 19px;
     color: white;
 
   }
@@ -329,7 +328,7 @@ input#busca {
     width: 100%;
     padding-top: 0.8rem;
     margin: 0.8rem 0;
-    font-size: 1.3vw;
+    font-size: 23px;
     font-weight: bold;
     font-family: var(--fonte_1);
   }
@@ -445,27 +444,37 @@ span.relacionados {
 }
 
 .header-doc {
+  min-width: 1024px;
   background-color: white;
   /*background-image: linear-gradient(gray,white);*/
   position: fixed;
+  display: flex;
   flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
   width: 100%;
   height: 100px;
   text-align: center;
   border-bottom: solid #FFFFFF 14px;
   line-height: 390%;
   z-index: 3;
+  box-sizing: border-box;
+  padding: 0 20px 0 0;
 }
 
 img.retorna-princ {
-  height: 54%;
-  width: 9%;
+  width: 200px; 
+  height: auto;
+  object-fit: contain;
   cursor: pointer;
-  float:inline-start;
-  margin-top: 1.5%;
-  margin-left: 1.5%;
-  margin-right: 15.5%;
+  flex-shrink: 0;
+  margin-top: 20px;
+  margin-left: 15px;
+  margin-right: 20px;
+  order: 1;
+  flex-basis: 230px;
 }
+
 
 a.go-doc-public {
   cursor: pointer;
@@ -476,22 +485,25 @@ a.go-doc-public {
   border-radius: 1.5rem;
   line-height: 4rem;
   font-family: var(--fonte_1);
-  margin-right: 4%;
-  margin-top: 2%;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  font-size: clamp(14px, 14vw, 20px); /*(mínimo, ideal, máximo)*/
 }
   
 
 a.go-doc-private {
-  cursor: pointer;
-  font-size: 1.1vw;
+  cursor: pointer;   
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 1.5rem;
   line-height: 4rem;
   font-family: var(--fonte_1);
-  margin-right: 4%;
-  margin-top: 2%;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  font-size: clamp(14px, 14vw, 20px); /*(mínimo, ideal, máximo)*/
 }
 
 a.go-doc-cadastro {
@@ -595,7 +607,7 @@ span.detalhe-pesquisa {
   box-sizing: border-box;
   padding: 0.7% 1%;
   
-  /* Flex Properties ajustadas */
+  
   flex-shrink: 3;           /* permite encolher */
   flex-grow: 0;             /* evita crescer demais se houver espaÃ§o */
 
@@ -637,43 +649,47 @@ span.detalhe-pesquisa {
 .header-botao-section {
   display: flex;
   flex-direction: row-reverse;
-  gap: 0.6%;
-  flex-shrink: 3;
-  margin-top: 0.4%;
-  white-space: nowrap; 
-
+  gap: 30px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  white-space: nowrap;
   align-items: center;
   justify-content: center;
-
+  order: 2;
+  margin-top: 0;
+  margin-left: 200px;
 }
 
 .header-util-section {
   display: flex;
   flex-direction: row-reverse;
   flex-wrap: nowrap;
-  max-height: 6.75rem;
-  gap: 0.6rem;
-  margin-top: 0.3%;
-  float: inline-end;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  flex-basis: 230px;
+  order: 3;
+  margin-top: 0;
 }
 
 span.go-login {
   cursor: pointer;
-  flex-shrink: 3;
+  flex-shrink: 0;
   font-size: 0.75vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   font-family: var(--fonte_1);
-/*  margin-left: -4.5%; */
-  margin-right: 5%;
-  margin-left: 2%;
-  margin-top: 2.5%;  
+  margin-right: 5px;
+  margin-left: 6px;
+  z-index: 4;
 }
 
 .go-login svg{
   margin-bottom: -20px;
-  margin-top: 20px;
+  margin-top: 20px;  
   width: 1.4rem;
   height: 1.4rem;
 }
@@ -724,6 +740,7 @@ span.go-login {
   flex-shrink: 3;
   align-items: center;
   justify-content: center;
+  top: 20em;
 }
 
 
@@ -753,7 +770,6 @@ span.go-login {
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 1px 1px 10px 1px #000;
-
 }
 
 .login-conteudo-box-cabecalho {
@@ -930,8 +946,8 @@ a.go-faq {
   font-size: 1.1vw;
   line-height: 4rem;
   font-family: var(--fonte_1);
-  margin-top: 2%;
-  margin-right: 4%;
+  margin-top: 10px;
+  font-size: clamp(5px, 5vw, 20px); /*(mínimo, ideal, máximo)*/
 }
 
 .escolhido {
@@ -1021,6 +1037,8 @@ li.lista-pergunta:hover, a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private
   font-weight: bold;
 }
 
+
+
 a.retorna-princ {
   cursor: pointer;
   display: block;
@@ -1042,32 +1060,43 @@ img.bgdoc {
   top: 0px;
 }
 
-svg#lupa {
- fill: #1E1655;
- position: unset;
- margin-top: 0.6rem;
- margin-right: -2rem;
- z-index: 2;
- width: 1rem;
+
+/* Container que envolve input + lupa */
+.mensagem {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+    margin: 0.2rem 0.5rem 0rem;
+    left: 80px
 }
 
+svg#lupa {
+    fill: #1E1655;
+    position: absolute;
+    left: 7%;
+    top: 55%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 0.9vw;
+    height: 0.9vw;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+
 .mensagem {
-/*  top: 200px;*/
   display: flex;
-  flex-shrink: 3;
-  height:  50%;
-  opacity: 0.9;
-  z-index: 0;
-  justify-content: flex-end;
-  align-items: stretch;
+  flex-shrink: 1;
+  align-items: center;
   position: relative;
-  z-index: 1;
+  z-index: 0;
+  opacity: 0.9;
 }
 
 
 
 li.flex-categorias {
-    width: 29.8%;
+    min-width: 400px; width: 29.8%;
    /* max-height: max-content; */
     margin: 1%;
     background-color: #091F2C;
@@ -1404,20 +1433,7 @@ h1.titulo-faq {
   }
   
 
-  a.go-doc-private {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22%;
-    height: 55%;
-    font-size: 1.1vw;
-    line-height: 4rem;
-    font-family: var(--fonte_1);
-    margin-right: 2%;
-    margin-top: 3%;
 
-  }
 
   span.detalhe-pesquisa {
     display: block;
@@ -1468,8 +1484,6 @@ h1.titulo-faq {
     margin-right: 0%;
     margin-left: 0.2%;
   }
-
-
 
 }
 
@@ -1734,52 +1748,7 @@ h1.titulo-faq {
     padding-left: 1%;
     padding-right: 1%;
     padding-bottom: 1px;
-  }
-
-
-  a.go-faq {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22%;
-    height: 55%;
-    font-size: 1.1vw;
-    line-height: 4rem;
-    font-family: var(--fonte_1);
-    margin-right: 2%;
-    margin-top: 3%;
-
-  }
-
-  
-    a.go-doc-public {
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22%;
-      height: 55%;
-      font-size: 1.1vw;
-      border-radius: 16px;
-      line-height: 38px;
-      font-family: var(--fonte_1);
-      margin-right: 2%;
-      margin-top: 3%;
-  }
-    
-
-    a.go-doc-private {
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1vw;
-      line-height: 4rem;
-      font-family: var(--fonte_1);
-      margin-right: 2%;
-      margin-top: 3%;
-    }
+  }  
 
     span.detalhe-pesquisa {
       display: block;
@@ -2595,5 +2564,3 @@ select[multiple] option:checked {
   border: 1px dashed #ccc;
   background-color: #f5f5f5;
 }
-
-
