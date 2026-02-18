@@ -145,4 +145,6 @@ FUNCTION getNivelUpdoc (
         prm_usuario VARCHAR2 DEFAULT NULL
     ) RETURN VARCHAR2;
 
+procedure download (  arquivo     varchar2 default null );
+
 END updoc;
