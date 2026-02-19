@@ -990,7 +990,7 @@ h1.titulo-faq {
 
 .menu-lateral-conteudo {
   flex-basis: 20%;
-  background:#cbc3c321;
+  /*background:#cbc3c321;*/
   padding-top: 8%;
   /* padding-right: 1%; */ 
   padding-bottom: 1px;  
@@ -1000,7 +1000,7 @@ h1.titulo-faq {
 
 .fundo-conteudo{
   flex-basis: 60%;
-  background:#cbc3c321;
+  /*background:#cbc3c321;*/
   height: 1000px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -1012,11 +1012,11 @@ h1.titulo-faq {
 
 .bloco-direito-conteudo{
   flex-basis: 20%;
-  background:#cbc3c321;
+  /*background:#cbc3c321;*/
 }
 
 .detalhe-conteudo {
-  background: #ffffffcc;
+  /*background: #ffffffcc;*/ 
   padding-top: 100px;
   padding-left: 2%;
   padding-right: 2%;
@@ -1026,7 +1026,7 @@ h1.titulo-faq {
   /* margin-left: 20%;
   margin-right: 20%;
   */ 
-  background: #ffffffcc;
+  /*background: #ffffffcc;*/ 
   padding-top: 30%;
   padding-left: 2%;
   padding-right: 2%;
@@ -1391,7 +1391,7 @@ h1.titulo-faq {
   .detalhe-conteudo {
   margin-left: 10%;
   margin-right: 10%;
-  background: #ffffffcc;
+  /* background: #ffffffcc;*/ 
   padding-top: 22%;
   padding-left: 1%;
   padding-right: 1%;
@@ -1400,7 +1400,7 @@ h1.titulo-faq {
   .detalhe-conteudo2 {
   margin-left: 10%;
   margin-right: 10%;
-  background: #ffffffcc;
+  /*background: #ffffffcc;*/
   padding-top: 1px;
   padding-left: 1%;
   padding-right: 1%;
@@ -1743,7 +1743,7 @@ h1.titulo-faq {
   .detalhe-conteudo {
     margin-left: 10%;
     margin-right: 10%;
-    background: #ffffffcc;
+    /*background: #ffffffcc;*/ 
     padding-top: 22%;
     padding-left: 1%;
     padding-right: 1%;
@@ -1752,7 +1752,7 @@ h1.titulo-faq {
   .detalhe-conteudo2 {
     margin-left: 10%;
     margin-right: 10%;
-    background: #ffffffcc;
+    /*background: #ffffffcc;*/
     padding-top: 1px;
     padding-left: 1%;
     padding-right: 1%;
