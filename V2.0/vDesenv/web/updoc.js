@@ -32,7 +32,7 @@ document.addEventListener('keypress', function(e){
 var loading;  
 
 document.addEventListener('click', function(e){
-    
+     
     
     if(e.target.id == "lupa"){
         chamar('consulta', e.target.previousElementSibling.value, '.flex-container',tip_user);   
