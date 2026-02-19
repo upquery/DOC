@@ -112,7 +112,7 @@ document.addEventListener('click', function(e){
         
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
         chamar('detalhe_pergunta', e.target.title, '', tip_user, 'somente_pergunta','S' );
-        document.body.scrollTop = 0
+        document.body.scrollTop = 0 
 
     }
 

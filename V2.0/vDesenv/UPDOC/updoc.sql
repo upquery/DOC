@@ -1130,8 +1130,9 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                         htp.p('</ul>');
                         htp.p('<div class="voto-linha"></div>');
                         htp.p('<div class= "voto">');
+                        htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
 
-                            htp.p('<span  id=  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                            htp.p('<span  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
                             htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
 
                             htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
@@ -1204,10 +1205,10 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
     BEGIN
 
         UPDATE DOC_PERGUNTAS 
-           SET 
-            RANK_PERGUNTAS  = DECODE(upper(PRM_VALOR), 'SIM', RANK_PERGUNTAS+1, 'NAO', RANK_PERGUNTAS-1)
-         WHERE 
-            CD_PERGUNTA     = PRM_PERGUNTA;
+            SET 
+                RANK_PERGUNTAS = DECODE(upper(PRM_VALOR), 'SIM', NVL(RANK_PERGUNTAS, 0)+1, 'NAO', NVL(RANK_PERGUNTAS, 0)-1)
+            WHERE 
+            CD_PERGUNTA = PRM_PERGUNTA;
         COMMIT;
 
         htp.p('!!!');

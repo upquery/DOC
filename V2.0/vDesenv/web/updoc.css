@@ -428,20 +428,19 @@ span.detalhe-pergunta {
 
 li.lista-pergunta {
   margin-bottom: 28px;
-  text-indent: 8px;
   cursor: pointer;
-  font-size: 0.68vw;
+  font-size: 13px;
 }
 
 span.relacionados {
-  margin-bottom: 30px;
-  display: block;
-  font-size: 0.7vw;
-  font-weight: bold;
-  padding-top: 0px;
-  width: calc(100% - 15px);
-  letter-spacing: 2px;
-}
+    margin-bottom: 15px;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    padding-top: 0px;
+    width: calc(100% - 7px);
+    letter-spacing: 1px;
+  }
 
 .header-doc {
   min-width: 1024px;
@@ -460,6 +459,7 @@ span.relacionados {
   z-index: 3;
   box-sizing: border-box;
   padding: 0 20px 0 0;
+  border-bottom: 1px solid #ddd;
 }
 
 img.retorna-princ {
@@ -584,17 +584,17 @@ ul#perg-rel {
 
 .resp-sim, .resp-nao{
   cursor: pointer;
-  width: 30%;
+  width: 120px;
 }
 
 span.detalhe-pesquisa {
   display: block;
+  flex-basis: 100%;   /* ← troca width por flex-basis */
   margin-top: 20px;
-  font-size: 0.8vw;
+  font-size: 15px;    /* ← troca 0.8vw por px fixo */
   margin-bottom: 10px;
   font-weight: bold;
   letter-spacing: 2px;
-
 } 
 
 
@@ -999,11 +999,13 @@ h1.titulo-faq {
 
 
 .fundo-conteudo{
-  flex-basis: 60%;
   /*background:#cbc3c321;*/
+  flex-basis: 60%;
   height: 1000px;
   overflow-y: scroll;
   overflow-x: hidden;
+  border-left: 1px solid #ddd;  
+  border-right: 1px solid #ddd;
 }
 
 .fundo-conteudo.arquivos{
@@ -1031,6 +1033,7 @@ h1.titulo-faq {
   padding-left: 2%;
   padding-right: 2%;
   padding-bottom: 1px;
+  min-width: 300px;
 }
 
 .disable{
@@ -1041,6 +1044,11 @@ h1.titulo-faq {
 
 .voto {
   padding-bottom: 30px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 li.lista-pergunta:hover, a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
@@ -1374,15 +1382,7 @@ h1.titulo-faq {
   font-size: 7px;
   }
 
-  span.relacionados {
-  margin-bottom: 15px;
-  display: block;
-  font-size: 12px;
-  font-weight: bold;
-  padding-top: 0px;
-  width: calc(100% - 7px);
-  letter-spacing: 1px;
-  }
+  
   img.seta {
   float: left;
   width: 18px;
@@ -1445,14 +1445,7 @@ h1.titulo-faq {
 
 
 
-  span.detalhe-pesquisa {
-    display: block;
-    margin-top: 20px;
-    font-size: 12px;
-    margin-bottom: 12px;
-    font-weight: bold;
-    letter-spacing: 2px;
-  }
+  
  /* .resp-sim, .resp-nao {
     cursor: pointer;
     width: 90px;
@@ -1726,15 +1719,6 @@ h1.titulo-faq {
     font-size: 7px;
   }
 
-  span.relacionados {
-    margin-bottom: 15px;
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    padding-top: 0px;
-    width: calc(100% - 7px);
-    letter-spacing: 1px;
-  }
   img.seta {
     float: left;
     width: 18px;
@@ -1757,16 +1741,10 @@ h1.titulo-faq {
     padding-left: 1%;
     padding-right: 1%;
     padding-bottom: 1px;
+    min-width: 300px;
   }  
 
-    span.detalhe-pesquisa {
-      display: block;
-      margin-top: 20px;
-      font-size: 12px;
-      margin-bottom: 12px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+  
   /*  .resp-sim, .resp-nao {
       cursor: pointer;
       width: 90px;
