@@ -77,7 +77,7 @@ BEGIN
             if nvl(prm_externo,'.') <> 'CADASTRO' THEN
                 htp.p('<div class="header-doc">');  
                     ws_usuario := nvl(UPPER(updoc.getusuario),'N/A');
-                    htp.p('<img src="dwu.fcl.download?arquivo=logo-upquery-01.png" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
+                    htp.p('<img src="https://www.upquery.com/wp-content/themes/upquery_2025/media/img/assets/logo-sem-slogan.svg" class="retorna-princ" tittle ="Logotipo do produto UpQuery"/>');
                     htp.p('<div class="header-util-section">');
                       if ws_usuario = 'N/A' or ws_usuario = 'NOUSER' then --renderização condicional de usuário logado ou não
                         htp.p('<span  class="go-login" id="go-logar">');
@@ -326,7 +326,7 @@ owa_util.http_header_close;*/
 			    /*htp.p('<a  class="link" href="dwu03.login.refazer_senha"> Esqueceu a senha? </a>');*/
       	     htp.p('</span>');
 
-             htp.p('<button class="login-botao" type="button" onclick="login_validacao(event)">LOGIN</button>');
+             htp.p('<span class="login-botao" onclick="login_validacao(this)">LOGIN</span>');
 
            htp.p('</div>');
 
@@ -547,11 +547,22 @@ prm_prazo    number   default 1 ) as
 ws_test  varchar2(10);
 ws_erro  exception;
 WS_COUNT_BI number;
-
+ws_count number;
 
 BEGIN
     
-  
+  -- Verifica se o usuário existe antes de testar a senha
+    select count(*) into ws_count 
+    from usuarios 
+    where upper(trim(usu_nome)) = upper(trim(prm_user))
+       or upper(trim(usu_email)) = upper(trim(prm_user));
+
+    if ws_count = 0 then
+        htp.p('ERRO|Usuário não encontrado.');
+        return;
+    end if;
+
+    -- Só depois testa a senha
    ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
     
 	if ws_test = 'Y' then
@@ -921,7 +932,7 @@ PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
         if updoc.getNivel = 'A' then
             ws_liberado := ' ';
         else    
-            ws_liberado := ' id_liberado = ''S'' and ';
+            ws_liberado := ' id_liberado IN (''S'',''TM'') and ';
         end if; 
 
         ws_limit := ' order by nvl(id_notas_versao,''N'') desc, categoria asc,ordem_categoria asc,cd_pergunta asc ' ;

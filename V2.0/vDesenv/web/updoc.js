@@ -43,7 +43,7 @@ document.addEventListener('click', function(e){
     if(e.target.id == "go-logar" || e.target.closest('#go-logar')){
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
     window.location.href = url_doc + '.updoc.login';
-}
+    }
 
 
     if(e.target.classList.contains("ler-mais")){
@@ -150,7 +150,9 @@ document.addEventListener('click', function(e){
 });
 
 function login_validacao(event) {
-    event.preventDefault();
+    if (event && event.preventDefault) {
+        event.preventDefault();
+    }
     
     var usuario = document.querySelector('input[name="prm_usuario"]').value;
     var senha = document.querySelector('input[name="prm_password"]').value;
@@ -199,13 +201,13 @@ function login_validacao(event) {
         alert('Erro de conexão');
     };
     
-    document.addEventListener('keydown', function(event) {
+    /*document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         // Previne o comportamento padrão (evita recarregar a página)
         event.preventDefault();                
         login_validacao(event);
     }
-    });
+    });*/
     
     request.send('prm_user=' + encodeURIComponent(usuario) + 
                  '&prm_password=' + encodeURIComponent(senha) + 
@@ -1334,3 +1336,13 @@ function realizarLogout() {
             window.location.href = url_doc + '.updoc.main';
         });
 }
+
+window.addEventListener('scroll', function() {
+    var header = document.querySelector('.header-doc');
+    if (!header) return;
+    if (window.scrollY > 60) {
+        header.classList.add('header-scrolled');
+    } else {
+        header.classList.remove('header-scrolled');
+    }
+});
