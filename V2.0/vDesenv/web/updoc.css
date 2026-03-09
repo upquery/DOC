@@ -1136,7 +1136,7 @@ img.bgdoc {
 svg#lupa {
     fill: #1E1655;
     position: absolute;
-    right: 7%;
+    right: 5%;
     top: 55%;
     transform: translateY(-50%);
     z-index: 2;
@@ -1144,6 +1144,10 @@ svg#lupa {
     height: 15px;
     cursor: pointer;
     pointer-events: auto;
+}
+
+svg#lupa * {
+  pointer-events: none;
 }
 
 

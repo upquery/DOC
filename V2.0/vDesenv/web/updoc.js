@@ -35,7 +35,7 @@ document.addEventListener('click', function(e){
      
     
     if(e.target.id == "lupa"){
-        chamar('consulta', e.target.previousElementSibling.value, '.flex-container',tip_user);   
+    chamar('consulta', e.target.nextElementSibling.value, '.flex-container', tip_user);   
     }
 
     //botao login//
