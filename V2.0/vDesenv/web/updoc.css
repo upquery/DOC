@@ -191,7 +191,7 @@ section, summary, time, mark {
 
 
 input#busca {
-  width: 250px;
+  width: 350px;
   height: 35px;
   border-radius: 5px;
   padding: 0px 2rem 0rem 0.5rem;
@@ -201,7 +201,7 @@ input#busca {
   float: left;
   margin: 0.2rem 0.5rem 0rem;
   outline: none;
-  
+  margin-left: 130px;  
 }
 
 
@@ -334,11 +334,21 @@ input#busca {
     border-radius: 7px;
   }
 
+  li.flex-categorias {
+    min-width: 400px;
+    width: 29.8%;
+    margin: 1%;
+    background: linear-gradient(to bottom, #19355e, #05121a);
+    padding: 0% 1% 4% 0.5%;
+    box-shadow: 0 5px #c3b9b9;
+    height: auto;
+    border-radius: 10px;
+}
+
   li.flex-categorias::before { 
     content: attr(title);
     display: inline-block;
     color: white;
-    background-color: #091F2C;
     text-indent: 1rem;
     width: 100%;
     padding-top: 0.8rem;
@@ -580,8 +590,8 @@ a.go-doc-cadastro {
   align-items: center;
   font-weight: bold;
   font-family: var(--fonte_1);
-  background-color: white;
-  border-top: solid #FFFFFF 14px;
+  background-color: rgb(229, 229, 229);
+  border-top: none;
   /*background-image: linear-gradient(white,gray);*/
 }
 
@@ -678,8 +688,8 @@ span.detalhe-pesquisa {
   justify-content: center;
   order: 2;
   margin-top: 0;
-  margin-left: 0;
-  margin-right: -240px
+  margin-left: 350px;
+  z-index: 2;
 }
 
 .header-util-section {
@@ -690,12 +700,12 @@ span.detalhe-pesquisa {
   align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-  flex-basis: 450px;
+  flex-basis: 600px;
   order: 3;
   margin-top: 0;
 }
 
-span.go-login {
+span.go-login {/*deslogado*/
   cursor: pointer;
   flex-shrink: 0;
   font-size: 13px;
@@ -704,10 +714,22 @@ span.go-login {
   align-items: center;
   text-align: center;
   font-family: var(--fonte_1);
-  margin-right: 5px;
-  margin-left: 6px;
   z-index: 4;
-  margin-top: 5px;
+  margin-top: 8px;
+}
+
+span#login { /*logado*/
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: var(--fonte_1);
+  margin-left: -50px;
+  z-index: 4;
+  margin-top: 8px;
 }
 
 .go-login svg{
@@ -772,7 +794,7 @@ span.go-login {
   font-family: var(--fonte_2);
   display: flex;
   align-items: center;
-  background-color: #F1F1F1;
+  background-color: #f1f1f1;
   justify-content: center;
   flex-direction: column;
   width: 100vw;
@@ -1109,20 +1131,12 @@ img.bgdoc {
 }
 
 
-/* Container que envolve input + lupa */
-.mensagem {
-    display: inline-block;
-    width: 250px;
-    margin: 0.2rem 0.5rem 0rem;
-    left: 80px;
-    margin-right: 80px;
-}
+
 
 svg#lupa {
     fill: #1E1655;
     position: absolute;
     right: 7%;
-    left: auto;
     top: 55%;
     transform: translateY(-50%);
     z-index: 2;
@@ -1140,6 +1154,7 @@ svg#lupa {
   position: relative;
   z-index: 0;
   opacity: 0.9;
+  right: 100px;
 }
 
 
@@ -1171,8 +1186,10 @@ img.bgpergunta {
 
 img.seta {
     float: left;
-    width: 5%;
-    height: 1%;
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    margin-top: -4px;
 }
 
 .cxmsg {
@@ -1873,6 +1890,7 @@ img.menu-lateral-aberto, img.menu-lateral-fechado {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 650px;  
+  background-color: #edf0f7;
 }
 
 ul.menu-lateral-fechado, div.invisivel , span.invisivel {

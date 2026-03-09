@@ -311,7 +311,8 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
                     document.querySelector('.cxmsg').classList.remove('mostrar');
                 }, 3000)
             }
-            loading.classList.remove('ativado');// esse ponto testa se o endereÃ§o alcanÃ§ou 200, e traz a resposta do backend               
+            loading.classList.remove('ativado');// esse ponto testa se o endereÃ§o alcanÃ§ou 200, e traz a resposta do backend
+            document.querySelector('.footer-doc').style.display = 'flex';               
         }
     }; 
     if (proc == 'detalhe_pergunta') {
