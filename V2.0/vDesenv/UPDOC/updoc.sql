@@ -177,7 +177,17 @@ BEGIN
 
             htp.p('<div class="main'||ws_class_cad||'">');
 
-                updoc.DOC_PUBLIC;
+                htp.p('<script>');
+                htp.p('var secao = sessionStorage.getItem(''ultima_secao'') || ''DOC_PUBLIC'';');
+                htp.p('if(secao == ''DOC_PUBLIC'') classe_doc = ''D'';');
+                htp.p('else if(secao == ''DOC_PRIVATE'') classe_doc = ''P'';');
+                htp.p('else if(secao == ''FAQ'') classe_doc = ''F'';');
+                htp.p('chamar(secao, '''','''',tip_user);');
+                htp.p('var botao = document.querySelector(''.go-doc-public'');');
+                htp.p('if(secao == ''DOC_PRIVATE'') botao = document.querySelector(''.go-doc-private'');');
+                htp.p('else if(secao == ''FAQ'') botao = document.querySelector(''.go-faq'');');
+                htp.p('if(botao) botao.classList.add(''escolhido'');');
+                htp.p('</script>');
               --  updoc.principal;
 
             htp.p('</div>');

@@ -58,16 +58,25 @@ document.addEventListener('click', function(e){
         }
     }
 
-    if(e.target.closest(".retorna-princ"))
-        { chamar('main');
+    if(e.target.closest(".retorna-princ")){
+    var secao = sessionStorage.getItem('ultima_secao') || 'DOC_PUBLIC';
+    if(secao == 'DOC_PUBLIC') classe_doc = 'D';
+    else if(secao == 'DOC_PRIVATE') classe_doc = 'P';
+    else if(secao == 'FAQ') classe_doc = 'F';
+    chamar(secao, '','',tip_user);
     if(document.querySelector('.escolhido')){
         document.querySelector('.escolhido').classList.remove('escolhido');
-        }
     }
+    var botao = document.querySelector('.go-doc-public');
+    if(secao == 'DOC_PRIVATE') botao = document.querySelector('.go-doc-private');
+    else if(secao == 'FAQ') botao = document.querySelector('.go-faq');
+    if(botao) botao.classList.add('escolhido');
+}
 
 
     if(e.target.className == "go-doc-public"){
         classe_doc = 'D';
+        sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
         chamar('DOC_PUBLIC', e.target.title,'',tip_user);
         if(document.querySelector('.escolhido')){
             document.querySelector('.escolhido').classList.remove('escolhido');
@@ -77,12 +86,13 @@ document.addEventListener('click', function(e){
 
 
     if(e.target.className == "go-doc-private"){
-        classe_doc = 'P';
-        chamar('DOC_PRIVATE', e.target.title,'',tip_user);
-        if(document.querySelector('.escolhido')){
-            document.querySelector('.escolhido').classList.remove('escolhido');
-        }
-        e.target.classList.add('escolhido');
+    classe_doc = 'P';
+    sessionStorage.setItem('ultima_secao', 'DOC_PRIVATE');
+    chamar('DOC_PRIVATE', e.target.title,'',tip_user);
+    if(document.querySelector('.escolhido')){
+        document.querySelector('.escolhido').classList.remove('escolhido');
+    }
+    e.target.classList.add('escolhido');
     }
 
     if(e.target.className == "go-doc-cadastro"){
@@ -96,6 +106,7 @@ document.addEventListener('click', function(e){
 
     if(e.target.className == "go-faq"){
         classe_doc = 'F';
+        sessionStorage.setItem('ultima_secao', 'FAQ');
         chamar('faq', e.target.title,'',tip_user);
         if(document.querySelector('.escolhido')){
             document.querySelector('.escolhido').classList.remove('escolhido');
