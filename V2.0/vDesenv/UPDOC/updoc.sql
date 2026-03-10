@@ -81,13 +81,13 @@ BEGIN
                     htp.p('<div class="header-util-section">');
                       if ws_usuario = 'N/A' or ws_usuario = 'NOUSER' then --renderização condicional de usuário logado ou não
                         htp.p('<span class="go-login" id="go-logar">');
-                            htp.p('<svg style="height: 1.7em; top: 1.7em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" > <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/></g></g></svg>');
+                            htp.p('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" > <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/></g></g></svg>');
                             htp.p('<span> Entrar </span>');
                         htp.p('</span>');                
                       else
 
                           htp.p('<span class="go-login" id="login" onclick="confirmarLogout()">');
-        	                htp.p('<svg style="height: 1.4em; top: 1.4em;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
+        	                htp.p('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M255.999,0c-74.443,0-135,60.557-135,135s60.557,135,135,135s135-60.557,135-135S330.442,0,255.999,0z"/> </g> </g> <g> <g> <path d="M478.48,398.68C438.124,338.138,370.579,302,297.835,302h-83.672c-72.744,0-140.288,36.138-180.644,96.68l-2.52,3.779V512 h450h0.001V402.459L478.48,398.68z"/> </g> </svg>');        
                                htp.p('<span> '|| ws_usuario ||' </span>');
                           htp.p('</span>');
 
@@ -177,17 +177,7 @@ BEGIN
 
             htp.p('<div class="main'||ws_class_cad||'">');
 
-                htp.p('<script>');
-                htp.p('var secao = sessionStorage.getItem(''ultima_secao'') || ''DOC_PUBLIC'';');
-                htp.p('if(secao == ''DOC_PUBLIC'') classe_doc = ''D'';');
-                htp.p('else if(secao == ''DOC_PRIVATE'') classe_doc = ''P'';');
-                htp.p('else if(secao == ''FAQ'') classe_doc = ''F'';');
-                htp.p('chamar(secao, '''','''',tip_user);');
-                htp.p('var botao = document.querySelector(''.go-doc-public'');');
-                htp.p('if(secao == ''DOC_PRIVATE'') botao = document.querySelector(''.go-doc-private'');');
-                htp.p('else if(secao == ''FAQ'') botao = document.querySelector(''.go-faq'');');
-                htp.p('if(botao) botao.classList.add(''escolhido'');');
-                htp.p('</script>');
+                updoc.DOC_PUBLIC;
               --  updoc.principal;
 
             htp.p('</div>');
@@ -212,6 +202,23 @@ BEGIN
             end if;            
             htp.p('<div id="loadingscreens">');					
             htp.p('</div>');
+
+            htp.p('<script>');
+            htp.p('if(!document.getElementById(''prm_externo'')){');
+            htp.p('    var secao = sessionStorage.getItem(''ultima_secao'') || ''DOC_PUBLIC'';');
+            htp.p('    if(secao != ''DOC_PUBLIC''){');
+            htp.p('        if(secao == ''DOC_PRIVATE'') classe_doc = ''P'';');
+            htp.p('        else if(secao == ''FAQ'') classe_doc = ''F'';');
+            htp.p('        chamar(secao, '''','''',tip_user);');
+            htp.p('        var botao = document.querySelector(''.go-doc-private'');');
+            htp.p('        if(secao == ''FAQ'') botao = document.querySelector(''.go-faq'');');
+            htp.p('        if(botao) botao.classList.add(''escolhido'');');
+            htp.p('    } else {');
+            htp.p('        classe_doc = ''D'';');
+            htp.p('        document.querySelector(''.go-doc-public'').classList.add(''escolhido'');');
+            htp.p('    }');
+            htp.p('}');
+            htp.p('</script>');
 
 
         htp.p('</body>');
