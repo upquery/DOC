@@ -185,9 +185,7 @@ section, summary, time, mark {
   border-spacing: 0; 
 }
 
-#busca {
-   font-style: italic;
-}
+
 
 
 input#busca {
@@ -195,7 +193,7 @@ input#busca {
   height: 35px;
   border-radius: 5px;
   padding: 0px 2rem 0rem 0.5rem;
-  border: rgb(181, 181, 181) 1px solid;
+  border: #e3d7d7 1px solid;
   box-shadow: none;
   font-size: 15px;
   float: left;
@@ -244,11 +242,11 @@ input#busca {
   span.flex-resposta, span.flex-perguntas {
     z-index: 2;
     cursor: pointer;
-    text-overflow: ellipsis;
+    text-overflow: unset;
     transition: all 0.2s linear 0s;
-    overflow: hidden;
-    height: 3.5rem;
-    white-space: nowrap;
+    overflow: visible;
+    height: auto;
+    white-space: normal;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -300,7 +298,7 @@ input#busca {
     height: auto;
     z-index: 1;
     transition: all 0.15s linear;
-    margin: 1.5rem 0rem;
+    margin: 0.5rem;
     position: relative;
     /* text-indent: 14px; */
     text-align: justify;
@@ -332,6 +330,7 @@ input#busca {
   
   li.flex-categorias{
     border-radius: 7px;
+    box-shadow: 0 5px #999;
   }
 
   li.flex-categorias {
@@ -358,12 +357,11 @@ input#busca {
     font-family: var(--fonte_1);
   }
   
-  li.flex-categorias ul li{
-    height: 2.2rem; 
-    transition: height 0.1s linear;
-  
-  }
-
+li.flex-categorias ul li:not(#lista-flex-perguntas-faq){
+    height: auto;
+    min-height: 1.2rem;
+    padding: 0.4rem 0;
+}
   #lista-flex-perguntas-faq {
     height: auto;
   }
@@ -719,6 +717,7 @@ span.go-login {/*deslogado*/
   font-family: var(--fonte_1);
   z-index: 4;
   margin-top: 8px;
+  margin-left: 20px;
 }
 
 span#login { /*logado*/
@@ -730,10 +729,11 @@ span#login { /*logado*/
   align-items: center;
   text-align: center;
   font-family: var(--fonte_1);
-  margin-left: -50px;
   z-index: 4;
   margin-top: 8px;
+  margin-left: -20px;
 }
+
 
 .go-login svg{
   margin-bottom: -20px;
@@ -1104,7 +1104,7 @@ h1.titulo-faq {
 
 li.lista-pergunta:hover, a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
   font-weight: bold;
-  color: #4CAF50;
+  color: #000000;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 2px;
@@ -2629,4 +2629,46 @@ select[multiple] option:checked {
 .cadcon-texto-view:hover {
   border: 1px dashed #ccc;
   background-color: #f5f5f5;
+}
+
+span#faq-resposta {
+    display: none;
+    padding: 10px 15px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+    background-color: #232323;
+    border-radius: 5px;
+    border-top: 1px solid #279fe9;
+    border-bottom: 1px solid #279fe9;
+    box-shadow: 0 2px 5px rgba(53, 185, 215, 0.5);
+    width: calc(100% + 1rem);
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    box-sizing: border-box;
+}
+
+span#faq-resposta.visivel {
+    display: block;
+}
+
+div.flex-perguntas-faq:has(.faq-aberto) {
+    background-color: #0d2137;
+    border-radius: 8px;    
+    border-top: 1px solid #75B6E7;
+    border-bottom: 3px solid #75B6E7;
+    padding: 0.8rem 1.5rem;
+    box-sizing: border-box;
+}
+
+span.go-login:hover,
+span#login:hover {
+  color: #4e4e4e;
+}
+
+span.go-login:hover svg,
+span#login:hover svg {
+  fill: #4e4e4e;
 }

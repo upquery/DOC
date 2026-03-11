@@ -149,8 +149,29 @@ document.addEventListener('click', function(e){
 
     }
 
+    if(e.target.id == "faq-pergunta" || e.target.closest('#faq-pergunta')){
+        var pergunta = e.target.closest('#faq-pergunta') || e.target;
+        var resposta = pergunta.parentNode.querySelector('#faq-resposta');
+    if(resposta.classList.contains('visivel')){
+        resposta.classList.remove('visivel');
+        pergunta.classList.remove('faq-aberto');
+    } else {
+        resposta.classList.add('visivel');
+        pergunta.classList.add('faq-aberto');
+        resposta.querySelectorAll('svg').forEach(function(el){
+            el.remove();
+        });
+            resposta.querySelectorAll('img').forEach(function(el){
+            el.onerror = function(){ this.remove(); };
+    if(!el.complete || el.naturalWidth === 0){
+        el.remove();
+    }
+        });
+    }
+    }
+}
 
-});
+);
 
 function login_validacao(event) {
     if (event && event.preventDefault) {
@@ -1328,15 +1349,14 @@ function confirmarLogout() {
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
     
-    // Chama a procedure LOGOUT que remove o cookie e limpa a sessão do banco
     fetch(url_doc + '.updoc.logout')
         .then(() => {
-            // Após limpar a sessão, redireciona para a página principal
+            sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
             window.location.href = url_doc + '.updoc.main';
         })
         .catch(error => {
-            // Se der erro, força o redirecionamento mesmo assim
             console.error('Erro ao deslogar:', error);
+            sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
             window.location.href = url_doc + '.updoc.main';
         });
 }
@@ -1349,4 +1369,5 @@ window.addEventListener('scroll', function() {
     } else {
         header.classList.remove('header-scrolled');
     }
+    
 });
