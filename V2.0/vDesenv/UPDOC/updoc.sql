@@ -1046,13 +1046,14 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
 
         htp.p('<div class="main-conteudo" data-pergunta="'||ws_cd_pergunta||'">');
 
-            htp.p('<div class="menu-lateral-conteudo">');
+            htp.p('<div class="menu-lateral-conteudo" id="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
                     if ws_classe = 'D' then  -- menu somente para documentação do BI
                         updoc.MONTA_MENU_LATERAL(0, 1, 2);
                     end if;    
                 htp.p('</div>');    
             htp.p('</div>');
+            htp.p('<button class="menu-lateral-toggle" id="btn-menu-lateral" onclick="toggleMenuLateral()" title="Fechar menu lateral">&#x276E;</button>');
 
             htp.p('<div id="fundo-conteudo" class="fundo-conteudo '||lower(ws_tp_conteudo)||'">');
 
@@ -1123,10 +1124,12 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
             htp.p('</div>');        -- fundo-conteudo 
 
             if ws_tp_conteudo <> 'ARQUIVOS' then 
-                htp.p('<div class="bloco-direito-conteudo">');
+                htp.p('<button class="detalhe-conteudo2-toggle" id="btn-detalhe-direito" onclick="toggleDetalheDireito()" title="Fechar menu direito">&#x276F;</button>');
+                htp.p('<div class="bloco-direito-conteudo" id="bloco-direito-conteudo">');
                     htp.p('<div class="detalhe-conteudo2">');
 
                         htp.p('<span class="relacionados">Artigos relacionados</span>');
+                        htp.p('<div class="bloco-direito-scroll">');
                         htp.p('<ul id="perg-rel">');
 
                             IF NVL(PRM_TIPUSER,'T') = 'T' THEN
@@ -1157,6 +1160,8 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
 
                         htp.p('</ul>');
                         htp.p('<div class="voto-linha"></div>');
+
+                        htp.p('</div>');    -- bloco-direito-scroll
                         htp.p('<div class= "voto">');
                         htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
 
@@ -1167,11 +1172,9 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
 
                         htp.p('</div>');
                         htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
-
-
                     htp.p('</div>');    -- detalhe-conteudo2
 
-                htp.p('</div>');
+                htp.p('</div>');    -- bloco-direito-conteudo
             end if;     
 
         htp.p('</div>');            -- principal-conteudo 

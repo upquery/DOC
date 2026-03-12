@@ -302,6 +302,15 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
                 } else {
                     document.querySelector(alvo).innerHTML = request.responseText;      
                 }    
+                posicionarBotoes();
+                var header = document.querySelector('.header-doc');
+                if (header) {
+                    if (proc == 'detalhe_pergunta') {
+                        header.classList.add('sem-busca');
+                    } else {
+                        header.classList.remove('sem-busca');
+                    }
+                }
                 if (proc == 'detalhe_pergunta' && localiza_menu == 'S') {
                     var itens = document.getElementById('menu-lateral-scroll').querySelectorAll('.menu-lateral-item');
                     for(let a=0;a<itens.length;a++){
@@ -1371,3 +1380,56 @@ window.addEventListener('scroll', function() {
     }
     
 });
+
+// Posiciona os botões toggle na borda dos menus
+function posicionarBotoes() {
+    var menuEsq = document.getElementById('menu-lateral-conteudo');
+    var btnEsq = document.getElementById('btn-menu-lateral');
+    var blocoDir = document.getElementById('bloco-direito-conteudo');
+    var btnDir = document.getElementById('btn-detalhe-direito');
+
+    // Botão esquerdo: quando colapsado vai pra borda esquerda da tela, quando aberto reseta pro CSS
+    if (menuEsq && btnEsq) {
+        var collapsed = menuEsq.classList.contains('collapsed');
+        if (collapsed) {
+            btnEsq.style.left = '4px';
+        } else {
+            btnEsq.style.left = '';  // deixa o CSS controlar
+        }
+    }
+
+    // Botão direito: quando colapsado vai pra borda direita da tela, quando aberto reseta pro CSS
+    if (blocoDir && btnDir) {
+        var collapsed2 = blocoDir.classList.contains('collapsed');
+        if (collapsed2) {
+            btnDir.style.right = '4px';
+        } else {
+            btnDir.style.right = '';  // deixa o CSS controlar
+        }
+    }
+}
+
+// Toggle menu lateral esquerdo
+function toggleMenuLateral() {
+    var menu = document.getElementById('menu-lateral-conteudo');
+    var btn = document.getElementById('btn-menu-lateral');
+    if (!menu || !btn) return;
+    var collapsed = menu.classList.toggle('collapsed');
+    btn.innerHTML = collapsed ? '&#x276F;' : '&#x276E;';
+    btn.title = collapsed ? 'Abrir menu lateral' : 'Fechar menu lateral';
+    posicionarBotoes();
+}
+
+// Toggle menu direito
+function toggleDetalheDireito() {
+    var bloco = document.getElementById('bloco-direito-conteudo');
+    var btn = document.getElementById('btn-detalhe-direito');
+    if (!bloco || !btn) return;
+    var collapsed = bloco.classList.toggle('collapsed');
+    btn.innerHTML = collapsed ? '&#x276E;' : '&#x276F;';
+    btn.title = collapsed ? 'Abrir menu direito' : 'Fechar menu direito';
+    posicionarBotoes();
+}
+
+window.addEventListener('load', posicionarBotoes);
+window.addEventListener('resize', posicionarBotoes);
