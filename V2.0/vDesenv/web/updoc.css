@@ -2639,13 +2639,10 @@ span#faq-resposta {
     line-height: 1.6;
     margin-top: 8px;
     transition: all 0.3s ease;
-    background-color: #232323;
+    background-color: #5a799d;
     border-radius: 5px;
-    border-top: 1px solid #279fe9;
-    border-bottom: 1px solid #279fe9;
-    box-shadow: 0 2px 5px rgba(53, 185, 215, 0.5);
+    box-shadow: 0 2px 5px rgba(70 160 181 / 50%);
     width: calc(100% + 1rem);
-    margin-left: -0.5rem;
     margin-right: -0.5rem;
     box-sizing: border-box;
 }
@@ -2655,12 +2652,7 @@ span#faq-resposta.visivel {
 }
 
 div.flex-perguntas-faq:has(.faq-aberto) {
-    background-color: #0d2137;
-    border-radius: 8px;    
-    border-top: 1px solid #75B6E7;
-    border-bottom: 3px solid #75B6E7;
-    padding: 0.8rem 1.5rem;
-    box-sizing: border-box;
+    
 }
 
 span.go-login:hover,
