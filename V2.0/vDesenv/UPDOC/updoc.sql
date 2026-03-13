@@ -1025,6 +1025,7 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
         ws_cd_aux       number; 
         ws_tp_conteudo  varchar2(20);
         ws_cd_pergunta  varchar2(20);
+        ws_count_rel    number := 0;
 
         ws_raise_erro   exception;
     BEGIN
@@ -1127,16 +1128,16 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                 htp.p('<button class="detalhe-conteudo2-toggle" id="btn-detalhe-direito" onclick="toggleDetalheDireito()" title="Fechar menu direito">&#x276F;</button>');
                 htp.p('<div class="bloco-direito-conteudo" id="bloco-direito-conteudo">');
                     htp.p('<div class="detalhe-conteudo2">');
-                        htp.p('<div class= "voto">');
-                        htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
+                        
 
-                            htp.p('<span  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                            htp.p('<button title="Sim" class="resp-sim votacao">Sim</button>');
+                        SELECT COUNT(*) INTO ws_count_rel
+                          FROM DOC_PERGUNTAS
+                         WHERE (ID_LIBERADO = 'S' OR updoc.getNivel = 'A')
+                           AND CATEGORIA   = WS_CATEGORIA
+                           AND CLASSE      = WS_CLASSE
+                           AND CD_PERGUNTA <> ws_cd_pergunta;
 
-                            htp.p('<button title="Nao" class="resp-nao votacao">Nao</button>');
-
-                        htp.p('</div>');
-
+                        IF ws_count_rel > 0 THEN
                         htp.p('<span class="relacionados">Artigos relacionados</span>');
                         htp.p('<div class="bloco-direito-scroll">');
                         htp.p('<ul id="perg-rel">');
@@ -1166,9 +1167,18 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                             END IF;
 
                         htp.p('</ul>');
-                        
-
                         htp.p('</div>');    -- bloco-direito-scroll
+                        END IF; -- ws_count_rel > 0
+
+                        htp.p('<div class= "voto">');
+                        htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
+
+                            htp.p('<span  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                            htp.p('<button title="Sim" class="resp-sim votacao">Sim</button>');
+
+                            htp.p('<button title="Nao" class="resp-nao votacao">Não</button>');
+
+                        htp.p('</div>');
                         
                         htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
                     htp.p('</div>');    -- detalhe-conteudo2

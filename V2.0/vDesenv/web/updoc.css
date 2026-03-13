@@ -640,8 +640,13 @@ ul#perg-rel {
   font-weight: bold;
   letter-spacing: 1px;
   border: none;
+  font-style: italic;
 }
 
+.resp-sim:hover {
+  background-color: #00c907;
+  border-color: #4CAF50;
+}
 .resp-nao:hover {
   background-color: #b71c1c;
   border-color: #b71c1c;
@@ -1200,7 +1205,8 @@ h1.titulo-faq {
   padding-left: 2%;
   padding-right: 2%;
   padding-bottom: 1px;
-
+  position: relative;
+  height: 100%;
 }
 
 .disable{
@@ -1210,23 +1216,34 @@ h1.titulo-faq {
 }
 
 .voto {
-  padding-bottom: 30px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-left: 50px;
-  margin-top: -55px;
+  justify-content: center;
+  text-align: center;
+  z-index: 999;
+  position: absolute;
+  bottom: 100px;
+  left: 0;
+  right: 0;
+  border-top: grey 1px solid;
 }
 
-li.lista-pergunta:hover, a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
+a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
   font-weight: bold;
   color: #000000;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 2px;
 }
+
+li.lista-pergunta:hover{
+  color: #ffffff;
+  font-weight: bold;
+}
+
 
 
 
@@ -1342,6 +1359,7 @@ img.seta {
   flex-wrap: wrap;
   box-shadow: 0 0 2px 0 #333;
   transform: rotatex(20deg);
+  z-index: 1;
 }
 
 .mostrar {
@@ -1997,7 +2015,14 @@ span.menu-lateral-item {
 }
 
 span.menu-lateral-item.selecionado {
-  opacity: 0.8;
+  background-color: #6090c7;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.menu-lateral-item:hover{
+  color: #ffffff;
+  font-weight: bold;
 }
 
 img.menu-lateral-aberto, img.menu-lateral-fechado {
