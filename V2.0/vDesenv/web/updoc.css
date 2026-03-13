@@ -1134,7 +1134,7 @@ h1.titulo-faq {
 .bloco-direito-scroll {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 450px;
+  height: calc(100vh - 300px);
 }
 
 .bloco-direito-conteudo.collapsed {
@@ -2015,7 +2015,7 @@ span.menu-lateral-item {
 }
 
 span.menu-lateral-item.selecionado {
-  background-color: #6090c7;
+  background-color: rgba(96, 144, 199, 0.5); 
   font-weight: bold;
   color: #ffffff;
 }
@@ -2045,7 +2045,7 @@ img.menu-lateral-aberto, img.menu-lateral-fechado {
 .menu-lateral-scroll {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 708px;  
+  height: calc(100vh - 143px);
 }
 
 ul.menu-lateral-fechado, div.invisivel , span.invisivel {
