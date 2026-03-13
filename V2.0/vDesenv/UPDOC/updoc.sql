@@ -1127,6 +1127,15 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                 htp.p('<button class="detalhe-conteudo2-toggle" id="btn-detalhe-direito" onclick="toggleDetalheDireito()" title="Fechar menu direito">&#x276F;</button>');
                 htp.p('<div class="bloco-direito-conteudo" id="bloco-direito-conteudo">');
                     htp.p('<div class="detalhe-conteudo2">');
+                        htp.p('<div class= "voto">');
+                        htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
+
+                            htp.p('<span  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
+                            htp.p('<button title="Sim" class="resp-sim votacao">Sim</button>');
+
+                            htp.p('<button title="Nao" class="resp-nao votacao">Nao</button>');
+
+                        htp.p('</div>');
 
                         htp.p('<span class="relacionados">Artigos relacionados</span>');
                         htp.p('<div class="bloco-direito-scroll">');
@@ -1141,8 +1150,7 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                                             AND CD_PERGUNTA <> ws_cd_pergunta 
                                             ORDER BY CD_PERGUNTA ) 
                                     LOOP
-                                        htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path d="M12 4.706c-2.938-1.83-7.416-2.566-12-2.706v17.714c3.937.12 7.795.681 10.667 1.995.846.388 1.817.388 2.667 0 2.872-1.314 6.729-1.875 10.666-1.995v-17.714c-4.584.14-9.062.876-12 2.706zm-10 13.104v-13.704c5.157.389 7.527 1.463 9 2.334v13.168c-1.525-.546-4.716-1.504-9-1.798zm20 0c-4.283.293-7.475 1.252-9 1.799v-13.171c1.453-.861 3.83-1.942 9-2.332v13.704zm-2-10.214c-2.086.312-4.451 1.023-6 1.672v-1.064c1.668-.622 3.881-1.315 6-1.626v1.018zm0 3.055c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0 6.093c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm0-2.031c-2.119.311-4.332 1.004-6 1.626v1.064c1.549-.649 3.914-1.361 6-1.673v-1.017zm-16-6.104c2.119.311 4.332 1.004 6 1.626v1.064c-1.549-.649-3.914-1.361-6-1.672v-1.018zm0 5.09c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.316-6-1.626v1.017zm0 6.093c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017zm0-2.031c2.086.312 4.451 1.023 6 1.673v-1.064c-1.668-.622-3.881-1.315-6-1.626v1.017z"></path></svg>'||I.PERGUNTA||'</li>');
                                     END LOOP;
                             ELSE 
                                 FOR I IN (SELECT CD_PERGUNTA,PERGUNTA FROM DOC_PERGUNTAS 
@@ -1153,24 +1161,15 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                                             AND TP_USUARIO IN (NVL(PRM_TIPUSER,'T'),'T')  
                                             ORDER BY CD_PERGUNTA ) 
                                     LOOP
-                                        htp.p('<img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />');
-                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'">'||I.PERGUNTA||'</li>');
+                                        htp.p('<li class="lista-pergunta" title="'||I.CD_PERGUNTA||'"><img src="dwu.fcl.download?arquivo=seta-doc.png" class="seta" />'||I.PERGUNTA||'</li>');
                                     END LOOP;
                             END IF;
 
                         htp.p('</ul>');
-                        htp.p('<div class="voto-linha"></div>');
+                        
 
                         htp.p('</div>');    -- bloco-direito-scroll
-                        htp.p('<div class= "voto">');
-                        htp.p('<a class="retorna-faq" id="'||ws_cd_pergunta||'" style="display:none;"></a>');
-
-                            htp.p('<span  class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
-                            htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
-
-                            htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-
-                        htp.p('</div>');
+                        
                         htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
                     htp.p('</div>');    -- detalhe-conteudo2
 

@@ -450,12 +450,13 @@ span.detalhe-pergunta {
 }
 
 li.lista-pergunta {
-  position: relative;
-  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
   cursor: pointer;
   font-size: 13px;
   color: white;
-  top: 5px
 }
 
 span.relacionados {
@@ -618,15 +619,37 @@ ul#perg-rel {
   margin-bottom: 50px;
 } */
 
+#perg-rel svg{
+  fill: #ffffff;
+}
+
 .seta{
   background-color: white;
   padding: 2px;
   border-radius: 5px;
 }
 
-.resp-sim, .resp-nao{
+.resp-sim, .resp-nao {
   cursor: pointer;
-  width: 120px;
+  width: 100px;
+  padding: 8px 0;
+  border-radius: 6px;
+  background-color: var(--verde-primario);
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: none;
+}
+
+.resp-nao:hover {
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+.resp-sim:active, .resp-nao:active {
+  opacity: 0.8;
+  transform: scale(0.97);
 }
 
 span.detalhe-pesquisa {
@@ -1173,7 +1196,7 @@ h1.titulo-faq {
   margin-right: 20%;
   */ 
   /*background: #ffffffcc;*/ 
-  padding-top: 30%;
+  padding-top: 20%;
   padding-left: 2%;
   padding-right: 2%;
   padding-bottom: 1px;
@@ -1193,6 +1216,8 @@ h1.titulo-faq {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  margin-left: 50px;
+  margin-top: -55px;
 }
 
 li.lista-pergunta:hover, a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
@@ -1299,7 +1324,7 @@ img.seta {
 .cxmsg {
   background-color: var(--verde-primario);
   color: #ddd6ff;
-  padding: 18px;
+  padding: 7px;
   height: 40px;
   right: 0;
   bottom: 0;
@@ -1995,7 +2020,7 @@ img.menu-lateral-aberto, img.menu-lateral-fechado {
 .menu-lateral-scroll {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 650px;  
+  height: 708px;  
 }
 
 ul.menu-lateral-fechado, div.invisivel , span.invisivel {
@@ -2446,13 +2471,6 @@ div.MARCADOR4 li { list-style-type: square; margin-left: 160px;}
   width: 120px;
   text-align: right;
   margin-right: 10px;
-}
-
-.voto-linha {
-  width: 100%;
-  background-color: grey;
-  height: 0.1rem;
-  margin-top: 1.8rem;
 }
 
 .cadcon-cadastro-linha input[type="number"], .cadcon-cadastro-linha select {
