@@ -68,11 +68,12 @@ BEGIN
                 htp.p('</li>');
             htp.p('</ul>');
 
-            htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
+            htp.p('<div id="header_doc_variaveis" style="display: none;"');
                 for a in (select variavel, conteudo from doc_variaveis) loop
-                    htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
+                    htp.p('data-'||a.variavel||'="'||a.conteudo||'" ');
                 end loop;
-            htp.p('></div>'); 
+            htp.p('data-url_doc="'||owa_util.get_cgi_env('REQUEST_PROTOCOL')||'://'||owa_util.get_cgi_env('HTTP_HOST')||'/'||regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1)||'/dwu" ');
+            htp.p('></div>');
 
             if nvl(prm_externo,'.') <> 'CADASTRO' THEN
                 htp.p('<div class="header-doc">');  
@@ -308,11 +309,12 @@ owa_util.http_header_close;*/
          htp.p('</li>');
         htp.p('</ul>');
 
-        htp.p('<div id="header_doc_variaveis" style="display: none;" '); 
-            for a in (select variavel, conteudo from doc_variaveis) loop
-                htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
-            end loop;
-        htp.p('></div>'); 
+        htp.p('<div id="header_doc_variaveis" style="display: none;"');
+        for a in (select variavel, conteudo from doc_variaveis) loop
+            htp.p('data-'||a.variavel||'="'||a.conteudo||'" ');
+        end loop;
+        htp.p('data-url_doc="'||owa_util.get_cgi_env('REQUEST_PROTOCOL')||'://'||owa_util.get_cgi_env('HTTP_HOST')||'/'||regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1)||'/dwu" ');
+        htp.p('></div>');
 
 
      htp.p('<div class="spinner"></div>');
@@ -388,10 +390,8 @@ BEGIN
         commit;
     end if;
 
-    owa_util.mime_header('text/html', FALSE);
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path='||ws_path||'; Domain=cloud.upquery.com; Max-Age=0');
-    owa_util.http_header_close;
-
+    owa_cookie.remove('UPDOC_SESSION', ws_path);
+    owa_util.mime_header('text/html', TRUE);
     htp.p('OK');
 END;
 
