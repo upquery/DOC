@@ -367,13 +367,12 @@ owa_util.http_header_close;*/
 END LOGIN;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PROCEDURE LOGOUT (prm_sessao varchar2 default null ) AS
+PROCEDURE LOGOUT (prm_sessao varchar2 default null) AS
     ws_id_session  varchar2(80);
     ws_cookie      owa_cookie.cookie;
 BEGIN
     if nvl(prm_sessao, 'N/A') = 'N/A' then
         ws_cookie := owa_cookie.get('UPDOC_SESSION');
-
         if ws_cookie.num_vals > 0 then
             ws_id_session := ws_cookie.vals(1);
         end if;
@@ -381,19 +380,16 @@ BEGIN
         ws_id_session := prm_sessao;
     end if;
 
-    owa_util.mime_header('text/html', FALSE);
-
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None; Secure');
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None; Secure');
-    
-    owa_util.http_header_close;
-
     if ws_id_session is not null then
         delete from bi_sessao where cod = ws_id_session;
         commit;
     end if;
 
-    owa_util.redirect_url('/conhecimento/dwu.updoc.main');
+    owa_util.mime_header('text/html', FALSE);
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Max-Age=0; SameSite=None; Secure');
+    owa_util.http_header_close;
+
+    htp.p('OK');
 END;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
