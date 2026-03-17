@@ -388,8 +388,10 @@ BEGIN
         commit;
     end if;
 
-    owa_cookie.remove('UPDOC_SESSION', ws_path);
-    owa_util.mime_header('text/html', TRUE);
+    owa_util.mime_header('text/html', FALSE);
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path='||ws_path||'; Domain=cloud.upquery.com; Max-Age=0');
+    owa_util.http_header_close;
+
     htp.p('OK');
 END;
 
