@@ -385,10 +385,10 @@ BEGIN
         commit;
     end if;
 
-    owa_util.mime_header('text/html', FALSE);
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Max-Age=0; SameSite=None; Secure');
-    owa_util.http_header_close;
+    owa_cookie.remove('UPDOC_SESSION', '/conhecimento/');
+    owa_cookie.remove('UPDOC_SESSION', '/');
 
+    owa_util.mime_header('text/html', TRUE);
     htp.p('OK');
 END;
 

@@ -1357,14 +1357,17 @@ function confirmarLogout() {
 // Função de logout (chamada após confirmação)
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-    
-    fetch(url_doc + '.updoc.logout')
+
+    // Apaga o cookie no browser independente do servidor
+    document.cookie = 'UPDOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
+    document.cookie = 'UPDOC_SESSION=; Path=/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
+
+    fetch('https://cloud.upquery.com/conhecimento/dwu.updoc.logout')
         .then(() => {
             sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
             window.location.href = url_doc + '.updoc.main';
         })
-        .catch(error => {
-            console.error('Erro ao deslogar:', error);
+        .catch(() => {
             sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
             window.location.href = url_doc + '.updoc.main';
         });
