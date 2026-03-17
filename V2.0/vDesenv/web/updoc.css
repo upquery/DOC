@@ -459,6 +459,10 @@ li.lista-pergunta {
   color: white;
 }
 
+li.lista-pergunta svg {
+  flex-shrink: 0;
+}
+
 span.relacionados {
     margin-bottom: 15px;
     display: block;
@@ -526,6 +530,26 @@ a.go-doc-public {
   margin-right: 10px;
   margin-top: 10px;
   font-size: clamp(14px, 14vw, 20px); /*(mínimo, ideal, máximo)*/
+  position: relative;
+  text-decoration: none;
+}
+
+a.go-doc-public::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+a.go-doc-public:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
   
 
@@ -541,6 +565,26 @@ a.go-doc-private {
   margin-right: 10px;
   margin-top: 10px;
   font-size: clamp(14px, 14vw, 20px); /*(mínimo, ideal, máximo)*/
+  position: relative;
+  text-decoration: none;
+}
+
+a.go-doc-private::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+a.go-doc-private:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 a.go-doc-cadastro {
@@ -643,13 +687,8 @@ ul#perg-rel {
   font-style: italic;
 }
 
-.resp-sim:hover {
-  background-color: #00c907;
-  border-color: #4CAF50;
-}
-.resp-nao:hover {
-  background-color: #b71c1c;
-  border-color: #b71c1c;
+.resp-sim:hover, .resp-nao:hover {
+  background-color: #3c8846b3;
 }
 
 .resp-sim:active, .resp-nao:active {
@@ -1043,6 +1082,26 @@ a.go-faq {
   font-family: var(--fonte_1);
   margin-top: 10px;
   font-size: clamp(5px, 5vw, 20px); /*(mínimo, ideal, máximo)*/
+  position: relative;
+  text-decoration: none;
+}
+
+a.go-faq::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+a.go-faq:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .escolhido {
@@ -1234,9 +1293,6 @@ h1.titulo-faq {
 a.go-faq:hover, a.go-doc-public:hover, a.go-doc-private:hover {
   font-weight: bold;
   color: #000000;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 2px;
 }
 
 li.lista-pergunta:hover{
@@ -2014,8 +2070,8 @@ span.menu-lateral-item {
   cursor: pointer;
 }
 
-span.menu-lateral-item.selecionado {
-  background-color: rgba(96, 144, 199, 0.5); 
+.menu-lateral-item.selecionado {
+  background-color: rgba(90, 121, 157, 0.61); 
   font-weight: bold;
   color: #ffffff;
 }
