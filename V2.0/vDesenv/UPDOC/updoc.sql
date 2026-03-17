@@ -367,13 +367,15 @@ owa_util.http_header_close;*/
 END LOGIN;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PROCEDURE LOGOUT (prm_sessao varchar2 default null ) AS
+PROCEDURE LOGOUT (prm_sessao varchar2 default null) AS
     ws_id_session  varchar2(80);
     ws_cookie      owa_cookie.cookie;
+    ws_path        varchar2(100);
 BEGIN
+    ws_path := '/' || regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1) || '/';
+
     if nvl(prm_sessao, 'N/A') = 'N/A' then
         ws_cookie := owa_cookie.get('UPDOC_SESSION');
-
         if ws_cookie.num_vals > 0 then
             ws_id_session := ws_cookie.vals(1);
         end if;
@@ -381,26 +383,18 @@ BEGIN
         ws_id_session := prm_sessao;
     end if;
 
-    owa_util.mime_header('text/html', FALSE);
-
-    owa_cookie.send(
-        name    => 'UPDOC_SESSION',
-        value   => 'deleted',
-        expires => sysdate - 1,
-        path    => '/desenv/'
-    );
-
-    owa_util.http_header_close;
-
     if ws_id_session is not null then
         delete from bi_sessao where cod = ws_id_session;
         commit;
     end if;
 
-    owa_util.redirect_url('/desenv/dwu.updoc.main');
+    owa_cookie.remove('UPDOC_SESSION', ws_path);
+    owa_util.mime_header('text/html', TRUE);
+    htp.p('OK');
 END;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
+
 PROCEDURE VALIDAR_USER (prm_user VARCHAR2) as
 
 ws_email_flag   boolean := false;
@@ -585,11 +579,11 @@ BEGIN
 	if ws_test = 'Y' then
         owa_util.mime_header('text/html', FALSE, NULL);
         owa_cookie.send(
-        name    => 'UPDOC_SESSION',
-        value   => prm_session,
-        expires => sysdate + 0.5,  -- expira em 12 horas
-        path    => '/desenv/');
-
+            name    => 'UPDOC_SESSION',
+            value   => prm_session,
+            expires => sysdate + 0.5,
+            path    => '/' || regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1) || '/'
+        );
         owa_util.http_header_close;
 
 		delete bi_sessao where valor = upper(prm_user) and dt_acesso <= sysdate; --Remove registros antigos expirados
