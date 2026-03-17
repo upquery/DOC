@@ -383,9 +383,9 @@ BEGIN
 
     owa_util.mime_header('text/html', FALSE);
 
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
-    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
-
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None; Secure');
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=None; Secure');
+    
     owa_util.http_header_close;
 
     if ws_id_session is not null then
@@ -579,12 +579,9 @@ BEGIN
    ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
     
 	if ws_test = 'Y' then
-        owa_util.mime_header('text/html', FALSE, NULL);
-        owa_cookie.send(
-        name    => 'UPDOC_SESSION',
-        value   => prm_session,
-        expires => sysdate + 0.5,  -- expira em 12 horas
-        path    => '/conhecimento/');
+        owa_util.mime_header('text/html', FALSE);
+
+        htp.p('Set-Cookie: UPDOC_SESSION='||prm_session||'; Path=/conhecimento/; Max-Age=43200; SameSite=None; Secure');
 
         owa_util.http_header_close;
 
