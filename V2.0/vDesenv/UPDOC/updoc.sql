@@ -367,12 +367,13 @@ owa_util.http_header_close;*/
 END LOGIN;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PROCEDURE LOGOUT (prm_sessao varchar2 default null) AS
+PROCEDURE LOGOUT (prm_sessao varchar2 default null ) AS
     ws_id_session  varchar2(80);
     ws_cookie      owa_cookie.cookie;
 BEGIN
     if nvl(prm_sessao, 'N/A') = 'N/A' then
         ws_cookie := owa_cookie.get('UPDOC_SESSION');
+
         if ws_cookie.num_vals > 0 then
             ws_id_session := ws_cookie.vals(1);
         end if;
@@ -380,16 +381,23 @@ BEGIN
         ws_id_session := prm_sessao;
     end if;
 
+    owa_util.mime_header('text/html', FALSE);
+
+    owa_cookie.send(
+        name    => 'UPDOC_SESSION',
+        value   => 'deleted',
+        expires => sysdate - 1,
+        path    => '/desenv/'
+    );
+
+    owa_util.http_header_close;
+
     if ws_id_session is not null then
         delete from bi_sessao where cod = ws_id_session;
         commit;
     end if;
 
-    owa_cookie.remove('UPDOC_SESSION', '/conhecimento/');
-    owa_cookie.remove('UPDOC_SESSION', '/');
-
-    owa_util.mime_header('text/html', TRUE);
-    htp.p('OK');
+    owa_util.redirect_url('/desenv/dwu.updoc.main');
 END;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -575,9 +583,12 @@ BEGIN
    ws_test:= TESTAR_SENHA_DIGERIDA(prm_user,prm_password);
     
 	if ws_test = 'Y' then
-        owa_util.mime_header('text/html', FALSE);
-
-        htp.p('Set-Cookie: UPDOC_SESSION='||prm_session||'; Path=/conhecimento/; Max-Age=43200; SameSite=None; Secure');
+        owa_util.mime_header('text/html', FALSE, NULL);
+        owa_cookie.send(
+        name    => 'UPDOC_SESSION',
+        value   => prm_session,
+        expires => sysdate + 0.5,  -- expira em 12 horas
+        path    => '/desenv/');
 
         owa_util.http_header_close;
 
