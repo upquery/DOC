@@ -383,12 +383,8 @@ BEGIN
 
     owa_util.mime_header('text/html', FALSE);
 
-    owa_cookie.send(
-        name    => 'UPDOC_SESSION',
-        value   => 'deleted',
-        expires => sysdate - 1,
-        path    => '/conhecimento/'
-    );
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/conhecimento/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    htp.p('Set-Cookie: UPDOC_SESSION=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
 
     owa_util.http_header_close;
 
