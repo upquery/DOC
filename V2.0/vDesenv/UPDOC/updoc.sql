@@ -387,7 +387,7 @@ BEGIN
         name    => 'UPDOC_SESSION',
         value   => 'deleted',
         expires => sysdate - 1,
-        path    => '/desenv/'
+        path    => '/conhecimento/'
     );
 
     owa_util.http_header_close;
@@ -397,7 +397,7 @@ BEGIN
         commit;
     end if;
 
-    owa_util.redirect_url('/desenv/dwu.updoc.main');
+    owa_util.redirect_url('/conhecimento/dwu.updoc.main');
 END;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -588,7 +588,7 @@ BEGIN
         name    => 'UPDOC_SESSION',
         value   => prm_session,
         expires => sysdate + 0.5,  -- expira em 12 horas
-        path    => '/desenv/');
+        path    => '/conhecimento/');
 
         owa_util.http_header_close;
 
