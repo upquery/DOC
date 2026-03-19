@@ -72,7 +72,13 @@ BEGIN
                 for a in (select variavel, conteudo from doc_variaveis) loop
                     htp.p('data-'||a.variavel||'="'||a.conteudo||'" ');
                 end loop;
-            htp.p('data-url_doc="'||owa_util.get_cgi_env('REQUEST_PROTOCOL')||'://'||owa_util.get_cgi_env('HTTP_HOST')||'/'||regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1)||'/dwu" ');
+            htp.p('data-url_doc="'||
+                case when owa_util.get_cgi_env('HTTP_HOST') like '%cloud.upquery.com%' 
+                     then 'https' 
+                     else 'http'
+                end ||
+                '://'||owa_util.get_cgi_env('HTTP_HOST')||'/'||
+                regexp_substr(owa_util.get_cgi_env('SCRIPT_NAME'), '[^/]+', 1, 1)||'/dwu" ');
             htp.p('></div>');
 
             if nvl(prm_externo,'.') <> 'CADASTRO' THEN
