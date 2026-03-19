@@ -1354,9 +1354,12 @@ function confirmarLogout() {
     }
 }
 
-// Função de logout (chamada após confirmação)
+// Função de logout
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
+    
+    // Força https se estiver em produção
+    url_doc = url_doc.replace('http://cloud.upquery.com', 'https://cloud.upquery.com');
     
     document.cookie = 'UPDOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
     document.cookie = 'UPDOC_SESSION=; Path=/desenv/; Max-Age=0';
@@ -1396,7 +1399,7 @@ function posicionarBotoes() {
         if (collapsed) {
             btnEsq.style.left = '4px';
         } else {
-            btnEsq.style.left = '';  // deixa o CSS controlar
+            btnEsq.style.left = '';
         }
     }
 
@@ -1406,7 +1409,7 @@ function posicionarBotoes() {
         if (collapsed2) {
             btnDir.style.right = '4px';
         } else {
-            btnDir.style.right = '';  // deixa o CSS controlar
+            btnDir.style.right = ''; 
         }
     }
 }
