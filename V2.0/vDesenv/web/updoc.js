@@ -296,10 +296,17 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
         if(request.status == 200){
             if(request.responseText.indexOf('!!!') == -1){ 
                 if (tipo == 'somente_pergunta') {
-                    var etemp = document.createElement('div');
-                    etemp.innerHTML = request.responseText;
-                    document.querySelector('.fundo-conteudo').innerHTML = etemp.querySelector('.fundo-conteudo').innerHTML;      
-                } else {
+                var etemp = document.createElement('div');
+                etemp.innerHTML = request.responseText;
+                document.querySelector('.fundo-conteudo').innerHTML = etemp.querySelector('.fundo-conteudo').innerHTML;
+                            
+                // Atualiza artigos relacionados
+                var blocoDir = document.getElementById('bloco-direito-conteudo');
+                var novoBlocoDir = etemp.querySelector('#bloco-direito-conteudo');
+                if (blocoDir && novoBlocoDir) {
+                    blocoDir.innerHTML = novoBlocoDir.innerHTML;
+                }
+            } else {
                     document.querySelector(alvo).innerHTML = request.responseText;      
                 }    
                 posicionarBotoes();
