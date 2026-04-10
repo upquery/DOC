@@ -6,7 +6,7 @@ import fs from 'node:fs';
 
 // Caminho do codigo fonte chamado
 const dirDoc = path.join(process.env.USERPROFILE,'FONTES','OUTROS','DOC','V2.0','vDesenv');
-const dirSql = path.join(dirDoc, 'UPDOC');
+const dirSql = path.join(dirDoc, 'DOC');
 const dirWeb = path.join(dirDoc, 'web');
 
 // Configuração de conexão
@@ -153,24 +153,24 @@ conexao(dbDocs.user, dbDocs.password, dbDocs.service, dbDocs.host, dbDocs.port)
                 if( all || args.includes('--js') ) {
                     encontrou = true;
                     console.log('JS flag detectada!\n');
-                    await inserirBlob(conn, 'updoc.js', logger);
+                    await inserirBlob(conn, 'doc.js', logger);
                 }
                 if (all || args.includes('--css')) {
                     encontrou = true;
                     console.log('CSS flag detectada!\n');
-                    await inserirBlob(conn, 'updoc.css', logger);
+                    await inserirBlob(conn, 'doc.css', logger);
                 } 
                 
                 if (all || args.includes('--plsql') || args.includes('--head')){
                     encontrou = true;
                     console.log('HEAD flag detectada!\n');
-                    await compilePLSQL(conn, 'updoc_header.sql', logger);
+                    await compilePLSQL(conn, 'doc_header.sql', logger);
                 }
 
                 if (all || args.includes('--plsql') || args.includes('--sql')){
                     encontrou = true;
                     console.log('SQL flag detectada!\n');
-                    await compilePLSQL(conn, 'updoc.sql', logger);
+                    await compilePLSQL(conn, 'doc.sql', logger);
                 }
 
                 if(!encontrou){
@@ -178,11 +178,11 @@ conexao(dbDocs.user, dbDocs.password, dbDocs.service, dbDocs.host, dbDocs.port)
                         "Uso: docs [flags]"+"\n\n"+
 
                         "Opções:"+"\n"+
-                        "   --js      faz upload do updoc.js"+"\n"+
-                        "   --css     faz upload do updoc.css"+"\n"+
-                        "   --head    compila a package updoc_header.sql"+"\n"+
-                        "   --sql     compila o body da package updoc.sql"+"\n"+
-                        "   --plsql   atalho para compilar o head e o body da package updoc"+"\n"+
+                        "   --js      faz upload do doc.js"+"\n"+
+                        "   --css     faz upload do doc.css"+"\n"+
+                        "   --head    compila a package doc_header.sql"+"\n"+
+                        "   --sql     compila o body da package doc.sql"+"\n"+
+                        "   --plsql   atalho para compilar o head e o body da package DOC"+"\n"+
                         "   --all     Roda todas as operações acima"+"\n"+
                         "   --help    Mostra esta ajuda"+"\n"
                     );

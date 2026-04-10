@@ -39,10 +39,10 @@ document.addEventListener('click', function(e){
     }
 
     //botao login//
-    // No código do botão "go-logar", ao invés de ir para updoc.login:
+    // No código do botão "go-logar", ao invés de ir para doc.login:
     if(e.target.id == "go-logar" || e.target.closest('#go-logar')){
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-    window.location.href = url_doc + '.updoc.login';
+    window.location.href = url_doc + '.doc.login';
     }
 
 
@@ -50,7 +50,7 @@ document.addEventListener('click', function(e){
 
         //chamar('detalhe_pergunta', e.target.title,'',tip_user);
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.open(url_doc + '.updoc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
+        window.open(url_doc + '.doc.main?prm_externo='+e.target.title+'&prm_usuario='+tip_user,'_blank');
        
         if(document.querySelector('.escolhido')){
 
@@ -89,7 +89,7 @@ document.addEventListener('click', function(e){
 
     if(e.target.className == "go-doc-cadastro"){
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.open(url_doc + '.updoc.main?prm_externo=CADASTRO','_blank');
+        window.open(url_doc + '.doc.main?prm_externo=CADASTRO','_blank');
         if(document.querySelector('.escolhido')){
             document.querySelector('.escolhido').classList.remove('escolhido');
         }
@@ -192,10 +192,10 @@ function login_validacao(event) {
     }
     
     // Gera um ID de sessão único
-    var sessionId = 'UPDOC_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    var sessionId = 'DOC_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
     
     var request = new XMLHttpRequest();
-    request.open('POST', 'dwu.updoc.validar_senha', true);
+    request.open('POST', 'dwu.doc.validar_senha', true);
     
     request.onload = function() {
         if (loading) {
@@ -211,7 +211,7 @@ function login_validacao(event) {
                 
                 // Redireciona
                 let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-                window.location.href = url_doc + '.updoc.main';
+                window.location.href = url_doc + '.doc.main';
             } else {
                 alert(request.responseText.split('|')[1]);
             }
@@ -268,7 +268,7 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
     loading = document.querySelector('.spinner');  
     loading.classList.add('ativado');
     var request = new XMLHttpRequest(); //aqui inicializa a requisiÃ§Ã£o
-    request.open('POST', 'dwu.updoc.' + proc, true); //esse ponto define a procedure de comunicaÃ§Ã£o
+    request.open('POST', 'dwu.doc.' + proc, true); //esse ponto define a procedure de comunicaÃ§Ã£o
 
     if(proc == 'principal'){
         request.send('prm_valor=');
@@ -280,14 +280,14 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
         request.send(search); 
     } else if (proc == 'main'){
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
-        window.location.replace(url_doc + '.updoc.main');
+        window.location.replace(url_doc + '.doc.main');
     } else if (proc.toLowerCase() == 'doc_cad_conteudo'){
         request.send('prm_valor='+search); 
     }else{
         request.send('prm_valor='+search+'&prm_classe='+classe_doc+'&prm_tipuser='+tipousuario); //esse ponto define a passagem de parametros
         let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
         try {
-            window.history.pushState("", "", url_doc + ".updoc.main");//remove os parametros da url , caso esteja acessando de um link externo
+            window.history.pushState("", "", url_doc + ".doc.main");//remove os parametros da url , caso esteja acessando de um link externo
         } catch {
         }
     }
@@ -454,7 +454,7 @@ function call(req, par, tipo){
 
     var tipo  = tipo || 'POST',
         par   = par || '',
-        pkg   = 'updoc',
+        pkg   = 'doc',
         owner = 'dwu';
     
     return new Promise(function(resolve, reject){
@@ -509,7 +509,7 @@ function alerta(tipo, msg){
 async function uploadArquivos(input_id) {
     var arquivosInput = document.getElementById(input_id||'arquivos');
     var arquivos = arquivosInput.files;
-    var acao = 'dwu.updoc.upload';
+    var acao = 'dwu.doc.upload';
    
     // if (input_id.length == 0) {
     //     let ele = document.getElementById('escolherArquivoButton');
@@ -526,7 +526,7 @@ async function uploadArquivos(input_id) {
 }
 
 function enviarArquivo(arquivo, acao) {
-    var acao = acao || 'dwu.updoc.upload';
+    var acao = acao || 'dwu.doc.upload';
     return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', acao, true);
@@ -1358,17 +1358,17 @@ function confirmarLogout() {
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
     
-    document.cookie = 'UPDOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
-    document.cookie = 'UPDOC_SESSION=; Path=/desenv/; Max-Age=0';
+    document.cookie = 'DOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
+    document.cookie = 'DOC_SESSION=; Path=/desenv/; Max-Age=0';
 
-    fetch(url_doc + '.updoc.logout')
+    fetch(url_doc + '.doc.logout')
         .then(() => {
             sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
-            window.location.href = url_doc + '.updoc.main';
+            window.location.href = url_doc + '.doc.main';
         })
         .catch(() => {
             sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
-            window.location.href = url_doc + '.updoc.main';
+            window.location.href = url_doc + '.doc.main';
         });
 }
 

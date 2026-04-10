@@ -925,7 +925,7 @@ a.login-conteudo-box-sair {
   padding: 20px;
   border-radius: 2px 2px 0 0;
   background-color: var(--login-faixa);
-  background-image: url(dwu.updoc.download?arquivo=conhecimento_login.png);
+  background-image: url(dwu.doc.download?arquivo=conhecimento_login.png);
   background-position: center;
   background-repeat: no-repeat;
 }
