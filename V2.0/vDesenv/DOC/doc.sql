@@ -2494,7 +2494,7 @@ exception when others then
 end getUsuario;
 
 -----------------------------------------------------------------------------
-/* 
+/*******************
 PROCEDURE setUsuario (
     prm_usuario VARCHAR2 DEFAULT NULL,
     prm_mimic   VARCHAR2 DEFAULT NULL
@@ -2503,7 +2503,8 @@ BEGIN
     -- cria sessão do DOC (ajuste se já tiver lógica própria)
     fun.setSessao(prm_usuario, prm_mimic);
 END setUsuario;
-*/ 
+*************************/ 
+
 
 ---------------------------------------------------------------------------------
 
@@ -2533,7 +2534,7 @@ exception
         return 'N';
 end getNivel;
 ---------------------------------------------------------------------------------
-/*
+/*******************************
 function getNivelUpdoc (prm_usuario varchar2 default null)
 return varchar2 as
     ws_usuario varchar2(80);
@@ -2553,7 +2554,7 @@ exception
     when others then
         return 'N';
 end getNivelUpdoc;
-*/ 
+************************/ 
 
 procedure download (  arquivo     varchar2 default null ) as
     L_Blob_Content  Tab_Documentos.Blob_Content%Type;
