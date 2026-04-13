@@ -396,6 +396,10 @@ BEGIN
         commit;
     end if;
 
+insert into err_txt values ('a1:'||ws_path);
+commit; 
+
+    --owa_cookie.remove('DOC_SESSION', ws_path);
     owa_cookie.remove('DOC_SESSION', ws_path);
     owa_util.mime_header('text/html', TRUE);
     htp.p('OK');
@@ -957,9 +961,9 @@ PROCEDURE CONSULTA (PRM_VALOR   VARCHAR2 DEFAULT NULL,
         ws_limit := ' order by nvl(id_notas_versao,''N'') desc, categoria asc,ordem_categoria asc,cd_pergunta asc ' ;
 
         IF nvl(PRM_TIPUSER,'T') <> 'T' THEN
-            execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+            execute immediate 'select * from doc_perguntas where categoria is not null and id_visivel_bloco = ''S'' and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' tp_usuario IN('||chr(39)||nvl(PRM_TIPUSER,'T')||chr(39)||','||chr(39)||'T'||chr(39)||') and classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
         ELSE
-            execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
+            execute immediate 'select * from doc_perguntas where categoria is not null and id_visivel_bloco = ''S'' and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
         END IF;
 
         FOR i in 1..ws_linha.COUNT LOOP			

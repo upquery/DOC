@@ -1358,18 +1358,17 @@ function confirmarLogout() {
 function realizarLogout() {
     let url_doc = document.getElementById('header_doc_variaveis').getAttribute('data-url_doc');
     
-    document.cookie = 'DOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
-    document.cookie = 'DOC_SESSION=; Path=/desenv/; Max-Age=0';
+    //document.cookie = 'DOC_SESSION=; Path=/conhecimento/; Domain=cloud.upquery.com; Max-Age=0; SameSite=None; Secure';
+    //document.cookie = 'DOC_SESSION=; Path=/desenv/; Max-Age=0';
 
-    fetch(url_doc + '.doc.logout')
-        .then(() => {
-            sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
-            window.location.href = url_doc + '.doc.main';
-        })
-        .catch(() => {
-            sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
-            window.location.href = url_doc + '.doc.main';
-        });
+    call('logout').then(function(resposta){ 
+        //sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
+        window.location.href = url_doc + '.doc.main';
+    //})
+    //.catch(() => {
+    //    //sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
+    //    window.location.href = url_doc + '.doc.main';
+    });
 }
 
 window.addEventListener('scroll', function() {
