@@ -1,5 +1,4 @@
-SET DEFINE OFF
-CREATE OR REPLACE PACKAGE BODY DOC  IS
+create or replace PACKAGE BODY DOC  IS
 
 PROCEDURE MAIN (PRM_USUARIO     VARCHAR2 DEFAULT NULL,
                 PRM_EXTERNO     VARCHAR2 DEFAULT NULL,
@@ -29,7 +28,7 @@ BEGIN
 
     htp.p('<!DOCTYPE html>');
     htp.p('<html lang="pt-br">');
-            
+
         htp.p('<head>');
 
             htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
@@ -66,7 +65,7 @@ BEGIN
                     htp.p('data-'||a.variavel||'="'||a.conteudo||'" '); 
                 end loop;
             htp.p('></div>'); 
-            
+
             if nvl(prm_externo,'.') <> 'CADASTRO' THEN
                 htp.p('<div class="header-doc">');  
                     ws_usuario := nvl(UPPER(gbl.getusuario),'N/A');
@@ -95,7 +94,7 @@ BEGIN
                     if prm_externo = 'VERSIONAMENTO' THEN    
                         select max(cd_pergunta) into ws_externo from doc_perguntas
                          where id_notas_versao = 'S'
-                           and nvl(id_liberado,'N') = 'S';
+                           and id_liberado     = 'S';
                     else 
                         ws_externo:=prm_externo;
                     end if;
@@ -105,8 +104,8 @@ BEGIN
                     ws_externo:='';
                 end if; 
             END IF;
-            
-                                            
+
+
             htp.p('<div class="main'||ws_class_cad||'">');
 
                 doc.principal;
@@ -156,30 +155,30 @@ END PRINCIPAL;
                     PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                     PRM_USUARIO VARCHAR2 DEFAULT NULL,
                     PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-        
+
         WS_USUARIO	    VARCHAR2(80);
         WS_CSS		    VARCHAR2(80);
         WS_TIPUSER      VARCHAR2(2);
 
     BEGIN
         WS_TIPUSER:=PRM_TIPUSER;
-      
+
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
             htp.p('<div class="conteudo-faq">');
 
-            
+
                 htp.p('<div class="fundo-busca">');
-                        
-                        
- 
+
+
+
                         htp.p('<h1 class="titulo-faq"> COMO PODEMOS AJUDAR?</h1>');
 
                         htp.p('<div class="mensagem">');
                             htp.p('<span class="label-tipUser">');
                                 htp.p('<a>Tipo de usuario:</a>');
                                  htp.p('<select id ="change-tipUser" onchange="tip_user=this.value; chamar(''FAQ'', '''||PRM_VALOR||''','''',this.value);" >');
-                                    
+
                                     if WS_TIPUSER = 'T' THEN
                                         htp.p('<option value="T" selected>Todos</option>');
                                     ELSE
@@ -221,7 +220,7 @@ PROCEDURE DOC_PUBLIC (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_USUARIO VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-    
+
     WS_USUARIO	    VARCHAR2(80);
     WS_CSS		    VARCHAR2(80);
     WS_TIPUSER      VARCHAR2(2);
@@ -233,14 +232,14 @@ BEGIN
         htp.p('<div class="conteudo-faq">');
 
             htp.p('<div class="fundo-busca">');
-                    
+
                     htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O</h1>');
 
                     htp.p('<div class="mensagem">');
                         htp.p('<span class="label-tipUser">');
                             htp.p('<a>Tipo de usuario:</a>');
                             htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PUBLIC'', '''||PRM_VALOR||''','''',this.value);"id ="change-tipUser">');
-                                
+
                                 if WS_TIPUSER = 'T' THEN
                                     htp.p('<option value="T" selected>Todos</option>');
                                 ELSE
@@ -268,7 +267,7 @@ BEGIN
                     htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
             htp.p('</div>');
-                    
+
                     htp.p('<ul class="flex-container">');
                         doc.consulta(PRM_VALOR,'D',WS_TIPUSER);
                     htp.p('</ul>');
@@ -282,13 +281,13 @@ EXCEPTION
         COMMIT;
 
 END DOC_PUBLIC;
-    
+
 ------------------------------------------------------------------------------------------------------------------------
 PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
                         PRM_CLASSE  VARCHAR2 DEFAULT NULL,
                         PRM_USUARIO VARCHAR2 DEFAULT NULL,
                         PRM_TIPUSER VARCHAR2 DEFAULT NULL) AS
-    
+
     WS_USUARIO	    VARCHAR2(80);
     WS_CSS		    VARCHAR2(80);
     WS_TIPUSER      VARCHAR2(2);
@@ -296,20 +295,20 @@ PROCEDURE DOC_PRIVATE (	PRM_VALOR 	VARCHAR2 DEFAULT NULL,
 BEGIN
 
     WS_TIPUSER:=PRM_TIPUSER;
-    
+
     htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="conteudo-faq">');
 
             htp.p('<div class="fundo-busca">');
-                    
+
                     htp.p('<h1 class="titulo-faq"> DOCUMENTA&Ccedil;&Atilde;O INTERNA</h1>');
 
                     htp.p('<div class="mensagem">');
                         htp.p('<span class="label-tipUser">');
                             htp.p('<a>Tipo de usuario:</a>');
                             htp.p('<select onchange="tip_user=this.value; chamar(''DOC_PRIVATE'', '''||PRM_VALOR||''','''',this.value);" id="change-tipUser">');
-                                
+
                                 if WS_TIPUSER = 'T' THEN
                                     htp.p('<option value="T" selected>Todos</option>');
                                 ELSE
@@ -337,13 +336,13 @@ BEGIN
                     htp.p('<img src="dwu.fcl.download?arquivo=doc_bg_pesquisa.png" class="bgdoc" />');
 
             htp.p('</div>');
-            
+
                     htp.p('<ul class="flex-container">');
                         doc.consulta(PRM_VALOR,'P',WS_TIPUSER);
                     htp.p('</ul>');
 
         htp.p('</div>');
-    
+
 END DOC_PRIVATE;
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -355,7 +354,7 @@ END DOC_PRIVATE;
         WS_CATEGORIA VARCHAR2(80) := 'N/A';
         WS_VALOR     VARCHAR2(1000);
         WS_CLASSE    VARCHAR2(2);
-        
+
         WS_COUNT NUMBER := 0;
         TYPE WS_LINHAS IS TABLE OF DOC_PERGUNTAS%ROWTYPE;
         WS_LINHA WS_LINHAS;
@@ -398,17 +397,17 @@ END DOC_PRIVATE;
         ELSE
             execute immediate 'select * from doc_perguntas where categoria is not null and tp_conteudo <> ''ARQUIVOS'' and '||ws_liberado||' classe ='||chr(39)||prm_classe||chr(39)||' and '||lower(ws_where)||ws_limit bulk collect into ws_linha;
         END IF;
-        
+
         FOR i in 1..ws_linha.COUNT LOOP			
 
                 IF (WS_CATEGORIA<>WS_LINHA(I).CATEGORIA) THEN			   
-                    
+
                     IF WS_CATEGORIA<>'N/A' THEN
                         HTP.P('</UL>');
                             HTP.P('</LI>');
                     END IF;
                     HTP.P('<LI CLASS="flex-categorias" TITLE="'||WS_LINHA(I).CATEGORIA||'">');
-                        
+
                         HTP.P('<UL CLASS ="">');
                             WS_CATEGORIA:=WS_LINHA(I).CATEGORIA;					
                 END IF;
@@ -423,7 +422,7 @@ END DOC_PRIVATE;
                         end if;
 
                     htp.p('</li>');
-            
+
         END LOOP;
 
     EXCEPTION
@@ -463,8 +462,7 @@ END DOC_PRIVATE;
         if PRM_VALOR = 'VERSIONAMENTO' then 
             select max(cd_pergunta) into ws_cd_pergunta 
               from doc_perguntas 
-             where nvl(id_notas_versao,'N') = 'S'
-              and nvl(id_liberado,'N') = 'S' 
+             where nvl(id_notas_versao,'N') = 'S' 
               and ordem_categoria = (select max(ordem_categoria) from doc_perguntas where nvl(id_notas_versao,'N') = 'S') ;
         else 
             ws_cd_pergunta := PRM_VALOR;
@@ -476,9 +474,9 @@ END DOC_PRIVATE;
         htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo='||nvl(ws_css, 'ideativo')||'.css">');
 
         htp.p('<div class="spinner"></div>');
-        
+
         htp.p('<div class="main-conteudo" data-pergunta="'||ws_cd_pergunta||'">');
-            
+
             htp.p('<div class="menu-lateral-conteudo">');
                 htp.p('<div id="menu-lateral-scroll" class="menu-lateral-scroll">');
                     if ws_classe = 'D' then  -- menu somente para documentação do BI
@@ -486,7 +484,7 @@ END DOC_PRIVATE;
                     end if;    
                 htp.p('</div>');    
             htp.p('</div>');
-            
+
             htp.p('<div id="fundo-conteudo" class="fundo-conteudo '||lower(ws_tp_conteudo)||'">');
 
                 if ws_classe = 'P' and nvl(gbl.getusuario,'NOUSER') = 'NOUSER' then   -- se for documentação Privada é necessário logon no sistema 
@@ -544,23 +542,23 @@ END DOC_PRIVATE;
                         end if;     
                     end if;     
 
-                                    
+
                     htp.p('<div class="detalhe-conteudo">');
-                        
+
                         htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
                         htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
 
                     htp.p('</div>');
 
                     htp.p('<div class="detalhe-conteudo2">');
-                                                                
+
                         htp.p('<div class= "voto">');
 
                             htp.p('<span class="detalhe-pesquisa">Esse artigo foi &uacute;til?</span>');
                             htp.p('<img src="dwu.fcl.download?arquivo=sim.png" title="Sim" class="resp-sim votacao" />');
 
                             htp.p('<img src="dwu.fcl.download?arquivo=nao.png" title="Nao" class="resp-nao votacao" />');
-                            
+
                         htp.p('</div>');
                         htp.p('<span class="cxmsg">Obrigado pelo seu feedback.</span>');
 
@@ -594,7 +592,7 @@ END DOC_PRIVATE;
                             END IF;
 
                         htp.p('</ul>');
-                        
+
                     htp.p('</div>');    -- detalhe-conteudo2
                 end if;
             htp.p('</div>');        -- fundo-conteudo 
@@ -616,7 +614,7 @@ END DOC_PRIVATE;
         WS_MOSTRAR VARCHAR2(300);
         WS_IMG     VARCHAR2(300);
     BEGIN
-        
+
         IF PRM_NIVEL <= PRM_NIVEL_ABERTO THEN 
             WS_MOSTRAR := ' class="menu-lateral-aberto"';
         ELSE     
@@ -625,7 +623,7 @@ END DOC_PRIVATE;
 
         HTP.P('<ul '||WS_MOSTRAR||'>');
 
-        
+
         FOR A IN (SELECT A.NR_ORDEM, A.CD_PERGUNTA, B.PERGUNTA, (SELECT COUNT(*) FROM DOC_ESTRUTURA C WHERE C.CD_PERGUNTA_PAI = A.CD_PERGUNTA) as QT_FILHO 
                     FROM DOC_ESTRUTURA A, DOC_PERGUNTAS B 
                    WHERE B.CD_PERGUNTA     = A.CD_PERGUNTA
@@ -658,24 +656,24 @@ END DOC_PRIVATE;
 
     PROCEDURE RANK_PERGUNTAS (  PRM_VALOR                VARCHAR2 DEFAULT NULL, 
                                 PRM_PERGUNTA             VARCHAR2 DEFAULT NULL) AS
-    
+
     BEGIN
-        
+
         UPDATE DOC_PERGUNTAS 
            SET 
             RANK_PERGUNTAS  = DECODE(upper(PRM_VALOR), 'SIM', RANK_PERGUNTAS+1, 'NAO', RANK_PERGUNTAS-1)
          WHERE 
             CD_PERGUNTA     = PRM_PERGUNTA;
         COMMIT;
-    
+
         htp.p('!!!');
-      
+
     END RANK_PERGUNTAS;
 
     FUNCTION TRADUZIR (PRM_TEXTO VARCHAR2) RETURN VARCHAR2 AS
-       
+
         WS_TRANSLATE VARCHAR2(1000);
-        
+
     BEGIN
 
         WS_TRANSLATE:= TRANSLATE( PRM_TEXTO,'ÁÇÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÜáçéíóúàèìòùâêîôûãõëü',
@@ -696,7 +694,7 @@ END DOC_PRIVATE;
         ws_styles      varchar2(32000);
         ws_texto       clob; 
         ws_url_doc     varchar2(200); 
-        
+
         ws_marcador_nivel   integer;
         ws_marcador_ante    integer;
         ws_marcador_atual   integer;
@@ -791,7 +789,7 @@ END DOC_PRIVATE;
             ws_conteudo := ws_conteudo||ws_tag_i||ws_texto||ws_tag_f;
 
         end loop;
-        
+
         -- Fecha marcadores abertos 
         if ws_marcador_ante > 0 then 
             ws_conteudo :=  ws_conteudo||RPAD('</ul>', (5*ws_marcador_ante), '</ul>');
@@ -803,7 +801,7 @@ END DOC_PRIVATE;
                 ws_styles := ws_styles||' .'||a.id_estilo||' {'||a.css_estilo||'} ';
             end loop;
             ws_styles := ws_styles ||'</style>';
-            
+
             prm_conteudo := ws_styles||' '||ws_conteudo; 
         else 
             prm_conteudo := null;
@@ -853,7 +851,7 @@ END DOC_PRIVATE;
             ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '</DOCF>', 1, 1) + 6);  
 
             ws_retorno := replace(ws_retorno, ws_formatar, '[#DOCF99#]');
-            
+
             ws_texto    := ws_formatar;  
             ws_texto    := substr(ws_texto, instr(ws_texto, '>', 1, 1)+1,1000000);  
             ws_texto    := substr(ws_texto, 1, instr(ws_texto, '</DOCF>', 1, 1)-1);  
@@ -920,7 +918,7 @@ END DOC_PRIVATE;
 
     end formatar_texto_html; 
 
-    
+
     procedure monta_conteudo_json ( prm_classe    varchar2) as
         cursor c_conteudo is 
             select c.cd_pergunta, p.pergunta ds_sessao, c.ds_titulo, c.ds_texto, c.tp_conteudo 
@@ -945,7 +943,7 @@ END DOC_PRIVATE;
                 ws_ds_conteudo := trim(a.ds_texto);
             end if; 
             ws_ds_conteudo := replace(ws_ds_conteudo,'"',''); 
-            
+
             --doc.formatar_texto_html(a.cd_pergunta, ws_ds_conteudo);
             --ws_ds_conteudo := replace(ws_ds_conteudo,'"', '''');
             --ws_ds_conteudo := replace(ws_ds_conteudo,'dwu.fcl.download?arquivo=','https://cloud.upquery.com/conhecimento/dwu.fcl.download?arquivo=');
@@ -969,7 +967,7 @@ END DOC_PRIVATE;
             ws_json_total    := ws_json_total||ws_json_pergunta;
         end if; 
         ws_json_total := '{"documentação": ['||ws_json_total||']}';
-        
+
         ws_json_total := replace(replace(replace(ws_json_total,chr(10),' '),chr(9),' '),chr(11), ' ');
 
         update doc_json set json = ws_json_total where classe = prm_classe;
@@ -1009,7 +1007,7 @@ END DOC_PRIVATE;
             end if;    
             ws_html := ws_html||'<a class="link-conteudo-arquivo" onclick="carrega_conteudo_arquivo('''||prm_pergunta||''', '''||ws_link_arquivo||''', '''||a.tp_conteudo||''');" title="'||a.ds_texto||'">'||a.ds_texto||'</a>';
         end loop;
-        
+
         -- Monta lista de arquivos 
         ws_conteudo := '<div class="conteudo-arquivos-lista">'||ws_html||'</div>';
 
@@ -1064,7 +1062,7 @@ END DOC_PRIVATE;
             ws_formatar := substr(ws_formatar, 1, instr(ws_formatar, '>', 1, 1));  
             ws_retorno := replace(ws_retorno, ws_formatar, '');
         end loop;
-        
+
         ws_retorno := replace(ws_retorno,'</DOCF>','');
 
         prm_texto := ws_retorno;
@@ -1081,7 +1079,7 @@ END DOC_PRIVATE;
 
 ------------------------------------------------------------------------------------------------------------------------
 procedure upload (arquivo  IN  varchar2) AS
-        
+
     l_nome_real       varchar2(1000);
     ws_usuario        varchar2(80);
     ws_doc_limit      varchar2(100);
@@ -1138,7 +1136,7 @@ end upload;
 
 ------------------------------------------------------------------------------------------------------------------------
 procedure doc_cad_conteudo (prm_valor 	varchar2 default null) as
-   
+
     ws_cd_pergunta  varchar2(20);
     ws_raise_fim    exception;
 
@@ -1180,7 +1178,7 @@ procedure conteudo_tela_topicos as
 begin
     -- Obter URL do documento da tabela de variáveis
     select max(conteudo) into ws_url_doc from doc_variaveis where variavel = 'URL_DOC';
-    
+
     -- Criar a tabela na parte esquerda da tela com as perguntas
     htp.p('<div id="cadastro-menu-esquerdo" class="cadastro-menu-esquerdo">');
         htp.p('<div class="cadastro-lista-topico">');
@@ -1192,7 +1190,7 @@ begin
                     htp.p('</tr>');
                 htp.p('</thead>');
                 htp.p('<tbody>');
-                
+
                 -- Loop através das perguntas na tabela doc_perguntas
                 for a in (select cd_pergunta, pergunta, categoria, id_liberado from doc_perguntas order by cd_pergunta desc ) loop
                     htp.p('<tr data-pergunta="'||a.cd_pergunta||'" class="lista-topico-item">');
@@ -1218,7 +1216,7 @@ begin
                         htp.p('</td>');                        
                     htp.p('</tr>');
                 end loop;
-                
+
                 htp.p('</tbody>');
             htp.p('</table>');
         htp.p('</div>');    
@@ -1299,7 +1297,7 @@ begin
                     htp.p('<div id="cadcon-texto-bloco-' || a.id_conteudo || '" style="width: 100%;">'); 
                         --
                         -- Div para visualização (visível inicialmente)
-                        
+
                         ws_texto_formatado := a.ds_texto;
                         doc.formatar_texto_html(a.cd_pergunta, ws_texto_formatado);
                         htp.p('<div id="cadcon-texto-view-' ||a.id_conteudo||'" class="cadcon-texto-view '||ws_class||'" onclick="toggleTextareaEdit('''||a.id_conteudo||''');">'||ws_texto_formatado||'</div>');
@@ -1330,7 +1328,7 @@ begin
     end loop;
     htp.p('</style>');
 
-  
+
 end;
 -----------------------------------------------------------------------------------------------------------------
 procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null, 
@@ -1338,7 +1336,7 @@ procedure conteudo_tela_cadastro (prm_pergunta     varchar2 default null,
     cursor c1 is 
       select * from doc_conteudos 
       where id_conteudo = prm_id_conteudo;
-    
+
     ws_cont       c1%rowtype;  
     ws_checked    varchar2(20);
     ws_erro       varchar2(300);
@@ -1402,7 +1400,7 @@ begin
                 htp.p('<a id="escolherArquivoButton" class="cadcon-conteudo-botao" data-id_topico="'||prm_id_conteudo||'" onclick="document.getElementById(''arquivos'').click();">'||nvl(ws_cont.ds_titulo,'ESCOLHER ARQUIVO...')||'</a>');
                 htp.p('<input style="opacity: 0; position: fixed; top: -9999px;left: -9999px;" type="file" id="arquivos" name="arquivos" onchange="mostrarArquivosSelecionados()"></input>');
                 htp.p('<a id="btnUploadArquivos" class="cadcon-conteudo-botao" onclick="uploadArquivos('''')">ENVIAR</a>');
-            
+
             htp.p('</div>'); 
 
             htp.p('<div id="cadastro-id_ativo" class="cadcon-cadastro-linha">'); 
@@ -1432,7 +1430,7 @@ end conteudo_tela_cadastro;
 ------------------------------------------------------------------------------------------------------------------------------
 procedure conteudo_tela_id_estilo (prm_id_conteudo    varchar2,
                                    prm_tp_conteudo    varchar2 default null ) as  
-    
+
     ws_tp_conteudo varchar2(100);
     ws_id_estilo   varchar2(100);
     ws_erro        varchar2(300);
@@ -1528,16 +1526,16 @@ begin
     select cd_pergunta, sq_conteudo into ws_cd_pergunta, ws_sq_origem
     from doc_conteudos
     where id_conteudo = prm_id_conteudo_origem;
-    
+
     select sq_conteudo into ws_sq_destino
     from doc_conteudos
     where id_conteudo = prm_id_conteudo_destino;
-    
+
     -- Primeiro, mover o item de origem para uma sequência temporária alta
     update doc_conteudos
     set sq_conteudo = ws_sq_temp
     where id_conteudo = prm_id_conteudo_origem;
-    
+
     -- Ajustar as sequências dos itens entre origem e destino
     if ws_sq_origem < ws_sq_destino then
         -- Movendo para baixo: diminuir a sequência dos itens entre origem e destino
@@ -1546,7 +1544,7 @@ begin
         where cd_pergunta = ws_cd_pergunta
         and sq_conteudo > ws_sq_origem
         and sq_conteudo <= ws_sq_destino;
-        
+
         -- Colocar o item de origem logo após o destino
         update doc_conteudos
         set sq_conteudo = ws_sq_destino
@@ -1558,13 +1556,13 @@ begin
         where cd_pergunta = ws_cd_pergunta
         and sq_conteudo >= ws_sq_destino
         and sq_conteudo < ws_sq_origem;
-        
+
         -- Colocar o item de origem logo no lugar do destino
         update doc_conteudos
         set sq_conteudo = ws_sq_destino
         where id_conteudo = prm_id_conteudo_origem;
     end if;
-    
+
     commit;
     htp.p('OK|Conteúdo movido com sucesso.');
 exception
@@ -1581,7 +1579,7 @@ procedure cadastro_conteudo_excluir (prm_id_conteudo varchar2) as
 begin 
     delete from doc_conteudos
     where id_conteudo = prm_id_conteudo;
-    
+
     if sql%notfound then 
         htp.p('ERRO|Conteúdo não localizado para exclusão.');
     else 
@@ -1601,9 +1599,9 @@ procedure cadastro_conteudo_inserir (prm_pergunta    varchar2,
     ws_sq_conteudo number;
     ws_sq_atual    number; 
 begin
-    
+
     select nvl(max(id_conteudo), 0) + 1 into ws_id_conteudo from doc_conteudos;
-    
+
     -- Get the next sequence number for this topic
     select nvl(max(sq_conteudo), 0) + 1 into ws_sq_conteudo 
     from doc_conteudos 
@@ -1645,7 +1643,7 @@ begin
     );
 
     commit;
-    
+
     htp.p('OK|Conteúdo criado com sucesso.|' || ws_id_conteudo);
 exception
     when others then
@@ -1671,7 +1669,7 @@ begin
            ds_titulo       = decode(prm_tp_conteudo,'LINHA',null,prm_ds_titulo),
            ds_texto        = decode(prm_tp_conteudo,'LINHA',null,ds_texto)
      where id_conteudo = prm_id_conteudo;
-     
+
     if sql%notfound then 
         htp.p('ERRO|Conteúdo não localizado para atualização.');
     else 
@@ -1693,34 +1691,34 @@ begin
     select max(tp_conteudo) into ws_tp_conteudo from doc_conteudos where id_conteudo = prm_id_conteudo;
     -- Create the popup container
     htp.p('<div id="estilos-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Selecione os Estilos</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with multi-select list
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<select id="estilos-select" multiple size="10">');
-        
+
         -- Loop through all styles from DOC_ESTILOS table
         for estilo in (select id_estilo, css_estilo from doc_estilos 
                        where instr(tp_conteudo||'|', ws_tp_conteudo||'|') > 0 or tp_conteudo = 'TODOS'
                         order by id_estilo) loop
             htp.p('<option value="' || estilo.id_estilo || '">' || estilo.id_estilo || ' - ' || substr(estilo.css_estilo, 1, 50) || '</option>');
         end loop;
-        
+
         htp.p('</select>');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="estilos-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="estilos-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="estilos-overlay" class="cadastro-tela-overlay"></div>');
 
@@ -1737,26 +1735,26 @@ procedure url_popup as
 begin
     -- Create the popup container
     htp.p('<div id="url-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Inserir URL</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with URL input field
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<label for="url-input">URL:</label>');
         htp.p('<input type="text" id="url-input" placeholder="https://" style="width:100%; padding:8px; margin-top:5px;">');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="url-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="url-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="url-overlay" class="cadastro-tela-overlay"></div>');
 exception 
@@ -1771,37 +1769,37 @@ procedure topico_popup as
 begin
     -- Create the popup container
     htp.p('<div id="topico-popup" class="cadastro-tela-popup">');
-    
+
         -- Popup header
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Selecionar Tópico</h3>');
         htp.p('</div>');
-        
+
         -- Popup content with search field and select
         htp.p('<div class="cadastro-tela-popup-content">');
         htp.p('<div style="margin-bottom:10px;">');
         htp.p('<label for="topico-search">Pesquisar:</label>');
         htp.p('<input type="text" id="topico-search" placeholder="Digite para filtrar..." style="width:100%; padding:8px; margin-top:5px;">');
         htp.p('</div>');
-        
+
         htp.p('<select id="topico-select" size="10" style="width:100%;">');
-        
+
         -- Loop through all topics from DOC_PERGUNTAS table
         for topico in (select cd_pergunta, pergunta from doc_perguntas order by cd_pergunta desc) loop
             htp.p('<option value="' || topico.cd_pergunta || '">' || topico.cd_pergunta || ' - ' || topico.pergunta || '</option>');
         end loop;
-        
+
         htp.p('</select>');
         htp.p('</div>');
-        
+
         -- Popup footer with buttons
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="topico-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="topico-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-        
+
     htp.p('</div>');
-    
+
     -- Overlay background
     htp.p('<div id="topico-overlay" class="cadastro-tela-overlay"></div>');
 
@@ -1818,18 +1816,18 @@ procedure imagem_popup as
 begin
     -- Criar o container do popup
     htp.p('<div id="imagem-popup" class="cadastro-tela-popup">');
-    
+
         -- Cabeçalho do popup
         htp.p('<div class="cadastro-tela-popup-header">');
         htp.p('<h3>Inserir Imagem</h3>');
         htp.p('</div>');
-        
+
         -- Conteúdo do popup com campo para upload de arquivo
         htp.p('<div class="cadastro-tela-popup-content">');
-        
+
             -- Formulário para upload
             htp.p('<form id="form-upload-imagem" enctype="multipart/form-data">');
-            
+
                 -- Campo para selecionar arquivo
                 htp.p('<div style="margin-bottom:10px;">');
                     htp.p('<label for="arquivo-imagem">Selecione uma imagem:</label>');
@@ -1841,16 +1839,16 @@ begin
                 htp.p('</div>');
             htp.p('</form>');
         htp.p('</div>');
-        
-   
+
+
         -- Rodapé do popup com botões
         htp.p('<div class="cadastro-tela-popup-footer">');
         htp.p('<button id="imagem-aplicar" class="cadastro-tela-btn aplicar">Aplicar</button>');
         htp.p('<button id="imagem-cancelar" class="cadastro-tela-btn cancelar">Cancelar</button>');
         htp.p('</div>');
-    
+
     htp.p('</div>');
-    
+
     -- Overlay de fundo
     htp.p('<div id="imagem-overlay" class="estilos-overlay"></div>');
 exception 
@@ -1862,5 +1860,3 @@ exception
 end imagem_popup;
 
 END DOC;
-/
-SHOW ERROR;
