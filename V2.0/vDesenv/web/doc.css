@@ -2869,3 +2869,118 @@ span.go-login:hover svg,
 span#login:hover svg {
   fill: #4e4e4e;
 }
+
+/************** página conteúdo markdown ******************/
+
+.resposta_conteudo.markdown > * {
+    /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;*/ 
+    font-family: "Google Sans Flex", "Google Sans", "Helvetica Neue", sans-serif !important;
+    font-size: 16px !important;
+    color: #30363b;
+}
+
+.resposta_conteudo.markdown {
+    line-height: 1.6 !important;
+    color: #24292e;
+    max-width: 850px;
+    padding: 20px;
+}
+
+.resposta_conteudo.markdown h1, .resposta_conteudo.markdown h2 {
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.resposta_conteudo.markdown h1 { font-size: 2em !important; scroll-margin-top: 90px;}
+.resposta_conteudo.markdown h2 { font-size: 1.5em !important;}
+
+.resposta_conteudo.markdown p, .resposta_conteudo.markdown ul, .resposta_conteudo.markdown ol {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.resposta_conteudo.markdown code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.resposta_conteudo.markdown pre {
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.resposta_conteudo.markdown pre code {
+    background: none;
+    padding: 0;
+    font-size: 100%;
+}
+
+.resposta_conteudo.markdown blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    margin: 0 0 16px 0;
+}
+
+.resposta_conteudo.markdown table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.resposta_conteudo.markdown table th, .resposta_conteudo.markdown table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.resposta_conteudo.markdown table tr:nth-child(even) {
+    background-color: #f6f8fa;
+}
+
+/* Força a exibição dos bullets na sua div de documentação */
+.resposta_conteudo.markdown ul {
+    list-style-type: disc !important; /* Ou circle, square */
+    margin-left: 25px !important;
+    padding-left: 5px !important;
+    display: block !important;
+}
+
+.resposta_conteudo.markdown li {
+    display: list-item !important; /* Garante que o navegador trate como item de lista */
+    margin-bottom: 5px;
+    margin-left: 1.5em;
+}
+
+.resposta_conteudo.markdown hr {
+    height: 1px;
+    background-color: #444;
+    border: none;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px #444;    
+}
+
+div.markdown-sumario {
+  margin-top: -40px;
+}
+
+div.markdown-sumario a {
+    color: #4da3ff;
+    text-decoration: none;
+}
+
+div.markdown-sumario a:hover {
+    text-decoration: underline;
+}

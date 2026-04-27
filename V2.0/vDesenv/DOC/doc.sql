@@ -42,8 +42,9 @@ BEGIN
             htp.p('<link rel="favicon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
             htp.p('<link rel="shortcut icon" href="dwu.fcl.download?arquivo=upquery-icon.png"/>');
             htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=doc.css"/>' );
+            htp.p('<link rel="stylesheet" href="dwu.fcl.download?arquivo=marked.min.css"/>' );
+            htp.p('<script src="dwu.fcl.download?arquivo=marked.min.js"></script>');      -- Conversão do Markdown em html 
             htp.p('<script src="dwu.fcl.download?arquivo=doc.js"></script>');
-            --htp.p('<script src="dwu.fcl.download?arquivo=pdf-min.js"></script>');
             htp.p('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>');
             htp.p('<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">');
             htp.p('<link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css">');
@@ -1111,6 +1112,12 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                         if ws_conteudo is not null then 
                             ws_detalhes := ws_conteudo;
                         end if;     
+                    elsif ws_tp_conteudo = 'MARKDOWN' then     
+                        ws_conteudo := null;
+                        doc.monta_conteudo_markdown(ws_cd_pergunta, ws_conteudo);
+                        if ws_conteudo is not null then 
+                            ws_detalhes := ws_conteudo;
+                        end if;     
                     else 
                         ws_conteudo := null;
                         doc.monta_conteudo_html(ws_cd_pergunta, ws_conteudo);
@@ -1121,13 +1128,23 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
 
 
                     htp.p('<div class="detalhe-conteudo">');
-
                         htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
-                        htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
+                        
+                        if ws_tp_conteudo = 'MARKDOWN' then 
+                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'); 
+                                htp.p('<textarea class="md-raw" style="display:none;">'||WS_DETALHES||'</textarea>');
+                            htp.p('</span>');                        
+                        else
+                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
+                        end if;     
 
                     htp.p('</div>');
 
+                    --if ws_tp_conteudo = 'MARKDOWN' then         
+                    --    htp.p('<script>renderizarMarkdown();</script>');
+                    --end if;    
                 end if;
+
             htp.p('</div>');        -- fundo-conteudo 
 
             if ws_tp_conteudo <> 'ARQUIVOS' then 
@@ -1627,6 +1644,23 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
             commit;
 
     END monta_conteudo_arquivos; 
+
+    procedure monta_conteudo_markdown ( prm_pergunta     varchar2,
+                                        prm_conteudo out clob ) as
+        ws_conteudo clob;
+    begin
+        prm_conteudo := null;
+        ws_conteudo  := null;
+        select detalhes into ws_conteudo 
+         from doc_detalhes 
+         where cd_pergunta = prm_pergunta 
+           and versao      = '0';
+        prm_conteudo := ws_conteudo;
+    exception
+        when others then
+            insert into bi_log_sistema values (sysdate, 'monta_conteudo_markdown: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+            commit;
+    END monta_conteudo_markdown; 
 
 
     -----------------------------------------------------------------------------------------------------------------------------------------------

@@ -75,8 +75,12 @@ procedure formatar_texto_html ( prm_pergunta         varchar2,
 								prm_texto     in out clob) ;
 
 procedure monta_conteudo_json ( prm_classe    varchar2);
+
 procedure monta_conteudo_arquivos ( prm_pergunta     varchar2,
 									prm_conteudo out clob ) ;
+
+procedure monta_conteudo_markdown ( prm_pergunta     varchar2,
+                                    prm_conteudo out clob ) ;
 
 procedure limpar_formatacao ( prm_texto     in out clob ) ; 
 

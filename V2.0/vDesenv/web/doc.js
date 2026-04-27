@@ -17,7 +17,6 @@ var tip_user = 'T' ;
 ====================================
  */  
 
-
 document.addEventListener('keypress', function(e){
     if (document.getElementById('busca')) {
         if(document.getElementById('busca').focus){
@@ -67,14 +66,14 @@ document.addEventListener('click', function(e){
 
 
     if(e.target.className == "go-doc-public"){
-    classe_doc = 'D';
-    sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
-    chamar('DOC_PUBLIC', e.target.title,'',tip_user);
-    if(document.querySelector('.escolhido')){
-        document.querySelector('.escolhido').classList.remove('escolhido');
+        classe_doc = 'D';
+        sessionStorage.setItem('ultima_secao', 'DOC_PUBLIC');
+        chamar('DOC_PUBLIC', e.target.title,'',tip_user);
+        if(document.querySelector('.escolhido')){
+            document.querySelector('.escolhido').classList.remove('escolhido');
+        }
+        e.target.classList.add('escolhido');
     }
-    e.target.classList.add('escolhido');
-}
 
 
     if(e.target.className == "go-doc-private"){
@@ -169,9 +168,7 @@ document.addEventListener('click', function(e){
         });
     }
     }
-}
-
-);
+});
 
 function login_validacao(event) {
     if (event && event.preventDefault) {
@@ -1434,3 +1431,48 @@ function toggleDetalheDireito() {
 
 window.addEventListener('load', posicionarBotoes);
 window.addEventListener('resize', posicionarBotoes);
+
+
+function renderizarMarkdown() {
+    console.log('Renderizando markdown...');
+    document.querySelectorAll('span.resposta_conteudo.markdown').forEach(function(container) {
+        console.log('Renderizando markdown... 2');
+        var source = container.querySelector('.md-raw');
+        // Verificamos se existe o source e se já não foi processado (para evitar loop)
+        if (source && typeof marked !== 'undefined') {
+            var rawMarkdown = source.value || source.textContent;
+            container.innerHTML = marked.parse(rawMarkdown.trim());
+            // O source é removido pelo innerHTML, então o container fica limpo
+        }
+    });
+}
+
+function gerarSumarioAutomatico() {
+    const container = document.querySelector('.resposta_conteudo.markdown');
+    if (!container) return;
+
+    // Busca apenas os títulos de nível 1 (#)
+    const titulos = container.querySelectorAll('h1');
+    if (titulos.length <= 1) return; // Não cria índice se só tiver um título principal
+
+    let htmlIndice = '<div class="markdown-sumario"><ul>';
+
+    titulos.forEach((titulo) => {
+        // Gera um ID para o título caso ele não tenha
+        const id = titulo.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        titulo.id = id;
+
+        htmlIndice += `<li><a href="#${id}">${titulo.textContent}</a></li>`;
+    });
+
+    htmlIndice += '</ul></div><hr>';
+
+    // Insere o índice no topo da documentação
+    container.insertAdjacentHTML('afterbegin', htmlIndice);
+}
+
+
+window.addEventListener("load", function() { 
+    renderizarMarkdown(); 
+    gerarSumarioAutomatico();
+});
