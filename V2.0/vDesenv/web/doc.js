@@ -295,11 +295,15 @@ function chamar(proc, search, alvo, tipousuario, tipo, localiza_menu){
                 if (tipo == 'somente_pergunta') {
                     var etemp = document.createElement('div');
                     etemp.innerHTML = request.responseText;
-                    document.querySelector('.fundo-conteudo').innerHTML = etemp.querySelector('.fundo-conteudo').innerHTML;      
+                    document.querySelector('.fundo-conteudo').innerHTML = etemp.querySelector('.fundo-conteudo').innerHTML;
                 } else {
-                    document.querySelector(alvo).innerHTML = request.responseText;      
-                }    
+                    document.querySelector(alvo).innerHTML = request.responseText;
+                }
                 posicionarBotoes();
+                if (proc == 'detalhe_pergunta') {
+                    renderizarMarkdown();
+                    gerarSumarioAutomatico();
+                }
                 var header = document.querySelector('.header-doc');
                 if (header) {
                     if (proc == 'detalhe_pergunta') {
