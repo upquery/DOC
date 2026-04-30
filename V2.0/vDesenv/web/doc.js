@@ -1447,6 +1447,8 @@ function renderizarMarkdown() {
             var rawMarkdown = source.value || source.textContent;
             container.innerHTML = marked.parse(rawMarkdown.trim());
             // O source é removido pelo innerHTML, então o container fica limpo
+        } else {
+            console.log('Conteudo markdown não localizado.');
         }
     });
 }

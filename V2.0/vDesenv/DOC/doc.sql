@@ -874,6 +874,7 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
         ws_tp_conteudo  varchar2(20);
         ws_cd_pergunta  varchar2(20);
         ws_count_rel    number := 0;
+        ws_chunk_offset integer;
 
         ws_raise_erro   exception;
     BEGIN
@@ -956,9 +957,11 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                     elsif ws_tp_conteudo = 'MARKDOWN' then     
                         ws_conteudo := null;
                         doc.monta_conteudo_markdown(ws_cd_pergunta, ws_conteudo);
+insert into err_txt values ('a1:'||length(ws_conteudo)); commit;                         
                         if ws_conteudo is not null then 
                             ws_detalhes := ws_conteudo;
                         end if;     
+insert into err_txt values ('a2:'||length(ws_detalhes)); commit;                                                 
                     else 
                         ws_conteudo := null;
                         doc.monta_conteudo_html(ws_cd_pergunta, ws_conteudo);
@@ -971,13 +974,25 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
                     htp.p('<div class="detalhe-conteudo">');
                         htp.p('<span class="detalhe-pergunta">'||ws_ds_titulo||'</span>');
                         
-                        if ws_tp_conteudo = 'MARKDOWN' then 
-                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'); 
-                                htp.p('<textarea class="md-raw" style="display:none;">'||WS_DETALHES||'</textarea>');
-                            htp.p('</span>');                        
+                        if ws_tp_conteudo = 'MARKDOWN' then
+                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">');
+                                htp.p('<textarea class="md-raw" style="display:none;">');
+                                ws_chunk_offset := 1;
+                                while ws_chunk_offset <= dbms_lob.getlength(ws_detalhes) loop
+                                    htp.prn(dbms_lob.substr(ws_detalhes, 8000, ws_chunk_offset));
+                                    ws_chunk_offset := ws_chunk_offset + 8000;
+                                end loop;
+                                htp.p('</textarea>');
+                            htp.p('</span>');
                         else
-                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">'||WS_DETALHES||'</span>');
-                        end if;     
+                            htp.p('<span class="detalhe-resposta resposta_conteudo '||lower(ws_tp_conteudo)||'">');
+                                ws_chunk_offset := 1;
+                                while ws_chunk_offset <= dbms_lob.getlength(ws_detalhes) loop
+                                    htp.prn(dbms_lob.substr(ws_detalhes, 8000, ws_chunk_offset));
+                                    ws_chunk_offset := ws_chunk_offset + 8000;
+                                end loop;
+                            htp.p('</span>');
+                        end if;
 
                     htp.p('</div>');
 
@@ -1492,11 +1507,10 @@ PROCEDURE DETALHE_PERGUNTA (    PRM_VALOR VARCHAR2 DEFAULT NULL,
         select detalhes into ws_conteudo 
          from doc_detalhes 
          where cd_pergunta = prm_pergunta 
-           and versao      = '0';
+           and rownum = 1;
         prm_conteudo := ws_conteudo;
-    exception
-        when others then
-            insert into bi_log_sistema values (sysdate, 'monta_conteudo_markdown: '|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
+    exception when others then
+            insert into bi_log_sistema values (sysdate, 'monta_conteudo_markdown [pergunta='||prm_pergunta||']:'|| dbms_utility.format_error_stack||'-'||dbms_utility.format_error_backtrace, 'dwu', 'erro');	
             commit;
     END monta_conteudo_markdown; 
 
