@@ -2882,7 +2882,6 @@ span#login:hover svg {
 .resposta_conteudo.markdown {
     line-height: 1.6 !important;
     color: #24292e;
-    max-width: 850px;
     padding: 20px;
 }
 
