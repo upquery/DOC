@@ -2925,6 +2925,7 @@ span#login:hover svg {
     background: none;
     padding: 0;
     font-size: 100%;
+    white-space: pre;
 }
 
 .resposta_conteudo.markdown blockquote {
